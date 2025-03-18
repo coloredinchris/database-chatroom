@@ -11,7 +11,7 @@ body {
 #messages {
     margin-bottom: 20px;
     overflow-y: scroll;
-    background-color: #d3d3d3;;
+    background-color: #d3d3d3; /* Default to Light Mode Colors */
     width: 99%;
     height: 55rem;
     border: 1px solid black;
@@ -24,43 +24,31 @@ body {
 #messages div {
     padding: 5px;
     margin: 2px 0;
-    background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white background */
     border-radius: 10px;
     display: block;
-    word-wrap: break-word; /* Ensure text wraps to a new line */
-    white-space: normal; /* Allow text wrapping */
+    word-wrap: break-word;
+    white-space: normal;
+    background-color: rgba(50, 50, 50, 0.9);
+}
+
+.light-mode #messages {
+    background-color: #d3d3d3;
+}
+
+.dark-mode #messages {
+    background-color: #333333;
+}
+
+.light-mode #messages div {
+    background-color: rgba(50, 50, 50, 0.9);
+}
+
+.dark-mode #messages div {
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 #input {
-    width: 99%;
+    width: 100%;
     padding: 10px;
     margin-top: 10px;
-}
-
-/* Dark mode styles */
-body.dark-mode {
-    background-color: #d3d3d3;
-    color: #000000;
-}
-
-body.dark-mode #messages {
-    background-color: #000000;
-}
-
-body.dark-mode #messages div {
-    background-color: rgba(128, 128, 128, 0.5); /* Semi-transparent gray background */
-}
-
-/* Light mode styles */
-body.light-mode {
-    background-color: #ffffff;
-    color: #000000;
-}
-
-body.light-mode #messages {
-    background-color: #d3d3d3;
-}
-
-body.light-mode #messages div {
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
 }
