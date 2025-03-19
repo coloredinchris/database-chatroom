@@ -10,11 +10,10 @@ app.secret_key = 'supersecretkey'  # Needed for session management
 CORS(app)
 socketio = SocketIO(app)
 
-
-#uploading files/file types
+# Uploading files/file types
 UPLOAD_FOLDER = 'uploads'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True) #creates folder if not already there
-ALLOWED_EXTENSIONS = {'txt'}
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Creates folder if not already there
+ALLOWED_EXTENSIONS = {'txt', 'jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov', 'avi', 'webm'}  # Allow image and video file types
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -32,17 +31,18 @@ def upload_file():
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
 
-    file=request.files['file']
+    file = request.files['file']
     username = request.form.get('username', 'Unknown1')
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
     if allowed_file(file.filename):
-        filepath = os.path.join(UPLOAD_FOLDER, file.filename)
+        filename = f"{uuid.uuid4()}_{file.filename}"
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
         file.save(filepath)
 
-        #send file to chat
-        file_url = f"/download/{file.filename}"
+        # Send file to chat
+        file_url = f"/download/{filename}"
         
         socketio.emit('message', {
             'username': username, 
@@ -57,11 +57,9 @@ def upload_file():
 
     return jsonify({"error": "Invalid file type"}), 400
 
-
 @app.route('/download/<filename>', methods=['GET'])
 def download_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename, as_attachment=True)
-
 
 @socketio.on('connect')
 def handle_connect():

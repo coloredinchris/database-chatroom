@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatroom</title>
     <link rel="icon" href="{{ url_for('static', filename='icon.png') }}?v={{ favicon_version }}" type="image/png">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="static/style.css">
     <script src="https://cdn.socket.io/4.1.3/socket.io.min.js"></script>
+    <script src="static/script.js" defer></script>
     
     <style>
         /* 🔹 Autocomplete Box */
@@ -37,12 +38,11 @@
     
     <div style="position: relative; width: 90%; margin: auto; display: flex; align-items: center;">
         <button onclick="document.getElementById('fileInput').click()">+</button>
-        <input type="file" id="fileInput" accept=".txt" style="display: none">
+        <input type="file" id="fileInput" accept=".txt,.jpg,.jpeg,.png,.gif,.mov,.avi,.mp4,.webm" style="display: none">
         <input type="text" id="input" placeholder="Type a message..." autocomplete="off" />
-        <button id="sendButton">➤</button>
+        <button id="sendButton">Send</button>
         <div id="autocomplete-box" class="autocomplete-suggestions"></div>
     </div>
 
-    <script src="/static/script.js"></script>
 </body>
 </html>

@@ -180,8 +180,29 @@ socket.on('message', function(data) {
     if(data.file_url) {
         var fileLink = document.createElement("a");
         fileLink.href = `http://localhost:5000${data.file_url}`;
-        fileLink.textContent = data.message;
         fileLink.target = "_blank";
+
+        // Check if the file is an image
+        if (/\.(jpg|jpeg|png|gif)$/i.test(data.file_url)) {
+            var img = document.createElement("img");
+            img.src = fileLink.href;
+            img.alt = data.message;
+            img.style.maxWidth = "100%";
+            img.style.height = "auto";
+            fileLink.appendChild(img);
+        } 
+        // Check if the file is a video
+        else if (/\.(mp4|mov|avi|webm)$/i.test(data.file_url)) {
+            var video = document.createElement("video");
+            video.src = fileLink.href;
+            video.controls = true;
+            video.style.maxWidth = "100%";
+            video.style.height = "auto";
+            fileLink.appendChild(video);
+        } 
+        else {
+            fileLink.textContent = data.message;
+        }
 
         messageSpan.appendChild(fileLink);
     }
