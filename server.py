@@ -3,12 +3,68 @@
 from flask import Flask, render_template, session, request, send_from_directory, jsonify
 from flask_socketio import SocketIO
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import inspect
 import uuid, random, string, os
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Needed for session management
 CORS(app)
 socketio = SocketIO(app)
+
+# Database configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:MySQLPasswordIsDaBomb!@localhost/chat_db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+# Define User model
+class User(db.Model):
+    __tablename__ = 'Users'
+    user_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
+    last_login = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+
+# Define Message model
+class Message(db.Model):
+    __tablename__ = 'Messages'
+    message_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
+    edited_at = db.Column(db.TIMESTAMP, nullable=True)
+
+# Define Moderator model
+class Moderator(db.Model):
+    __tablename__ = 'Moderators'
+    mod_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), unique=True, nullable=False)
+
+# Define BannedUser model
+class BannedUser(db.Model):
+    __tablename__ = 'Banned_Users'
+    ban_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), unique=True, nullable=False)
+    banned_by = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=True)
+    ban_reason = db.Column(db.Text, nullable=False)
+    ban_date = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
+
+# Create tables if they do not exist
+if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+    with app.app_context():
+        print("Checking if tables exist...")
+        inspector = inspect(db.engine)
+        tables = inspector.get_table_names()
+        print(f"Existing tables: {tables}")
+        if not tables:
+            try:
+                db.create_all()
+                print("Tables created successfully.")
+            except Exception as e:
+                print(f"Error creating tables: {e}")
 
 # Uploading files/file types
 UPLOAD_FOLDER = 'uploads'
