@@ -1,0 +1,20 @@
+.triangle {
+    width: 0;
+    height: 0;
+    border-left: 40px solid transparent;
+    border-right: 40px solid transparent;
+    border-bottom: 70px solid red;
+    margin: 5px;
+}
+
+.triangle.flipped {
+    transform: rotate(180deg) translateX(-50px);
+    transform-origin: center;
+}
+
+.triangleRow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  

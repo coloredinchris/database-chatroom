@@ -1,0 +1,84 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    text-align: center;
+}
+
+#toggleMode {
+    margin-bottom: 20px;
+}
+
+#messages {
+    margin-bottom: 20px;
+    overflow-y: scroll;
+    background-color: #d3d3d3; /* Default to Light Mode Colors */
+    text-shadow: 1px 1px 2px #000, -1px -1px 2px #000; /* Default to Light Mode Colors */
+    width: 90vw;
+    height: 70vh;
+    border: 1px solid black;
+    border-radius: 10px;
+    margin: 0 auto;
+    padding: 10px;
+    text-align: left;
+}
+
+#messages div {
+    padding: 5px;
+    margin: 2px 0;
+    border-radius: 10px;
+    display: block;
+    word-wrap: break-word;
+    white-space: normal;
+    background-color: rgba(50, 50, 50, 0.9);
+}
+
+#messages img, #messages video {
+    max-width: 100%;
+    height: auto;
+}
+
+.light-mode #messages {
+    background-color: #d3d3d3;
+}
+
+.dark-mode #messages {
+    background-color: #333333;
+}
+
+.light-mode #messages div {
+    background-color: rgba(50, 50, 50, 0.9);
+}
+
+.dark-mode #messages div {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+#input {
+    width: 100%;
+    padding: 10px;
+    margin: 0 auto;
+    margin-top: 10px;
+}
+
+/* Media queries for smaller screens */
+@media (max-width: 768px) {
+    #messages {
+        width: 90%;
+        height: 60vh;
+    }
+
+    #input {
+        width: 90%;
+    }
+}
+
+@media (max-width: 480px) {
+    #messages {
+        width: 85%;
+        height: 50vh;
+    }
+
+    #input {
+        width: 85%;
+    }
+}
