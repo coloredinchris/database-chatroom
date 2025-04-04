@@ -1,0 +1,15 @@
+:root {
+    --charcoal: #2e2e2e;     /* deep gray */
+    --teal: #117C88;         /* rich teal */
+    --gray-blue: #B5C7C7;         /* soft gray-blue */
+    --dark-green: #1D3520;       /* dark green */
+    --slate: #545F66;        /* bluish-gray */
+    --earth-green: #3A6B35;        /* earthy green */
+    --brown: #665544;         /* muted brown */
+    --orange: #C67F36;         /* burnt orange */
+    --pale-green: #C4DFAA;         /* pale green */
+  }
+  
+  .test {
+    background-color: var(--charcoal);
+  }
