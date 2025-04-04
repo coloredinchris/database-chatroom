@@ -1,10 +1,21 @@
 /* Root layout */
+:root {
+    --midnight-bark: #2e2e2e;    
+    --river-teal: #117C88;        
+    --misty-blue: #B5C7C7;        
+    --deep-moss: #1D3520;      
+    --slate: #545F66;      
+    --pine-green: #3A6B35;       
+    --mudstone: #665544;        
+    --earthy-orange: #C67F36;        
+    --minty-moss: #C4DFAA;        
+  }
+
 .chatroom {
     display: flex;
     flex-direction: column;
     height: 100vh;
     font-family: 'Segoe UI', sans-serif;
-    
     background: linear-gradient(to bottom right, #e6f0fa, #f2f8fc);
     color: #333;
     transition: background-color .3s ease;
@@ -81,12 +92,13 @@
 .user-list {
     flex: 2;
     max-width: 20vw;
-    background-color: #f7f9fc;
+    /* background-color: #f7f9fc; */
     border-left: 1px solid #ddd;
     padding: 1rem;
     overflow-y: auto;
     transition: background-color .3s ease;
   }
+  
 .chatroom.dark-mode .user-list {
     background-color: #1b1b1b;
     border-left: 1px solid #333;
