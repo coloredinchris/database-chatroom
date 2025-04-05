@@ -1,6 +1,7 @@
 /* Root layout */
 :root {
-    --midnight-bark: #2e2e2e;    
+    --midnight-bark: #2e2e2e;
+    --translucent-midnight-bark: rgba(46, 46, 46, 0.3);
     --river-teal: #117C88;        
     --misty-blue: #B5C7C7;        
     --deep-moss: #1D3520;      
@@ -113,8 +114,9 @@
 
 .user-list h3 {
     text-align: center;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid var(--translucent-midnight-bark);
     padding-bottom: 1rem;
+    color: var(--midnight-bark);
 }
 
 .user-list ul {
