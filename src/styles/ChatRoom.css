@@ -153,6 +153,7 @@
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     max-width: 100%;
     word-wrap: break-word;
+    word-break: break-word;
     line-height: 1.5;
     transition: background-color .5s ease;
 }
@@ -182,10 +183,10 @@
 span.message-text {
     display: flex;
     left: 0;
-    margin-left: 3.5rem;
+    margin-left: 1rem;
+    justify-content: left;
     justify-items: left;
-    text-align: left;
-    word-wrap: normal;
+    text-align: left;;
 }
 
 span.username.centered-system {
