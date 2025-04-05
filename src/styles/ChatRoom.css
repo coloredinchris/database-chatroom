@@ -1,11 +1,15 @@
 /* Root layout */
 :root {
     --midnight-bark: #2e2e2e;
+    --translucent-midnight-bark-button: rgba(46, 46, 46, 0.8);
     --translucent-midnight-bark: rgba(46, 46, 46, 0.3);
-    --river-teal: #117C88;        
-    --misty-blue: #B5C7C7;        
+    --river-teal: #117C88;
+    --translucent-river-teal: rgba(17, 124, 136, 0.7);        
+    --misty-blue: #B5C7C7;
+    --translucent-misty-blue: rgba(181, 199, 199, 0.7);
     --deep-moss: #1D3520;      
-    --slate: #545F66;      
+    --slate: #545F66;
+    --translucent-slate-button: rgba(84, 95, 102, 0.8);     
     --pine-green: #3A6B35;       
     --mudstone: #665544;        
     --earthy-orange: #C67F36;        
@@ -36,7 +40,7 @@
     text-align: center;
     margin: 1rem 0 0.5rem;
     font-size: 1.8rem;
-    color: var(--midnight-bark)
+    color: var(--midnight-bark);
 }
 
 .chatroom-main {
@@ -56,16 +60,24 @@
 #toggleMode {
     margin: 0 auto 1rem;
     padding: 0.5rem 1rem;
-    border: none;
-    background-color: #555;
-    color: white;
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 #toggleMode:hover {
-    background-color: #444;
+    background-color: var(--translucent-midnight-bark-button);
+}
+
+.light-mode #toggleMode {
+    border: none;
+    background-color: var(--slate);
+    color: var(--minty-moss);
+    text-shadow: var(--midnight-bark) 2px 2px 1px;
+}
+
+.light-mode #toggleMode:hover {
+    background-color: var(--translucent-slate-button);
 }
 
 /* Messages container */
@@ -78,23 +90,31 @@
     gap: 0.75rem;
     background-color: inherit;
     transition: background-color .3s ease;
+
+    /* Scrollbar for Firefox */
+    scrollbar-color: var(--river-teal) var(--translucent-midnight-bark); /* Thumb color and track color */
+    scrollbar-width: thin; /* Makes the scrollbar thinner */
 }
 
-/* .user-list {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 20vw;
-    height: 100vh;
-    background-color: #f7f9fc;
-    color: #222;
-    border-left: 1px solid #ddd;
-    text-decoration: none;
-    border-radius: 12px;
-    overflow: hidden;
-    overflow-y: scroll;
-    padding: 0 0 .5rem .5rem;
-} */
+/* Scrollbar for WebKit-based browsers (Chrome, Edge, Safari) */
+#messages::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#messages::-webkit-scrollbar-track {
+    background: var(--translucent-midnight-bark);
+    border-radius: 4px;
+}
+
+#messages::-webkit-scrollbar-thumb {
+    background: var(--river-teal);
+    border-radius: 4px;
+}
+
+#messages::-webkit-scrollbar-thumb:hover {
+    background: var(--translucent-river-teal); /* Color of the thumb on hover */
+}
 
 .user-list {
     flex: 2;
@@ -125,7 +145,6 @@
 }
 
 .user-list li {
-    background-color: #eef1f5;
     border-radius: 5px;
     padding: .4rem .6rem;
     margin-bottom: .4rem;
@@ -133,9 +152,12 @@
     /* transition: background-color .3s ease; */
 }
 
-.user-list li:hover {
-    background-color: #e2e6ea;
-    
+.light-mode .chatroom-main .user-list li {
+    background-color: var(--deep-moss);
+}
+
+.light-mode .chatroom-main .user-list li:hover {
+    background-color: var(--mudstone);
 }
 
 .chatroom.dark-mode .user-list li {
@@ -166,7 +188,7 @@
 
 .light-mode .message-bubble {
     background-color: var(--deep-moss);
-    border-left: 4px solid #87cefa;
+    border-left: 0.5rem solid var(--mudstone);
 }
 
 .message-bubble span {
@@ -224,7 +246,7 @@ span.username.centered-system {
 }
 
 .light-mode .input-area {
-    background-color: var(--minty-moss);
+    background-color: var(--mudstone);
     border-top: 1px solid var(--translucent-midnight-bark);
 }
 .dark-mode .input-area {
@@ -246,11 +268,16 @@ span.username.centered-system {
     color: #eee;
 }
 
+.light-mode .input-area input[type="text"] {
+    background-color: white;
+    border-color: var(--translucent-midnight-bark);
+    color: var(--deep-moss);
+}
 .input-area button {
     padding: 0.6rem 1rem;
     border: none;
-    background-color: #007bff;
-    color: white;
+    background-color: var(--misty-blue);
+    color: var(--deep-moss);
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
@@ -258,36 +285,48 @@ span.username.centered-system {
 }
 
 .input-area button:hover {
-    background-color: #0056b3;
+    background-color: var(--translucent-misty-blue);
 }
 
 /* Autocomplete box */
 #autocomplete-box {
     position: absolute;
-    bottom: 100%;
     left: 0;
+    bottom: 100%;
     width: 100%;
-    background: white;
-    border: 1px solid #ccc;
+    border: 1px solid var(--translucent-midnight-bark);
     border-radius: 6px;
     z-index: 10;
     max-height: 150px;
     overflow-y: auto;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
+
 .dark-mode #autocomplete-box{
     background: #2a2a2a;
     color: #eee;
     border-color: #555;
 }
+
+.light-mode #autocomplete-box{
+    background: var(--translucent-misty-blue);
+    border-color: var(--translucent-midnight-bark);
+}
+
 .autocomplete-suggestions div {
     padding: 0.5rem 0.75rem;
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
 
-.autocomplete-suggestions div:hover {
-    background-color: #f0f0f0;
+.light-mode .autocomplete-suggestions div {
+    background-color: var(--translucent-misty-blue);
+    color: var(--midnight-bark);
+}
+
+.light-mode .autocomplete-suggestions div:hover {
+    background-color: var(--midnight-bark);
+    color: var(--minty-moss);
 }
 
 .light-mode .message-text {
