@@ -17,6 +17,10 @@
     --translucent-minty-moss: rgba(196, 223, 170, 0.5);
   }
 
+  body {
+    line-height: 1.6;
+  }
+
 .chatroom {
     display: flex;
     flex-direction: column;
@@ -63,6 +67,7 @@
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: 16px;
 }
 
 #toggleMode:hover {
@@ -242,7 +247,10 @@ span.username.centered-system {
     padding: 1rem;
     gap: 0.5rem;
     transition: background-color .3s ease;
-    
+}
+
+.input-area button {
+    font-size: 16px;
 }
 
 .light-mode .input-area {
