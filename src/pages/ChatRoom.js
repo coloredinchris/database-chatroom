@@ -111,6 +111,20 @@ const ChatRoom = () => {
       }
   }, [messages]);
 
+  // Add this useEffect to detect and style "System" spans
+  useEffect(() => {
+      // Select all spans inside .message-bubble
+      const spans = document.querySelectorAll('.message-bubble span');
+
+      // Loop through each span and check its text content
+      spans.forEach((span) => {
+          if (span.textContent.trim() === 'System:') {
+              // Add a class to center the span
+              span.classList.add('centered-system');
+          }
+      });
+}, [messages]);
+
   if (!hasJoined) return <WelcomeScreen onJoin={handleJoin} />;
 
   return (
@@ -130,7 +144,6 @@ const ChatRoom = () => {
                 <div className="message-line">
                   <span className="timestamp">[{msg.timestamp}]</span>
                   <span className="username" style={{ color: userColor}}>{msg.username}: </span>
-
                 </div>
                 
                 {msg.file_url ? (

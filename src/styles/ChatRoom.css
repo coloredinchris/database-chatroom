@@ -8,7 +8,8 @@
     --pine-green: #3A6B35;       
     --mudstone: #665544;        
     --earthy-orange: #C67F36;        
-    --minty-moss: #C4DFAA;        
+    --minty-moss: #C4DFAA;
+    --translucent-minty-moss: rgba(196, 223, 170, 0.5);
   }
 
 .chatroom {
@@ -16,10 +17,13 @@
     flex-direction: column;
     height: 100vh;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to bottom right, #e6f0fa, #f2f8fc);
-    color: #333;
     transition: background-color .3s ease;
   }
+
+  .chatroom.light-mode {
+    color: var(--minty-moss);
+    background: var(--minty-moss);
+}
   
 .chatroom.dark-mode {
     background: #1e1e1e;
@@ -31,6 +35,7 @@
     text-align: center;
     margin: 1rem 0 0.5rem;
     font-size: 1.8rem;
+    color: var(--midnight-bark)
 }
 
 .chatroom-main {
@@ -89,10 +94,11 @@
     overflow-y: scroll;
     padding: 0 0 .5rem .5rem;
 } */
+
 .user-list {
     flex: 2;
     max-width: 20vw;
-    /* background-color: #f7f9fc; */
+    background-color: var(--minty-moss);
     border-left: 1px solid #ddd;
     padding: 1rem;
     overflow-y: auto;
@@ -141,7 +147,6 @@
 /* Chat bubble behind messages */
 .message-bubble {
     padding: 0.75rem 1rem;
-    background-color: rgba(255,255,255,0.85);
     border-radius: 12px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     max-width: 100%;
@@ -157,9 +162,36 @@
 }
 
 .light-mode .message-bubble {
-    background-color: rgba(255,255,255,0.85);
+    background-color: var(--deep-moss);
     border-left: 4px solid #87cefa;
 }
+
+.message-bubble span {
+    display: inline-flex;
+    flex-direction: row;
+    gap: 0.2rem;
+}
+
+.message-bubble span span {
+    text-align: left;
+    display: inline;
+}
+
+span.message-text {
+    display: flex;
+    left: 0;
+    margin-left: 3.5rem;
+    justify-items: left;
+    text-align: left;
+    word-wrap: normal;
+}
+
+span.username.centered-system {
+    display: block;
+    margin: 0 auto;
+    color: var(--earthy-orange) !important;
+}
+
 /* Username text styles */
 .username {
     font-weight: bold;
@@ -258,7 +290,7 @@
 }
 
 .light-mode .message-text {
-    color: #333;
+    color: var(--minty-moss);
 }
   
 .dark-mode .message-text {
@@ -266,14 +298,14 @@
 }
   
 .timestamp {
-    color: #8a8a8a;
+    color: var(--translucent-minty-moss);
     position: absolute;
-    left: 0;
+    right: 0;
 }
 
 .message-line {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: left;
     position: relative;
 }
