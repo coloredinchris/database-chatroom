@@ -414,3 +414,35 @@ span.username.centered-system {
     background-color: var(--river-teal); /* Slightly darker color on hover */
     color: white; /* Change text color on hover */
 }
+
+/* Highlight for hashtags (#) */
+.highlight-hashtag {
+    background-color: var(--translucent-minty-moss); /* Light green for emphasis */
+    color: var(--minty-moss);
+    padding: 0 0.2rem;
+    border-radius: 4px;
+}
+
+/* Highlight for exclamation points (!) */
+.highlight-exclamation {
+    background-color: var(--translucent-earthy-orange); /* Yellow for warnings */
+    color: var(--earthy-orange);
+    padding: 0 0.2rem;
+    border-radius: 4px;
+}
+
+/* Highlight for question marks (?) */
+.highlight-question {
+    background-color: var(--translucent-river-teal); /* Blue for questions */
+    color: var(--river-teal);
+    padding: 0 0.2rem;
+    border-radius: 4px;
+}
+
+/* Highlight for periods (.) */
+.highlight-period {
+    background-color: var(--translucent-midnight-bark); /* Red for severity */
+    color: var(--midnight-bark);
+    padding: 0 0.2rem;
+    border-radius: 4px;
+}

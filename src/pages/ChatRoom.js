@@ -81,6 +81,26 @@ const ChatRoom = () => {
         return match;
     });
 
+    // Highlight text surrounded by hashtags (#)
+    messageContent = messageContent.replace(/#(.*?)#/g, (match, text) => {
+        return `<span class="highlight-hashtag">${text}</span>`;
+    });
+
+    // Highlight text surrounded by exclamation points (!)
+    messageContent = messageContent.replace(/!(.*?)!/g, (match, text) => {
+        return `<span class="highlight-exclamation">${text}</span>`;
+    });
+
+    // Highlight text surrounded by question marks (?)
+    messageContent = messageContent.replace(/\?(.*?)\?/g, (match, text) => {
+        return `<span class="highlight-question">${text}</span>`;
+    });
+
+    // Highlight text surrounded by periods (.)
+    messageContent = messageContent.replace(/\.(.*?)\./g, (match, text) => {
+        return `<span class="highlight-period">${text}</span>`;
+    });
+
     return messageContent;
 };
 
