@@ -9,9 +9,7 @@ import WelcomeScreen from "./WelcomeScreen";
 /**********           for testing LOCAL            **********/
 const socket = io("http://localhost:5000");
 
-
 const readableColors = ["#3498db", "#9b59b6", "#1abc9c", "#f39c12", "#e67e22", "#e74c3c", "#2ecc71", "#34495e"];
-const testList = [{username: "user1", color: "#333"}, {username: "user2", color: "#333"}, {username: "user3", color: "#333"}]
 const getRandomReadableColor = () => readableColors[Math.floor(Math.random() * readableColors.length)];
 
 const ChatRoom = () => {
@@ -32,47 +30,65 @@ const ChatRoom = () => {
   };
 
   const fetchSuggestions = async (prefix) => {
-      const res = await fetch(`https://api.datamuse.com/words?sp=${prefix}*&max=10`);
-      const words = await res.json();
-      return words.map(word => word.word);
+    const res = await fetch(`https://api.datamuse.com/words?sp=${prefix}*&max=10`);
+    const words = await res.json();
+    return words.map((word) => word.word);
   };
 
   const handleInputChange = async (e) => {
-      const text = e.target.value;
-      setInput(text);
-      const lastWord = text.split(" ").pop();
-      if (lastWord.length >= 2) {
-        const matches = await fetchSuggestions(lastWord);
-        setSuggestions(matches);
-      } else {
-        setSuggestions([]);
-      }
+    const text = e.target.value;
+    setInput(text);
+    const lastWord = text.split(" ").pop();
+    if (lastWord.length >= 2) {
+      const matches = await fetchSuggestions(lastWord);
+      setSuggestions(matches);
+    } else {
+      setSuggestions([]);
+    }
   };
 
-  const formatUsername = (msg) => {
-      return msg.replace(/User-\d{4}/g, (match) => {
-        const color = userColors.current[match]?.usernameColor || "black";
-        return `<span style=\"color: ${color}; font-weight: bold;\">${match}</span>`;
-      });
-  };
+  // Function to format messages
+  const formatMessage = (msg) => {
+    // Highlight file names (e.g., hello.txt, image.jpg)
+    msg = msg.replace(/\b\w+\.(txt|jpg|jpeg|png|gif|mp4|mov|avi|webm|pdf|docx|xlsx)\b/gi, (match) => {
+        return `<span class="highlight-file">${match}</span>`;
+    });
+
+    // Convert links to clickable hyperlinks (e.g., https://example.com, www.example.com, example.com)
+    // Ensure the match is not already wrapped in a tag
+    msg = msg.replace(/(?<!<\/?span[^>]*>)\b((https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/[^\s]*)?)\b/gi, (match) => {
+        const hasProtocol = match.startsWith("http://") || match.startsWith("https://");
+        const url = hasProtocol ? match : `https://${match}`; // Add https:// if no protocol is present
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="highlight-link">${match}</a>`;
+    });
+
+    // Highlight mentioned usernames (e.g., @username)
+    msg = msg.replace(/@(\w+)/g, (match, username) => {
+        return `<span class="highlight-mention">@${username}</span>`;
+    });
+
+    return msg;
+};
 
   const handleSend = () => {
-      if (!input.trim()) return;
-      if (pendingFile) {
-        const formData = new FormData();
-        formData.append("file", pendingFile);
-        formData.append("username", username);
-        fetch("https://chatroom-backend-qv2y.onrender.com/upload", {
-          method: "POST",
-          body: formData,
-        }).then(res => res.json()).then(data => console.log(data));
-        setPendingFile(null);
-        setInput("");
-      } else {
-        socket.emit("message", { username, message: input });
-        setInput("");
-        setSuggestions([]);
-      }
+    if (!input.trim()) return;
+    if (pendingFile) {
+      const formData = new FormData();
+      formData.append("file", pendingFile);
+      formData.append("username", username);
+      fetch("https://chatroom-backend-qv2y.onrender.com/upload", {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((data) => console.log(data));
+      setPendingFile(null);
+      setInput("");
+    } else {
+      socket.emit("message", { username, message: input });
+      setInput("");
+      setSuggestions([]);
+    }
   };
 
   useEffect(() => {
@@ -85,17 +101,16 @@ const ChatRoom = () => {
       setMessages((prev) => [...prev, data]);
     };
 
-
     socket.on("connect", () => console.log("Connected to server"));
     socket.on("set_username", (data) => {
       setUsername(data.username);
       userColors.current[data.username] = {
-        usernameColor: data.color
-      }
+        usernameColor: data.color,
+      };
     });
-    socket.on("chat_history", (history)=>{
+    socket.on("chat_history", (history) => {
       setMessages(history);
-    })
+    });
     socket.on("message", handleMessage);
     socket.on("update_user_list", (users) => {
       setOnlineUsers(users);
@@ -104,26 +119,12 @@ const ChatRoom = () => {
       socket.off("message", handleMessage);
     };
   }, []);
-  
+
   useEffect(() => {
-      if (messagesRef.current) {
-        messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-      }
+    if (messagesRef.current) {
+      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+    }
   }, [messages]);
-
-  // Add this useEffect to detect and style "System" spans
-  useEffect(() => {
-      // Select all spans inside .message-bubble
-      const spans = document.querySelectorAll('.message-bubble span');
-
-      // Loop through each span and check its text content
-      spans.forEach((span) => {
-          if (span.textContent.trim() === 'System:') {
-              // Add a class to center the span
-              span.classList.add('centered-system');
-          }
-      });
-}, [messages]);
 
   if (!hasJoined) return <WelcomeScreen onJoin={handleJoin} />;
 
@@ -131,55 +132,69 @@ const ChatRoom = () => {
     <div className={`chatroom ${darkMode ? "dark-mode" : "light-mode"}`}>
       <div className="chatroom-main">
         <div className="left-group">
-        <h1>Chatroom</h1>
-        <button id="toggleMode" onClick={() => setDarkMode(!darkMode)}>Toggle Dark/Light Mode</button>
-  
-        <div id="messages" className="messages" ref={messagesRef}>
-          {messages.map((msg, index) => {
-            const userColor = msg.color || "#888";
-            const msgColor = userColors.current[msg.username]?.messageColor;
-            return (
-              
-              <div key={index} className="message-bubble">
-                <div className="message-line">
-                  <span className="timestamp">[{msg.timestamp}]</span>
-                  <span className="username" style={{ color: userColor}}>{msg.username}: </span>
-                </div>
-                
-                {msg.file_url ? (
-                  /\.(jpg|jpeg|png|gif)$/i.test(msg.file_url) ? ( 
-                    <img src={`https://chatroom-backend-qv2y.onrender.com${msg.file_url}`} alt={msg.message} className="chat-image" />
-                  ) : /\.(mp4|mov|avi|webm)$/i.test(msg.file_url) ? (
-                    <video src={`https://chatroom-backend-qv2y.onrender.com${msg.file_url}`} controls className="chat-video" />
+          <h1>Chatroom</h1>
+          <button id="toggleMode" onClick={() => setDarkMode(!darkMode)}>
+            Toggle Dark/Light Mode
+          </button>
+
+          <div id="messages" className="messages" ref={messagesRef}>
+            {messages.map((msg, index) => {
+              const userColor = msg.color || "#888";
+              return (
+                <div key={index} className="message-bubble">
+                  <div className="message-line">
+                    <span className="timestamp">[{msg.timestamp}]</span>
+                    <span className="username" style={{ color: userColor }}>
+                      {msg.username}:
+                    </span>
+                  </div>
+
+                  {msg.file_url ? (
+                    /\.(jpg|jpeg|png|gif)$/i.test(msg.file_url) ? (
+                      <img
+                        src={`https://chatroom-backend-qv2y.onrender.com${msg.file_url}`}
+                        alt={msg.message}
+                        className="chat-image"
+                      />
+                    ) : /\.(mp4|mov|avi|webm)$/i.test(msg.file_url) ? (
+                      <video
+                        src={`https://chatroom-backend-qv2y.onrender.com${msg.file_url}`}
+                        controls
+                        className="chat-video"
+                      />
+                    ) : (
+                      <a
+                        href={`https://chatroom-backend-qv2y.onrender.com${msg.file_url}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {msg.message}
+                      </a>
+                    )
                   ) : (
-                    <a href={`https://chatroom-backend-qv2y.onrender.com${msg.file_url}`} target="_blank" rel="noreferrer">
-                      {msg.message}
-                    </a>
-                  ) 
-                ) : (msg.username === "System" ? <span dangerouslySetInnerHTML={{ __html: msg.message }} /> 
-                  : (<span className="message-text" dangerouslySetInnerHTML={{ __html: formatUsername(msg.message) }} />)
-                )}
-                
-              </div>
-            );
-          })}
-        </div>
+                    <span
+                      className="message-text"
+                      dangerouslySetInnerHTML={{ __html: formatMessage(msg.message) }}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div className="user-list">
-        <h3>Online</h3>
-        <ul >
-          {onlineUsers.map((user, i) => (
-            <li key={i} style={{color: user.color}}>
-              {user.username}
-            </li>
-          ))}
-        </ul>
+          <h3>Online</h3>
+          <ul>
+            {onlineUsers.map((user, i) => (
+              <li key={i} style={{ color: user.color }}>
+                {user.username}
+              </li>
+            ))}
+          </ul>
         </div>
-
-        
       </div>
-      
+
       <div className="input-area">
         <button onClick={() => document.getElementById("fileInput").click()}>+</button>
         <input
@@ -202,13 +217,15 @@ const ChatRoom = () => {
           autoComplete="off"
           onChange={handleInputChange}
           onKeyDown={(e) => {
-            if(e.key === "Enter") {
+            if (e.key === "Enter") {
               e.preventDefault();
               handleSend();
             }
           }}
         />
-        <button id="sendButton" onClick={handleSend}>Send</button>
+        <button id="sendButton" onClick={handleSend}>
+          Send
+        </button>
         {suggestions.length > 0 && (
           <div id="autocomplete-box" className="autocomplete-suggestions">
             {suggestions.map((word, i) => (
@@ -222,16 +239,14 @@ const ChatRoom = () => {
                   setSuggestions([]);
                 }}
               >
-              {word}
-            </div>
-          ))}
-        </div>
-      )}
-        </div>
-      
-      
+                {word}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
-}
+};
 
 export default ChatRoom;

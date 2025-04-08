@@ -357,3 +357,35 @@ span.username.centered-system {
     justify-content: left;
     position: relative;
 }
+
+/* Highlight file names with a background effect */
+.highlight-file {
+    background-color: var(--translucent-river-teal); /* Semi-transparent teal background */
+    color: var(--river-teal); /* Text color */
+    font-weight: bold;
+    padding: 0 0.2rem; /* Add padding to make the highlight more visible */
+    border-radius: 4px; /* Optional: Rounded corners */
+}
+
+/* Highlight links with a background effect */
+.highlight-link {
+    background-color: var(--translucent-minty-moss); /* Semi-transparent minty background */
+    color: var(--minty-moss); /* Text color */
+    text-decoration: none; /* Remove underline */
+    padding: 0 0.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.highlight-link:hover {
+    text-decoration: underline; /* Add underline on hover */
+}
+
+/* Highlight mentions with a background effect */
+.highlight-mention {
+    background-color: var(--translucent-earthy-orange); /* Semi-transparent orange background */
+    color: var(--earthy-orange); /* Text color */
+    font-weight: bold;
+    padding: 0 0.2rem;
+    border-radius: 4px;
+}
