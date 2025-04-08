@@ -150,6 +150,37 @@ const ChatRoom = () => {
     }
   }, [messages]);
 
+  const handleTextHighlight = () => {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+
+    const range = selection.getRangeAt(0);
+    const selectedText = selection.toString();
+
+    if (selectedText.trim()) {
+        // Create a span element to wrap the selected text
+        const span = document.createElement("span");
+        span.className = "custom-highlight";
+        span.textContent = selectedText;
+
+        // Add a click event listener to remove the highlight
+        span.addEventListener("click", () => {
+            const parent = span.parentNode;
+            if (parent) {
+                // Replace the span with its text content
+                parent.replaceChild(document.createTextNode(span.textContent), span);
+            }
+        });
+
+        // Replace the selected text with the highlighted span
+        range.deleteContents();
+        range.insertNode(span);
+
+        // Clear the selection
+        selection.removeAllRanges();
+    }
+};
+
   if (!hasJoined) return <WelcomeScreen onJoin={handleJoin} />;
 
   return (
@@ -161,55 +192,60 @@ const ChatRoom = () => {
             Toggle Dark/Light Mode
           </button>
 
-          <div id="messages" className="messages" ref={messagesRef}>
-    {messages.map((msg, index) => {
-        const isCurrentUser = msg.username === username; // Check if the message is from the current user
-        const userColor = msg.color || "#888"; // Default color for usernames
+          <div
+            id="messages"
+            className="messages"
+            ref={messagesRef}
+            onMouseUp={handleTextHighlight} // Add this event listener
+          >
+            {messages.map((msg, index) => {
+              const isCurrentUser = msg.username === username; // Check if the message is from the current user
+              const userColor = msg.color || "#888"; // Default color for usernames
 
-        return (
-            <div
-                key={index}
-                className={`message-bubble ${isCurrentUser ? "current-user" : "other-user"}`}
-            >
-                <div className="message-line">
+              return (
+                <div
+                  key={index}
+                  className={`message-bubble ${isCurrentUser ? "current-user" : "other-user"}`}
+                >
+                  <div className="message-line">
                     <span className="timestamp">[{msg.timestamp}]</span>
                     <span className="username" style={{ color: userColor }}>
-                        {msg.username}:
+                      {msg.username}:
                     </span>
-                </div>
+                  </div>
 
-                {msg.file_url ? (
+                  {msg.file_url ? (
                     /\.(jpg|jpeg|png|gif)$/i.test(msg.file_url) ? (
-                        <img
-                            src={`https://chatroom-backend-qv2y.onrender.com${msg.file_url}`}
-                            alt={msg.message}
-                            className="chat-image"
-                        />
+                      <img
+                        src={`https://chatroom-backend-qv2y.onrender.com${msg.file_url}`}
+                        alt={msg.message}
+                        className="chat-image"
+                      />
                     ) : /\.(mp4|mov|avi|webm)$/i.test(msg.file_url) ? (
-                        <video
-                            src={`https://chatroom-backend-qv2y.onrender.com${msg.file_url}`}
-                            controls
-                            className="chat-video"
-                        />
+                      <video
+                        src={`https://chatroom-backend-qv2y.onrender.com${msg.file_url}`}
+                        controls
+                        className="chat-video"
+                      />
                     ) : (
-                        <a
-                            href={`https://chatroom-backend-qv2y.onrender.com${msg.file_url}`}
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            {msg.message}
-                        </a>
+                      <a
+                        href={`https://chatroom-backend-qv2y.onrender.com${msg.file_url}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {msg.message}
+                      </a>
                     )
-                ) : (
+                  ) : (
                     <span
-                        className="message-text"
-                        dangerouslySetInnerHTML={{ __html: formatMessage(msg) }}
+                      className="message-text"
+                      dangerouslySetInnerHTML={{ __html: formatMessage(msg) }}
                     />
-                )}
-            </div>
-        );
-    })}
-</div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div className="user-list">

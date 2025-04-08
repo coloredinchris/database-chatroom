@@ -398,3 +398,19 @@ span.username.centered-system {
     padding: 0 0.2rem;
     border-radius: 4px;
 }
+
+/* Custom Highlight Style */
+.custom-highlight {
+    background-color: var(--translucent-river-teal); /* Custom highlight color */
+    color: inherit; /* Inherit the text color from the parent */
+    padding: 0; /* Remove padding to avoid block-like appearance */
+    border-radius: 0; /* Remove border radius to keep it inline */
+    display: inline; /* Ensure the span behaves like inline text */
+    cursor: pointer; /* Indicate that the block is clickable */
+    transition: background-color 0.3s ease;
+}
+
+.custom-highlight:hover {
+    background-color: var(--river-teal); /* Slightly darker color on hover */
+    color: white; /* Change text color on hover */
+}
