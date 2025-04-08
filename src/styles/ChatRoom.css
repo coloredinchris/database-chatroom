@@ -177,6 +177,16 @@ body {
     background-color: #3a3f47;
 }
 
+/* Highlight the selected user */
+.chatroom-main .user-list li.selected {
+    background-color: var(--mudstone);
+    transition: background-color 0.3s ease;
+}
+
+.user-list li.selected:hover {
+    background-color: var(--mudstone);
+}
+
 /* Message Bubble */
 .message-bubble {
     padding: 0.75rem 1rem;
@@ -200,15 +210,13 @@ body {
     border-left: 0.5rem solid var(--mudstone);
 }
 
-/* Messages from the current user */
 .message-bubble.current-user {
-    background-color: var(--river-teal); /* Example color for the current user's messages */
+    background-color: var(--river-teal);
     color: white;
 }
 
-/* Messages from other users */
 .message-bubble.other-user {
-    background-color: var(--deep-moss); /* Example color for other users' messages */
+    background-color: var(--deep-moss);
     color: white;
 }
 
@@ -251,15 +259,15 @@ span.username.centered-system {
     color: var(--translucent-minty-moss);
     font-size: 0.8rem;
     position: absolute;
-    bottom: 4px; /* Position the timestamp at the bottom of the bubble */
-    right: 8px; /* Align the timestamp to the right */
+    bottom: 4px;
+    right: 8px;
 }
 
 /* Ensure system messages are unaffected */
 .message-line {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Space out username and timestamp */
+    justify-content: space-between;
     position: relative;
 }
 
@@ -401,23 +409,23 @@ span.username.centered-system {
 
 /* Custom Highlight Style */
 .custom-highlight {
-    background-color: var(--translucent-river-teal); /* Custom highlight color */
-    color: inherit; /* Inherit the text color from the parent */
-    padding: 0; /* Remove padding to avoid block-like appearance */
-    border-radius: 0; /* Remove border radius to keep it inline */
-    display: inline; /* Ensure the span behaves like inline text */
-    cursor: pointer; /* Indicate that the block is clickable */
+    background-color: var(--translucent-river-teal);
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    display: inline;
+    cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 .custom-highlight:hover {
-    background-color: var(--river-teal); /* Slightly darker color on hover */
-    color: white; /* Change text color on hover */
+    background-color: var(--river-teal);
+    color: white;
 }
 
 /* Highlight for hashtags (#) */
 .highlight-hashtag {
-    background-color: var(--translucent-minty-moss); /* Light green for emphasis */
+    background-color: var(--translucent-minty-moss);
     color: var(--minty-moss);
     padding: 0 0.2rem;
     border-radius: 4px;
@@ -425,7 +433,7 @@ span.username.centered-system {
 
 /* Highlight for exclamation points (!) */
 .highlight-exclamation {
-    background-color: var(--translucent-earthy-orange); /* Yellow for warnings */
+    background-color: var(--translucent-earthy-orange);
     color: var(--earthy-orange);
     padding: 0 0.2rem;
     border-radius: 4px;
@@ -433,7 +441,7 @@ span.username.centered-system {
 
 /* Highlight for question marks (?) */
 .highlight-question {
-    background-color: var(--translucent-river-teal); /* Blue for questions */
+    background-color: var(--translucent-river-teal);
     color: var(--river-teal);
     padding: 0 0.2rem;
     border-radius: 4px;
@@ -441,7 +449,7 @@ span.username.centered-system {
 
 /* Highlight for periods (.) */
 .highlight-period {
-    background-color: var(--translucent-midnight-bark); /* Red for severity */
+    background-color: var(--translucent-midnight-bark);
     color: var(--midnight-bark);
     padding: 0 0.2rem;
     border-radius: 4px;

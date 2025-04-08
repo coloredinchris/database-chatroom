@@ -27,6 +27,7 @@ const ChatRoom = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const handleJoin = (customName) => {
     socket.emit("request_username", { custom: customName });
@@ -272,7 +273,12 @@ const ChatRoom = () => {
           <h3>Online</h3>
           <ul>
             {onlineUsers.map((user, i) => (
-              <li key={i} style={{ color: user.color }}>
+              <li
+                key={i}
+                style={{ color: user.color }}
+                className={selectedUser === user.username ? "selected" : ""}
+                onClick={() => setSelectedUser(user.username)} // Set the selected user
+              >
                 {user.username}
               </li>
             ))}
