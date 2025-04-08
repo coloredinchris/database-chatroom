@@ -163,9 +163,14 @@ const ChatRoom = () => {
 
           <div id="messages" className="messages" ref={messagesRef}>
     {messages.map((msg, index) => {
-        const userColor = msg.color || "#888";
+        const isCurrentUser = msg.username === username; // Check if the message is from the current user
+        const userColor = msg.color || "#888"; // Default color for usernames
+
         return (
-            <div key={index} className="message-bubble">
+            <div
+                key={index}
+                className={`message-bubble ${isCurrentUser ? "current-user" : "other-user"}`}
+            >
                 <div className="message-line">
                     <span className="timestamp">[{msg.timestamp}]</span>
                     <span className="username" style={{ color: userColor }}>

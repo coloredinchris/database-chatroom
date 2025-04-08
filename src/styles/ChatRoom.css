@@ -200,15 +200,16 @@ body {
     border-left: 0.5rem solid var(--mudstone);
 }
 
-.message-bubble span {
-    display: inline-flex;
-    flex-direction: row;
-    gap: 0.2rem;
+/* Messages from the current user */
+.message-bubble.current-user {
+    background-color: var(--river-teal); /* Example color for the current user's messages */
+    color: white;
 }
 
-.message-bubble span span {
-    text-align: left;
-    display: inline;
+/* Messages from other users */
+.message-bubble.other-user {
+    background-color: var(--deep-moss); /* Example color for other users' messages */
+    color: white;
 }
 
 /* Message Text */
@@ -247,14 +248,17 @@ span.username.centered-system {
 /* Timestamp */
 .timestamp {
     color: var(--translucent-minty-moss);
+    font-size: 0.8rem;
     position: absolute;
-    right: 0;
+    bottom: 4px; /* Position the timestamp at the bottom of the bubble */
+    right: 8px; /* Align the timestamp to the right */
 }
 
+/* Ensure system messages are unaffected */
 .message-line {
     display: flex;
     align-items: center;
-    justify-content: left;
+    justify-content: space-between; /* Space out username and timestamp */
     position: relative;
 }
 
@@ -312,7 +316,7 @@ span.username.centered-system {
     padding: 0.6rem 1rem;
     border: none;
     background-color: var(--misty-blue);
-    color: var(--deep-moss);
+    color: var (--deep-moss);
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
