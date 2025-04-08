@@ -1,4 +1,4 @@
-/* Root layout */
+/* Root Variables */
 :root {
     --midnight-bark: #2e2e2e;
     --translucent-midnight-bark-button: rgba(46, 46, 46, 0.8);
@@ -12,28 +12,31 @@
     --translucent-slate-button: rgba(84, 95, 102, 0.8);     
     --pine-green: #3A6B35;       
     --mudstone: #665544;        
-    --earthy-orange: #C67F36;        
+    --earthy-orange: #C67F36;
+    --translucent-earthy-orange: rgba(198, 127, 54, 0.3);       
     --minty-moss: #C4DFAA;
     --translucent-minty-moss: rgba(196, 223, 170, 0.5);
-  }
+}
 
-  body {
+/* Global Styles */
+body {
     line-height: 1.6;
-  }
+}
 
+/* Chatroom Layout */
 .chatroom {
     display: flex;
     flex-direction: column;
     height: 100vh;
     font-family: 'Segoe UI', sans-serif;
     transition: background-color .3s ease;
-  }
+}
 
-  .chatroom.light-mode {
+.chatroom.light-mode {
     color: var(--minty-moss);
     background: var(--minty-moss);
 }
-  
+
 .chatroom.dark-mode {
     background: #1e1e1e;
     color: #ddd;
@@ -47,6 +50,7 @@
     color: var(--midnight-bark);
 }
 
+/* Chatroom Main Section */
 .chatroom-main {
     display: flex;
     flex: 1;
@@ -60,7 +64,7 @@
     overflow: hidden;
 }
 
-/* Toggle button for light or dark*/
+/* Toggle Button */
 #toggleMode {
     margin: 0 auto 1rem;
     padding: 0.5rem 1rem;
@@ -85,7 +89,7 @@
     background-color: var(--translucent-slate-button);
 }
 
-/* Messages container */
+/* Messages Container */
 #messages {
     flex: 1;
     overflow-y: auto;
@@ -97,11 +101,11 @@
     transition: background-color .3s ease;
 
     /* Scrollbar for Firefox */
-    scrollbar-color: var(--river-teal) var(--translucent-midnight-bark); /* Thumb color and track color */
-    scrollbar-width: thin; /* Makes the scrollbar thinner */
+    scrollbar-color: var(--river-teal) var(--translucent-midnight-bark);
+    scrollbar-width: thin;
 }
 
-/* Scrollbar for WebKit-based browsers (Chrome, Edge, Safari) */
+/* Scrollbar for WebKit-based Browsers */
 #messages::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -118,9 +122,10 @@
 }
 
 #messages::-webkit-scrollbar-thumb:hover {
-    background: var(--translucent-river-teal); /* Color of the thumb on hover */
+    background: var(--translucent-river-teal);
 }
 
+/* User List */
 .user-list {
     flex: 2;
     max-width: 20vw;
@@ -129,8 +134,8 @@
     padding: 1rem;
     overflow-y: auto;
     transition: background-color .3s ease;
-  }
-  
+}
+
 .chatroom.dark-mode .user-list {
     background-color: #1b1b1b;
     border-left: 1px solid #333;
@@ -154,7 +159,6 @@
     padding: .4rem .6rem;
     margin-bottom: .4rem;
     font-weight: 500;
-    /* transition: background-color .3s ease; */
 }
 
 .light-mode .chatroom-main .user-list li {
@@ -173,7 +177,7 @@
     background-color: #3a3f47;
 }
 
-/* Chat bubble behind messages */
+/* Message Bubble */
 .message-bubble {
     padding: 0.75rem 1rem;
     border-radius: 12px;
@@ -207,13 +211,14 @@
     display: inline;
 }
 
+/* Message Text */
 span.message-text {
     display: flex;
     left: 0;
     margin-left: 1rem;
     justify-content: left;
     justify-items: left;
-    text-align: left;;
+    text-align: left;
 }
 
 span.username.centered-system {
@@ -222,25 +227,45 @@ span.username.centered-system {
     color: var(--earthy-orange) !important;
 }
 
-/* Username text styles */
 .username {
     font-weight: bold;
     margin-bottom: 0.3rem;
 }
 
-/* Message text styles */
 .message-text {
     font-size: 1rem;
 }
 
-/* Img&Vid attachments */
+.light-mode .message-text {
+    color: var(--minty-moss);
+}
+
+.dark-mode .message-text {
+    color: #ddd;
+}
+
+/* Timestamp */
+.timestamp {
+    color: var(--translucent-minty-moss);
+    position: absolute;
+    right: 0;
+}
+
+.message-line {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    position: relative;
+}
+
+/* Attachments */
 .chat-image, .chat-video {
     max-width: 100%;
     border-radius: 8px;
     margin-top: 0.5rem;
 }
 
-/* Input area */
+/* Input Area */
 .input-area {
     position: relative;
     display: flex;
@@ -257,6 +282,7 @@ span.username.centered-system {
     background-color: var(--mudstone);
     border-top: 1px solid var(--translucent-midnight-bark);
 }
+
 .dark-mode .input-area {
     background-color: #2c2c2c;
     border-top: 1px solid #444;
@@ -281,6 +307,7 @@ span.username.centered-system {
     border-color: var(--translucent-midnight-bark);
     color: var(--deep-moss);
 }
+
 .input-area button {
     padding: 0.6rem 1rem;
     border: none;
@@ -296,7 +323,7 @@ span.username.centered-system {
     background-color: var(--translucent-misty-blue);
 }
 
-/* Autocomplete box */
+/* Autocomplete Box */
 #autocomplete-box {
     position: absolute;
     left: 0;
@@ -310,13 +337,13 @@ span.username.centered-system {
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
-.dark-mode #autocomplete-box{
+.dark-mode #autocomplete-box {
     background: #2a2a2a;
     color: #eee;
     border-color: #555;
 }
 
-.light-mode #autocomplete-box{
+.light-mode #autocomplete-box {
     background: var(--translucent-misty-blue);
     border-color: var(--translucent-midnight-bark);
 }
@@ -337,54 +364,31 @@ span.username.centered-system {
     color: var(--minty-moss);
 }
 
-.light-mode .message-text {
-    color: var(--minty-moss);
-}
-  
-.dark-mode .message-text {
-    color: #ddd;
-}
-  
-.timestamp {
-    color: var(--translucent-minty-moss);
-    position: absolute;
-    right: 0;
-}
-
-.message-line {
-    display: flex;
-    align-items: center;
-    justify-content: left;
-    position: relative;
-}
-
-/* Highlight file names with a background effect */
+/* Highlight Styles */
 .highlight-file {
-    background-color: var(--translucent-river-teal); /* Semi-transparent teal background */
-    color: var(--river-teal); /* Text color */
+    background-color: var(--translucent-river-teal);
+    color: var(--river-teal);
     font-weight: bold;
-    padding: 0 0.2rem; /* Add padding to make the highlight more visible */
-    border-radius: 4px; /* Optional: Rounded corners */
+    padding: 0 0.2rem;
+    border-radius: 4px;
 }
 
-/* Highlight links with a background effect */
 .highlight-link {
-    background-color: var(--translucent-minty-moss); /* Semi-transparent minty background */
-    color: var(--minty-moss); /* Text color */
-    text-decoration: none; /* Remove underline */
+    background-color: var(--translucent-minty-moss);
+    color: var(--minty-moss);
+    text-decoration: none;
     padding: 0 0.2rem;
     border-radius: 4px;
     cursor: pointer;
 }
 
 .highlight-link:hover {
-    text-decoration: underline; /* Add underline on hover */
+    text-decoration: underline;
 }
 
-/* Highlight mentions with a background effect */
 .highlight-mention {
-    background-color: var(--translucent-earthy-orange); /* Semi-transparent orange background */
-    color: var(--earthy-orange); /* Text color */
+    background-color: var(--translucent-earthy-orange);
+    color: var(--earthy-orange);
     font-weight: bold;
     padding: 0 0.2rem;
     border-radius: 4px;

@@ -1,4 +1,4 @@
-# Description: This file contains the server-side code for the chat application.
+# This file contains the server-side code for the chat application.
 # It uses Flask and Flask-SocketIO to create a simple chat server that allows users to send and receive messages in real-time.
 from flask import Flask, render_template, session, request, send_from_directory, jsonify
 from flask_socketio import SocketIO
@@ -180,22 +180,26 @@ def handle_message(data):
         if isinstance(data, dict) and 'message' in data:
             username = session.get('username', 'Anonymous')
             message = data['message']
-            color = user_colors.get(username, "888")
+            color = user_colors.get(username, "#888")
 
             print(f"[MESSAGE] {username}: {message}")
             
-            #profanity filter
+            # Profanity filter
             clean_message = profanity.censor(data['message'])
+
+            # Get the list of valid usernames (all active users)
+            valid_usernames = list(user_colors.keys())
 
             # Broadcast the message to all clients
             message_data = {
                 'username': username, 
                 'message': clean_message, 
                 'color': color,
-                'timestamp' : datetime.now().strftime("%H:%M:%S")
+                'timestamp': datetime.now().strftime("%H:%M:%S"),
+                'validUsernames': valid_usernames  # Include valid usernames
             }
             chat_history.append(message_data)
-            socketio.emit('message', message_data)   
+            socketio.emit('message', message_data)
         else:
             print("Error: Received data is not a valid object or missing 'message' field.")
     except Exception as e:
