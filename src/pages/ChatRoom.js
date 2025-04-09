@@ -133,37 +133,64 @@ const ChatRoom = () => {
   useEffect(() => {
     const handleMessage = (data) => {
         console.log("Received message:", data); // Debugging log
+
         if (!userColors.current[data.username]) {
             userColors.current[data.username] = {
                 usernameColor: data.color || "#888",
             };
         }
-        setMessages((prev) => [...prev, data]);
+
+        setMessages((prev) => {
+            const updatedMessages = [...prev, data];
+
+            // If the message is from "System", add the fade-out class and remove it after the animation
+            if (data.username === "System") {
+                setTimeout(() => {
+                    // Add the fade-out class to the system message
+                    setMessages((currentMessages) =>
+                        currentMessages.map((msg) =>
+                            msg === data ? { ...msg, fadeOut: true } : msg
+                        )
+                    );
+
+                    // Remove the system message after the fade-out animation
+                    setTimeout(() => {
+                        setMessages((currentMessages) =>
+                            currentMessages.filter((msg) => msg !== data)
+                        );
+                    }, 5000); // Match the fade-out animation duration
+                }, 2000); // Delay before starting the fade-out
+            }
+
+            return updatedMessages;
+        });
     };
 
     socket.on("connect", () => console.log("Connected to server"));
     socket.on("set_username", (data) => {
-      setUsername(data.username);
-      userColors.current[data.username] = {
-        usernameColor: data.color,
-      };
+        setUsername(data.username);
+        userColors.current[data.username] = {
+            usernameColor: data.color,
+        };
     });
     socket.on("chat_history", (history) => {
-      const updatedHistory = history.map((msg) => ({
-          ...msg,
-          validUsernames: msg.validUsernames || [], // Add fallback for older messages
-      }));
-      setMessages(updatedHistory);
-  });
+        const filteredHistory = history.filter((msg) => msg.username !== "System"); // Exclude old system messages
+        const updatedHistory = filteredHistory.map((msg) => ({
+            ...msg,
+            validUsernames: msg.validUsernames || [], // Add fallback for older messages
+        }));
+        setMessages(updatedHistory);
+    });
     socket.on("message", handleMessage);
     socket.on("update_user_list", (users) => {
-      console.log("Updated online users:", users); // Debugging log
-      setOnlineUsers(users);
+        console.log("Updated online users:", users); // Debugging log
+        setOnlineUsers(users);
     });
+
     return () => {
-      socket.off("message", handleMessage);
+        socket.off("message", handleMessage);
     };
-  }, []);
+}, []);
 
   useEffect(() => {
     if (messagesRef.current) {
@@ -225,44 +252,30 @@ const ChatRoom = () => {
 
               return (
                 <div
-                  key={index}
-                  className={`message-bubble ${isCurrentUser ? "current-user" : "other-user"}`}
+                    key={index}
+                    className={`message-bubble ${
+                        msg.username === "System"
+                            ? `system-message ${msg.fadeOut ? "fade-out" : ""}`
+                            : isCurrentUser
+                            ? "current-user"
+                            : "other-user"
+                    }`}
                 >
-                  <div className="message-line">
-                    <span className="timestamp">[{msg.timestamp}]</span>
-                    <span className="username" style={{ color: userColor }}>
-                      {msg.username}:
-                    </span>
-                  </div>
+                    <div className="message-line">
+                        {msg.username !== "System" && (
+                            <>
+                                <span className="timestamp">[{msg.timestamp}]</span>
+                                <span className="username" style={{ color: userColor }}>
+                                    {msg.username}:
+                                </span>
+                            </>
+                        )}
+                    </div>
 
-                  {msg.file_url ? (
-                    /\.(jpg|jpeg|png|gif)$/i.test(msg.file_url) ? (
-                      <img
-                        src={`https://chatroom-backend-qv2y.onrender.com${msg.file_url}`}
-                        alt={msg.message}
-                        className="chat-image"
-                      />
-                    ) : /\.(mp4|mov|avi|webm)$/i.test(msg.file_url) ? (
-                      <video
-                        src={`https://chatroom-backend-qv2y.onrender.com${msg.file_url}`}
-                        controls
-                        className="chat-video"
-                      />
-                    ) : (
-                      <a
-                        href={`https://chatroom-backend-qv2y.onrender.com${msg.file_url}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {msg.message}
-                      </a>
-                    )
-                  ) : (
                     <span
-                      className="message-text"
-                      dangerouslySetInnerHTML={{ __html: formatMessage(msg) }}
+                        className="message-text"
+                        dangerouslySetInnerHTML={{ __html: formatMessage(msg) }}
                     />
-                  )}
                 </div>
               );
             })}
