@@ -15,9 +15,6 @@ import WelcomeScreen from "./WelcomeScreen";
 /**********           for testing LOCAL            **********/
 const socket = io("http://localhost:5000");
 
-const readableColors = ["#3498db", "#9b59b6", "#1abc9c", "#f39c12", "#e67e22", "#e74c3c", "#2ecc71", "#34495e"];
-const getRandomReadableColor = () => readableColors[Math.floor(Math.random() * readableColors.length)];
-
 const ChatRoom = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");

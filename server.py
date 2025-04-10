@@ -112,28 +112,27 @@ def handle_connect():
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    print(f"[DISCONNECTED] SID: {request.sid}, IP: {request.remote_addr}") # log disconnect
+    print(f"[DISCONNECTED] SID: {request.sid}, IP: {request.remote_addr}")  # Log disconnect
     sid = request.sid
-    username = sid_username_dict.pop(sid, None)
-    if username and sid:
-        
-        # Broadcast message from server when a user diconnects
+    username = sid_username_dict.pop(sid, None)  # Remove the SID from the dictionary
+
+    if username:
+        # Broadcast message from server when a user disconnects
         disconnect_message = {
             'username': 'System',
-            'message': f"<span style='color: {user_colors[username]}; font-weight: bold;'>{username}</span> has left the chat.",
+            'message': f"<span style='color: {user_colors.get(username, '#444')}; font-weight: bold;'>{username}</span> has left the chat.",
             'color': '#444',
-            'timestamp' : datetime.now().strftime("%H:%M:%S")
+            'timestamp': datetime.now().strftime("%H:%M:%S")
         }
+        chat_history.append(disconnect_message)  # Add to chat history
+        socketio.emit('message', disconnect_message)  # Broadcast the message
+
+        # Remove the user from the user_colors dictionary
         user_colors.pop(username, None)
-        chat_history.append(disconnect_message)
-        socketio.emit('message', disconnect_message)
 
-        socketio.emit('update_user_list', [{"username": u, "color": c} for u, c in user_colors.items()])
-        
-        active_users.discard(username)
-
-        socketio.emit('update_user_list', list(active_users))
-
+        # Update the user list for all clients
+        user_list = [{"username": u, "color": c} for u, c in user_colors.items()]
+        socketio.emit('update_user_list', user_list)
 
 @socketio.on('request_username')
 def handle_custom_username(data):
