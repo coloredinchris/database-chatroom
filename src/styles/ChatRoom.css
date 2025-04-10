@@ -98,6 +98,7 @@ body {
     flex-direction: column;
     background-color: inherit;
     transition: background-color 0.3s ease;
+    box-sizing: border-box; /* Include padding in the width calculation */
 
     /* Scrollbar for Firefox */
     scrollbar-color: var(--river-teal) var(--translucent-midnight-bark);
@@ -240,12 +241,18 @@ body {
 
 /* System Message */
 .message-bubble.system-message {
-    background-color: var(--earthy-orange); /* Use a distinct background color */
-    width: 100%; /* Make it span the full width */
+    background-color: var(--slate); /* Use a distinct background color */
+    border-left: 0.5rem solid var(--earthy-orange);
+    border-right: 0.5rem solid var(--earthy-orange);
+    max-width: 100%; /* Prevent the message from exceeding the container width */
+    box-sizing: border-box; /* Include padding and borders in the width calculation */
     padding: 0.5rem 1rem; /* Add padding for better readability */
     border-radius: 8px; /* Rounded corners */
     font-weight: bold; /* Make the text bold */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
+    overflow-wrap: break-word; /* Ensure long words break to fit within the container */
+    word-wrap: break-word; /* Compatibility for older browsers */
+    word-break: break-word; /* Ensure long words break properly */
 }
 
 /* Add a class for fading out */
@@ -359,9 +366,8 @@ span.message-text {
     font-size: 16px;
     padding: 0.6rem 1rem;
     border: none;
-    color: var(--midnight-bark);
-    background-color: var(--misty-blue);
     color: var (--deep-moss);
+    background-color: var(--misty-blue);
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
