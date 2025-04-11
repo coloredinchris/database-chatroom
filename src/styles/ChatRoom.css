@@ -405,6 +405,8 @@ span.message-text {
     max-height: 150px;
     overflow-y: auto;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    scrollbar-color: var(--river-teal) var(--translucent-midnight-bark);
+    scrollbar-width: thin;
 }
 
 .dark-mode #autocomplete-box {
@@ -415,6 +417,26 @@ span.message-text {
 .light-mode #autocomplete-box {
     background: var(--translucent-misty-blue);
     border-color: var(--translucent-midnight-bark);
+}
+
+/* Scrollbar for Autocomplete Box */
+#autocomplete-box::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#autocomplete-box::-webkit-scrollbar-track {
+    background: var(--translucent-midnight-bark);
+    border-radius: 4px;
+}
+
+#autocomplete-box::-webkit-scrollbar-thumb {
+    background: var(--river-teal);
+    border-radius: 4px;
+}
+
+#autocomplete-box::-webkit-scrollbar-thumb:hover {
+    background: var(--translucent-river-teal);
 }
 
 .autocomplete-suggestions div {
@@ -431,6 +453,12 @@ span.message-text {
 .light-mode .autocomplete-suggestions div:hover {
     background-color: var(--midnight-bark);
     color: var (--minty-moss);
+}
+
+/* Hover Effect for Autocomplete Suggestions */
+.autocomplete-suggestions div:hover {
+    background-color: var(--midnight-bark); /* Background changes to midnight bark */
+    color: var(--minty-moss); /* Text changes to minty moss */
 }
 
 /* Highlight Styles */
