@@ -15,6 +15,17 @@ import WelcomeScreen from "./WelcomeScreen";
 /**********           for testing LOCAL            **********/
 const socket = io("http://localhost:5000");
 
+const usernameColorMap = {
+    "#3498db": { light: "#3498db", dark: "#5dade2" },
+    "#9b59b6": { light: "#9b59b6", dark: "#af7ac5" },
+    "#1abc9c": { light: "#1abc9c", dark: "#48c9b0" },
+};
+
+const getAdjustedColor = (baseColor, isDarkMode) => {
+    console.log("Adjusting color:", baseColor, "Dark mode:", isDarkMode); // Debugging log
+    return isDarkMode ? usernameColorMap[baseColor]?.dark || baseColor : usernameColorMap[baseColor]?.light || baseColor;
+};
+
 const ChatRoom = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -22,7 +33,7 @@ const ChatRoom = () => {
   const [pendingFile, setPendingFile] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
   const messagesRef = useRef(null);
-  const userColors = useRef({});
+  const userColors = useRef({}); // Store light and dark mode colors for each user
   const [darkMode, setDarkMode] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState([]);
@@ -129,13 +140,57 @@ const ChatRoom = () => {
     }
 };
 
+  const handleToggleMode = () => {
+    const isDarkMode = !darkMode;
+    setDarkMode(isDarkMode);
+
+    // Save dark mode colors on the first toggle
+    if (!userColors.current[username]?.darkColor) {
+        console.log("Assigning dark mode colors for the first time"); // Debugging log
+        Object.keys(userColors.current).forEach((user) => {
+            const lightColor = userColors.current[user].lightColor;
+            const darkColor = getAdjustedColor(lightColor, true); // Calculate dark mode color
+            userColors.current[user].darkColor = darkColor; // Save dark mode color
+        });
+    }
+
+    // Update username and system message colors
+    updateColors(isDarkMode);
+};
+
+  const updateColors = (isDarkMode) => {
+    // Update username colors
+    document.querySelectorAll(".username").forEach((el) => {
+      const username = el.dataset.username;
+      const color = isDarkMode
+        ? userColors.current[username]?.darkColor
+        : userColors.current[username]?.lightColor;
+      if (color) {
+        el.style.color = color;
+      }
+    });
+
+    // Update system message colors
+    updateSystemMessageColors(isDarkMode);
+  };
+
+  const updateSystemMessageColors = (isDarkMode) => {
+    document.querySelectorAll(".system-message").forEach((el) => {
+      const baseColor = el.dataset.baseColor; // Store the base color in a data attribute
+      if (baseColor) {
+        el.style.color = getAdjustedColor(baseColor, isDarkMode);
+      }
+    });
+  };
+
   useEffect(() => {
     const handleMessage = (data) => {
         console.log("Received message:", data); // Debugging log
 
+        // Ensure the user's color is saved in userColors
         if (!userColors.current[data.username]) {
             userColors.current[data.username] = {
-                usernameColor: data.color || "#888",
+                lightColor: data.color || "#888", // Save the light mode color
             };
         }
 
@@ -168,8 +223,10 @@ const ChatRoom = () => {
     socket.on("connect", () => console.log("Connected to server"));
     socket.on("set_username", (data) => {
         setUsername(data.username);
+
+        // Save the user's light mode color
         userColors.current[data.username] = {
-            usernameColor: data.color,
+            lightColor: data.color, // Save the light mode color
         };
     });
     socket.on("chat_history", (history) => {
@@ -184,6 +241,15 @@ const ChatRoom = () => {
     socket.on("update_user_list", (users) => {
         console.log("Updated online users:", users); // Debugging log
         setOnlineUsers(users);
+
+        // Ensure all users have their colors saved
+        users.forEach((user) => {
+            if (!userColors.current[user.username]) {
+                userColors.current[user.username] = {
+                    lightColor: user.color, // Save the light mode color
+                };
+            }
+        });
     });
 
     return () => {
@@ -230,12 +296,14 @@ const ChatRoom = () => {
 
   if (!hasJoined) return <WelcomeScreen onJoin={handleJoin} />;
 
+  console.log("User Colors:", userColors.current);
+
   return (
     <div className={`chatroom ${darkMode ? "dark-mode" : "light-mode"}`}>
       <div className="chatroom-main">
         <div className="left-group">
           <h1>Chatroom</h1>
-          <button id="toggleMode" onClick={() => setDarkMode(!darkMode)}>
+          <button id="toggleMode" onClick={handleToggleMode}>
             Toggle Dark/Light Mode
           </button>
 
@@ -246,37 +314,42 @@ const ChatRoom = () => {
             onMouseUp={handleTextHighlight} // Add this event listener
           >
             {messages.map((msg, index) => {
-              const isCurrentUser = msg.username === username; // Check if the message is from the current user
-              const userColor = msg.color || "#888"; // Default color for usernames
+                const isCurrentUser = msg.username === username;
+                const userColor = darkMode
+                    ? userColors.current[msg.username]?.darkColor || "#888"
+                    : userColors.current[msg.username]?.lightColor || "#888";
 
-              return (
-                <div
-                    key={index}
-                    className={`message-bubble ${
-                        msg.username === "System"
-                            ? `system-message ${msg.fadeOut ? "fade-out" : ""}`
-                            : isCurrentUser
-                            ? "current-user"
-                            : "other-user"
-                    }`}
-                >
-                    <div className="message-line">
-                        {msg.username !== "System" && (
-                            <>
-                                <span className="timestamp">[{msg.timestamp}]</span>
-                                <span className="username" style={{ color: userColor }}>
-                                    {msg.username}:
-                                </span>
-                            </>
-                        )}
+                return (
+                    <div
+                        key={index}
+                        className={`message-bubble ${
+                            msg.username === "System"
+                                ? `system-message ${msg.fadeOut ? "fade-out" : ""}`
+                                : isCurrentUser
+                                ? "current-user"
+                                : "other-user"
+                        }`}
+                    >
+                        <div className="message-line">
+                            {msg.username !== "System" && (
+                                <>
+                                    <span className="timestamp">[{msg.timestamp}]</span>
+                                    <span
+                                        className="username"
+                                        style={{ color: userColor }}
+                                        data-username={msg.username}
+                                    >
+                                        {msg.username}:
+                                    </span>
+                                </>
+                            )}
+                        </div>
+                        <span
+                            className="message-text"
+                            dangerouslySetInnerHTML={{ __html: formatMessage(msg) }}
+                        />
                     </div>
-
-                    <span
-                        className="message-text"
-                        dangerouslySetInnerHTML={{ __html: formatMessage(msg) }}
-                    />
-                </div>
-              );
+                );
             })}
           </div>
         </div>
@@ -287,7 +360,9 @@ const ChatRoom = () => {
             {onlineUsers.map((user, i) => (
               <li
                 key={i}
-                style={{ color: user.color }}
+                style={{ color: darkMode
+                  ? userColors.current[user.username]?.darkColor || "#888"
+                  : userColors.current[user.username]?.lightColor || "#888" }} // Adjust color based on dark mode
                 className={selectedUser === user.username ? "selected" : ""}
                 onClick={() => setSelectedUser(user.username)} // Set the selected user
               >

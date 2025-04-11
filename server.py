@@ -102,8 +102,7 @@ active_users = {}
 chat_history = deque(maxlen=30)
 
 readable_colors = [
-    "#3498db", "#9b59b6", "#1abc9c", "#f39c12",
-    "#e67e22", "#e74c3c", "#2ecc71", "#34495e"
+    "#3498db", "#9b59b6", "#1abc9c"
 ]
 
 @socketio.on('connect')
