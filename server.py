@@ -119,8 +119,9 @@ def handle_disconnect():
         # Broadcast message from server when a user disconnects
         disconnect_message = {
             'username': 'System',
-            'message': f"<span style='color: {user_colors.get(username, '#444')}; font-weight: bold;'>{username}</span> has left the chat.",
-            'color': '#444',
+            'message': f"{username} has left the chat.",
+            'user': username,  # Include the username separately
+            'color': user_colors.get(username, "#888"),  # Include the user's color
             'timestamp': datetime.now().strftime("%H:%M:%S")
         }
         chat_history.append(disconnect_message)  # Add to chat history
@@ -135,8 +136,7 @@ def handle_disconnect():
 
 @socketio.on('request_username')
 def handle_custom_username(data):
-    # Assign username, random or user given name
-    custom = data.get('custom','').strip()
+    custom = data.get('custom', '').strip()
     username = custom if custom else gen_username()
     session['username'] = username
 
@@ -156,16 +156,17 @@ def handle_custom_username(data):
     socketio.emit('set_username', {
         'username': username,
         'color': user_colors[username]
-        }, room=request.sid)
+    }, room=request.sid)
     
     socketio.emit('chat_history', list(chat_history), room=request.sid)
 
     # Broadcast message from server when a user connects
     join_message = {
         'username': 'System',
-        'message': f"<span style='color: {user_colors[username]}; font-weight: bold;'>{username}</span> has joined the chat.",
-        'color': '#444',
-        'timestamp' : datetime.now().strftime("%H:%M:%S")
+        'message': f"{username} has joined the chat.",
+        'user': username,  # Include the username separately
+        'color': user_colors[username],  # Include the user's color
+        'timestamp': datetime.now().strftime("%H:%M:%S")
     }
     chat_history.append(join_message)
     socketio.emit('message', join_message)

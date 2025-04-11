@@ -16,9 +16,9 @@ import WelcomeScreen from "./WelcomeScreen";
 const socket = io("http://localhost:5000");
 
 const usernameColorMap = {
-    "#3498db": { light: "#3498db", dark: "#5dade2" },
-    "#9b59b6": { light: "#9b59b6", dark: "#af7ac5" },
-    "#1abc9c": { light: "#1abc9c", dark: "#48c9b0" },
+    "#3498db": { light: "#3498db", dark: "#2E2E2E" },
+    "#9b59b6": { light: "#9b59b6", dark: "#C67F36" },
+    "#1abc9c": { light: "#1abc9c", dark: "#B5C7C7" },
 };
 
 const getAdjustedColor = (baseColor, isDarkMode) => {
@@ -175,22 +175,25 @@ const ChatRoom = () => {
   };
 
   const updateSystemMessageColors = (isDarkMode) => {
-    document.querySelectorAll(".system-message").forEach((el) => {
-      const baseColor = el.dataset.baseColor; // Store the base color in a data attribute
-      if (baseColor) {
-        el.style.color = getAdjustedColor(baseColor, isDarkMode);
-      }
+    document.querySelectorAll(".system-message .username[data-username]").forEach((el) => {
+        const username = el.dataset.username; // Get the username from the data attribute
+        const color = isDarkMode
+            ? userColors.current[username]?.darkColor || "#C67F36" // Default to Earth Orange
+            : userColors.current[username]?.lightColor || "#888"; // Default to gray
+        el.style.color = color; // Apply the color dynamically
     });
-  };
+};
 
   useEffect(() => {
     const handleMessage = (data) => {
         console.log("Received message:", data); // Debugging log
 
         // Ensure the user's color is saved in userColors
-        if (!userColors.current[data.username]) {
-            userColors.current[data.username] = {
-                lightColor: data.color || "#888", // Save the light mode color
+        const normalizedUsername = data.username.toLowerCase(); // Normalize to lowercase
+        if (!userColors.current[normalizedUsername]) {
+            userColors.current[normalizedUsername] = {
+                lightColor: data.color || "#888",
+                darkColor: getAdjustedColor(data.color || "#888", true),
             };
         }
 
@@ -231,10 +234,24 @@ const ChatRoom = () => {
     });
     socket.on("chat_history", (history) => {
         const filteredHistory = history.filter((msg) => msg.username !== "System"); // Exclude old system messages
-        const updatedHistory = filteredHistory.map((msg) => ({
-            ...msg,
-            validUsernames: msg.validUsernames || [], // Add fallback for older messages
-        }));
+        const updatedHistory = filteredHistory.map((msg) => {
+            // Ensure the user's color is saved in userColors
+            const normalizedUsername = msg.username.toLowerCase(); // Normalize to lowercase
+            if (!userColors.current[normalizedUsername]) {
+                const lightColor = msg.color || "#888"; // Default light mode color
+                const darkColor = getAdjustedColor(lightColor, true); // Calculate dark mode color
+                userColors.current[normalizedUsername] = {
+                    lightColor,
+                    darkColor,
+                };
+            }
+
+            return {
+                ...msg,
+                validUsernames: msg.validUsernames || [], // Add fallback for older messages
+            };
+        });
+
         setMessages(updatedHistory);
     });
     socket.on("message", handleMessage);
@@ -316,8 +333,8 @@ const ChatRoom = () => {
             {messages.map((msg, index) => {
                 const isCurrentUser = msg.username === username;
                 const userColor = darkMode
-                    ? userColors.current[msg.username]?.darkColor || "#888"
-                    : userColors.current[msg.username]?.lightColor || "#888";
+                    ? userColors.current[msg.username.toLowerCase()]?.darkColor || "#888" // Use dark mode color
+                    : userColors.current[msg.username.toLowerCase()]?.lightColor || msg.color || "#888"; // Use light mode color or fallback
 
                 return (
                     <div
@@ -331,7 +348,22 @@ const ChatRoom = () => {
                         }`}
                     >
                         <div className="message-line">
-                            {msg.username !== "System" && (
+                            {msg.username === "System" ? (
+                                <>
+                                    <span
+                                        className="username"
+                                        style={{
+                                            color: darkMode
+                                                ? userColors.current[msg.user]?.darkColor || "#C67F36"
+                                                : userColors.current[msg.user]?.lightColor || "#888",
+                                        }}
+                                        data-username={msg.user}
+                                    >
+                                        {msg.user}
+                                    </span>
+                                    <span className="message-text">{msg.message}</span>
+                                </>
+                            ) : (
                                 <>
                                     <span className="timestamp">[{msg.timestamp}]</span>
                                     <span
@@ -343,11 +375,16 @@ const ChatRoom = () => {
                                     </span>
                                 </>
                             )}
+                            <span className="timestamp">
+                                {msg.username === "System" ? `[${msg.timestamp}]` : ""}
+                            </span>
                         </div>
-                        <span
-                            className="message-text"
-                            dangerouslySetInnerHTML={{ __html: formatMessage(msg) }}
-                        />
+                        {msg.username !== "System" && (
+                            <span
+                                className="message-text"
+                                dangerouslySetInnerHTML={{ __html: formatMessage(msg) }}
+                            />
+                        )}
                     </div>
                 );
             })}

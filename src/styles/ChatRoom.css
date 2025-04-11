@@ -203,7 +203,6 @@ body {
 .dark-mode .message-bubble {
     background-color: #282828;
     border-left: 4px solid #555;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
 .light-mode .message-bubble {
@@ -229,7 +228,6 @@ body {
     order: 0; /* Ensure the username is on the left */
     font-weight: bold; /* Make the username bold */
     margin-right: 0.5rem; /* Add spacing between the username and timestamp */
-    text-align: left; /* Align text to the left */
 }
 
 .message-bubble.other-user .timestamp {
@@ -237,10 +235,14 @@ body {
     margin-left: 0.5rem; /* Add spacing between the username and timestamp */
     font-size: 0.8rem; /* Adjust font size for better readability */
     color: var(--translucent-minty-moss); /* Use a subtle color */
+    padding-bottom: 0.5rem; /* Add spacing between the timestamp and message text */
 }
 
 /* System Message */
 .message-bubble.system-message {
+    display: flex;
+    justify-content: space-between; /* Space out the username, message, and timestamp */
+    align-items: center; /* Vertically align items */
     background-color: var(--slate); /* Use a distinct background color */
     border-left: 0.5rem solid var(--earthy-orange);
     border-right: 0.5rem solid var(--earthy-orange);
@@ -253,6 +255,19 @@ body {
     overflow-wrap: break-word; /* Ensure long words break to fit within the container */
     word-wrap: break-word; /* Compatibility for older browsers */
     word-break: break-word; /* Ensure long words break properly */
+}
+
+/* Align the timestamp to the right */
+.message-bubble.system-message .timestamp {
+    margin-left: auto; /* Push the timestamp to the right */
+    font-size: 0.8rem; /* Adjust font size for better readability */
+    color: var(--translucent-minty-moss); /* Use a subtle color */
+}
+
+/* Username styling */
+.message-bubble.system-message .username {
+    font-weight: bold;
+    margin-right: 0.5rem; /* Add spacing between the username and message */
 }
 
 /* Add a class for fading out */
@@ -415,7 +430,7 @@ span.message-text {
 
 .light-mode .autocomplete-suggestions div:hover {
     background-color: var(--midnight-bark);
-    color: var(--minty-moss);
+    color: var (--minty-moss);
 }
 
 /* Highlight Styles */
