@@ -16,6 +16,10 @@
     --translucent-earthy-orange: rgba(198, 127, 54, 0.3);       
     --minty-moss: #C4DFAA;
     --translucent-minty-moss: rgba(196, 223, 170, 0.5);
+    --tuscan-yellow: #FCD12A;
+    --translucent-tuscan-yellow: rgba(252, 209, 42, 0.85);
+    --muted-red: #961E1E;
+    --success-green: #4EEA4E;
 }
 
 /* Global Styles */
@@ -494,12 +498,11 @@ span.message-text {
 /* Custom Highlight Style */
 .custom-highlight {
     background-color: var(--translucent-river-teal);
-    color: inherit;
-    padding: 0;
-    border-radius: 0;
-    display: inline;
+    padding: 0 0.3rem;
+    border-radius: 0.3rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    text-align: center;
 }
 
 .custom-highlight:hover {
@@ -511,31 +514,35 @@ span.message-text {
 .highlight-hashtag {
     background-color: var(--translucent-minty-moss);
     color: var(--minty-moss);
-    padding: 0 0.2rem;
+    padding: 0 0.3rem;
     border-radius: 4px;
 }
 
 /* Highlight for exclamation points (!) */
 .highlight-exclamation {
-    background-color: var(--translucent-earthy-orange);
-    color: var(--earthy-orange);
-    padding: 0 0.2rem;
+    background-color: var(--tuscan-yellow);
+    color: var(--muted-red);
+    font-weight: 800;
+    text-decoration: underline !important;
+    padding: 0 0.3rem;
     border-radius: 4px;
 }
 
 /* Highlight for question marks (?) */
 .highlight-question {
-    background-color: var(--translucent-river-teal);
-    color: var(--river-teal);
-    padding: 0 0.2rem;
+    background-color: var(--translucent-tuscan-yellow);
+    color: var(--midnight-bark);
+    font-style: italic;
+    font-weight: 600;
+    padding: 0 0.3rem;
     border-radius: 4px;
 }
 
 /* Highlight for periods (.) */
 .highlight-period {
-    background-color: var(--translucent-midnight-bark);
+    background-color: var(--success-green);
     color: var(--midnight-bark);
-    padding: 0 0.2rem;
+    padding: 0 0.3rem;
     border-radius: 4px;
 }
 
