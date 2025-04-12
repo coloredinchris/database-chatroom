@@ -20,6 +20,11 @@
     --translucent-tuscan-yellow: rgba(252, 209, 42, 0.85);
     --muted-red: #961E1E;
     --success-green: #4EEA4E;
+    --sky-blue: #76D7EA;
+    --lavender-gray: #C4C3D0;
+    --soft-gold: #E6C87A;
+    --muted-sand: #D9CBA3;
+    --seafoam: #A0D6B4;
 }
 
 /* Global Styles */
@@ -467,29 +472,30 @@ span.message-text {
 
 /* Highlight Styles */
 .highlight-file {
-    background-color: var(--translucent-river-teal);
-    color: var(--river-teal);
+    background-color: var(--soft-gold);
+    color: var(--midnight-bark);
     font-weight: bold;
     padding: 0 0.2rem;
     border-radius: 4px;
 }
 
 .highlight-link {
-    background-color: var(--translucent-minty-moss);
-    color: var(--minty-moss);
-    text-decoration: none;
+    background-color: var(--seafoam);
+    color: var(--midnight-bark);
+    text-decoration: underline;
     padding: 0 0.2rem;
     border-radius: 4px;
-    cursor: pointer;
+    /* cursor: pointer; */
 }
 
-.highlight-link:hover {
+/* Removed until I can fix hyperlinks */
+/* .highlight-link:hover {
     text-decoration: underline;
-}
+} */
 
 .highlight-mention {
-    background-color: var(--translucent-earthy-orange);
-    color: var(--earthy-orange);
+    background-color: var(--muted-sand);
+    color: var(--midnight-bark);
     font-weight: bold;
     padding: 0 0.2rem;
     border-radius: 4px;
@@ -497,23 +503,25 @@ span.message-text {
 
 /* Custom Highlight Style */
 .custom-highlight {
-    background-color: var(--translucent-river-teal);
+    background-color: var(--lavender-gray);
+    color: var(--midnight-bark);
     padding: 0 0.3rem;
     border-radius: 0.3rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    text-align: center;
 }
 
 .custom-highlight:hover {
-    background-color: var(--river-teal);
-    color: white;
+    background-color: var(--slate);
+    color: var(--lavender-gray);
 }
 
 /* Highlight for hashtags (#) */
 .highlight-hashtag {
-    background-color: var(--translucent-minty-moss);
-    color: var(--minty-moss);
+    background-color: var(--sky-blue);
+    color: var(--midnight-bark);
+    font-style: italic;
+    font-weight: bold;
     padding: 0 0.3rem;
     border-radius: 4px;
 }
@@ -528,8 +536,8 @@ span.message-text {
     border-radius: 4px;
 }
 
-/* Highlight for question marks (?) */
-.highlight-question {
+/* Highlight for dollar sign ($) */
+.highlight-dollar {
     background-color: var(--translucent-tuscan-yellow);
     color: var(--midnight-bark);
     font-style: italic;
@@ -538,8 +546,8 @@ span.message-text {
     border-radius: 4px;
 }
 
-/* Highlight for periods (.) */
-.highlight-period {
+/* Highlight for tilde (~) */
+.highlight-tilde {
     background-color: var(--success-green);
     color: var(--midnight-bark);
     padding: 0 0.3rem;
