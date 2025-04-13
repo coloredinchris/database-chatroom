@@ -149,7 +149,7 @@ def handle_disconnect():
         # Broadcast message from server when a user disconnects
         disconnect_message = {
             'username': 'System',
-            'message': f"{username} has left the chat.",
+            'message': f"<span style='color: {user_colors.get(username, '#888')}; font-weight: bold;'>{username}</span> has left the chat.",
             'user': username,  # Include the username separately
             'color': user_colors.get(username, "#888"),  # Include the user's color
             'timestamp': datetime.now().strftime("%I:%M:%S %p")  # 12-hour AM/PM format
@@ -157,13 +157,14 @@ def handle_disconnect():
         chat_history.append(disconnect_message)  # Add to chat history
         socketio.emit('message', disconnect_message)  # Broadcast the message
 
-        # Remove the user from the user_colors dictionary
-        user_colors.pop(username, None)
+        # Return the user's color to the pool
+        if username in user_colors:
+            readable_colors.append(user_colors[username])  # Re-add the color to the pool
+            user_colors.pop(username, None)  # Remove the user from the color map
 
         # Update the user list for all clients
         user_list = [{"username": u, "color": c} for u, c in user_colors.items()]
         socketio.emit('update_user_list', user_list)
-
 
 @socketio.on('request_username')
 def handle_custom_username(data):
@@ -171,9 +172,13 @@ def handle_custom_username(data):
     username = custom if custom else gen_username()
     session['username'] = username
 
-    # Assign colors for users
+    # Assign a unique color for the user
     if username not in user_colors:
-        color = random.choice(readable_colors)
+        if len(readable_colors) > 0:
+            color = readable_colors.pop(0)  # Assign the first available color
+        else:
+            # Recycle colors if all are used
+            color = random.choice(list(user_colors.values()))
         user_colors[username] = color
 
     print(f"User joined with username: {username}")
@@ -196,7 +201,7 @@ def handle_custom_username(data):
     # Broadcast message from server when a user connects
     join_message = {
         'username': 'System',
-        'message': f"{username} has joined the chat.",
+        'message': f"<span style='color: {user_colors[username]}; font-weight: bold;'>{username}</span> has joined the chat.",
         'user': username,  # Include the username separately
         'color': user_colors[username],  # Include the user's color
         'timestamp': datetime.now().strftime("%I:%M:%S %p")

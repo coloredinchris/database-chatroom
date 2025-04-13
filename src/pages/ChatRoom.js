@@ -299,15 +299,13 @@ const ChatRoom = () => {
     socket.on("update_user_list", (users) => {
         setOnlineUsers(users);
 
-        // Ensure all users have their colors saved
+        // Update userColors for all users in the list
         users.forEach((user) => {
             const normalizedUsername = user.username.toLowerCase(); // Normalize username for consistent lookup
             if (!userColors.current[normalizedUsername]) {
-                const lightColor = user.color; // Light mode color from the server
-                const darkColor = getAdjustedColor(lightColor, true); // Calculate dark mode color
                 userColors.current[normalizedUsername] = {
-                    lightColor,
-                    darkColor,
+                    lightColor: user.color, // Light mode color from the server
+                    darkColor: getAdjustedColor(user.color, true), // Calculate dark mode color
                 };
             }
         });
@@ -418,11 +416,7 @@ const ChatRoom = () => {
                         className="message-text"
                         style={{ textAlign: "left" }} // Align text to the left
                         dangerouslySetInnerHTML={{
-                            __html: msg.message.replace(
-                                /(User-\d+)/g, // Match usernames like "User-####"
-                                (match) =>
-                                    `<span style="color: ${userColor}; font-weight: bold;">${match}</span>`
-                            ),
+                            __html: msg.message, // Render the message with the color styling
                         }}
                     />
                 ) : (
@@ -484,19 +478,24 @@ const ChatRoom = () => {
         <div className="user-list">
           <h3>Online</h3>
           <ul>
-            {onlineUsers.map((user, i) => (
-              <li
+    {onlineUsers.map((user, i) => {
+        const normalizedUsername = user.username.toLowerCase(); // Normalize username for consistent lookup
+        const userColor = darkMode
+            ? userColors.current[normalizedUsername]?.darkColor || "#888"
+            : userColors.current[normalizedUsername]?.lightColor || "#888";
+
+        return (
+            <li
                 key={i}
-                style={{ color: darkMode
-                  ? userColors.current[user.username]?.darkColor || "#888"
-                  : userColors.current[user.username]?.lightColor || "#888" }} // Adjust color based on dark mode
+                style={{ color: userColor }} // Use the dynamically determined color
                 className={selectedUser === user.username ? "selected" : ""}
                 onClick={() => setSelectedUser(user.username)} // Set the selected user
-              >
+            >
                 {user.username}
-              </li>
-            ))}
-          </ul>
+            </li>
+        );
+    })}
+</ul>
         </div>
       </div>
 
