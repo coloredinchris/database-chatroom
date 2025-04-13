@@ -347,6 +347,15 @@ span.message-text {
     margin-top: 0.5rem;
 }
 
+.chat-image {
+    max-width: 300px; /* Limit the width */
+    max-height: 200px; /* Limit the height */
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    display: block;
+    object-fit: cover; /* Ensure the image scales properly */
+}
+
 /* Input Area */
 .input-area {
     position: relative;

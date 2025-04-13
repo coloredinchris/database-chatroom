@@ -116,27 +116,32 @@ const ChatRoom = () => {
 };
 
   const handleSend = () => {
-    if (!input.trim()) return;
+    if (!input.trim() && !pendingFile) return;
 
     if (pendingFile) {
         const formData = new FormData();
         formData.append("file", pendingFile);
         formData.append("username", username);
-        fetch("https://chatroom-backend-qv2y.onrender.com/upload", {
+
+        fetch("http://localhost:5000/upload", {
             method: "POST",
             body: formData,
         })
             .then((res) => res.json())
-            .then((data) => console.log(data));
+            .then((data) => {
+                if (data.file_url) {
+                    console.log("File uploaded successfully:", data.file_url);
+                } else {
+                    console.error("File upload failed:", data.error);
+                }
+            })
+            .catch((err) => console.error("Error uploading file:", err));
+
         setPendingFile(null);
         setInput("");
     } else {
-        // Include the current list of online usernames in the message
-        const validUsernames = onlineUsers.map((user) => user.username);
-        console.log("Sending message with validUsernames:", validUsernames); // Debugging log
-        socket.emit("message", { username, message: input, validUsernames });
+        socket.emit("message", { username, message: input });
         setInput("");
-        setSuggestions([]);
     }
 };
 
@@ -233,10 +238,8 @@ const ChatRoom = () => {
         };
     });
     socket.on("chat_history", (history) => {
-        const filteredHistory = history.filter((msg) => msg.username !== "System"); // Exclude old system messages
-        const updatedHistory = filteredHistory.map((msg) => {
-            // Ensure the user's color is saved in userColors
-            const normalizedUsername = msg.username.toLowerCase(); // Normalize to lowercase
+        const updatedHistory = history.map((msg) => {
+            const normalizedUsername = msg.username.toLowerCase(); // Normalize username for consistent lookup
             if (!userColors.current[normalizedUsername]) {
                 const lightColor = msg.color || "#888"; // Default light mode color
                 const darkColor = getAdjustedColor(lightColor, true); // Calculate dark mode color
@@ -256,14 +259,17 @@ const ChatRoom = () => {
     });
     socket.on("message", handleMessage);
     socket.on("update_user_list", (users) => {
-        console.log("Updated online users:", users); // Debugging log
         setOnlineUsers(users);
 
         // Ensure all users have their colors saved
         users.forEach((user) => {
-            if (!userColors.current[user.username]) {
-                userColors.current[user.username] = {
-                    lightColor: user.color, // Save the light mode color
+            const normalizedUsername = user.username.toLowerCase(); // Normalize username for consistent lookup
+            if (!userColors.current[normalizedUsername]) {
+                const lightColor = user.color; // Light mode color from the server
+                const darkColor = getAdjustedColor(lightColor, true); // Calculate dark mode color
+                userColors.current[normalizedUsername] = {
+                    lightColor,
+                    darkColor,
                 };
             }
         });
@@ -279,6 +285,27 @@ const ChatRoom = () => {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
     }
   }, [messages]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+        const inputBox = document.getElementById("input");
+        const autocompleteBox = document.getElementById("autocomplete-box");
+
+        if (
+            autocompleteBox &&
+            !autocompleteBox.contains(event.target) &&
+            inputBox !== event.target
+        ) {
+            setSuggestions([]); // Clear suggestions
+        }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+        document.removeEventListener("click", handleClickOutside);
+    };
+}, []);
 
   const handleTextHighlight = () => {
     const selection = window.getSelection();
@@ -331,63 +358,56 @@ const ChatRoom = () => {
             onMouseUp={handleTextHighlight} // Add this event listener
           >
             {messages.map((msg, index) => {
-                const isCurrentUser = msg.username === username;
-                const userColor = darkMode
-                    ? userColors.current[msg.username.toLowerCase()]?.darkColor || "#888" // Use dark mode color
-                    : userColors.current[msg.username.toLowerCase()]?.lightColor || msg.color || "#888"; // Use light mode color or fallback
+    const normalizedUsername = msg.username.toLowerCase(); // Normalize username for consistent lookup
+    const userColor = darkMode
+        ? userColors.current[normalizedUsername]?.darkColor || "#888"
+        : userColors.current[normalizedUsername]?.lightColor || "#888";
 
-                return (
-                    <div
-                        key={index}
-                        className={`message-bubble ${
-                            msg.username === "System"
-                                ? `system-message ${msg.fadeOut ? "fade-out" : ""}`
-                                : isCurrentUser
-                                ? "current-user"
-                                : "other-user"
-                        }`}
-                    >
-                        <div className="message-line">
-                            {msg.username === "System" ? (
-                                <>
-                                    <span
-                                        className="username"
-                                        style={{
-                                            color: darkMode
-                                                ? userColors.current[msg.user]?.darkColor || "#C67F36"
-                                                : userColors.current[msg.user]?.lightColor || "#888",
-                                        }}
-                                        data-username={msg.user}
-                                    >
-                                        {msg.user}
-                                    </span>
-                                    <span className="message-text">{msg.message}</span>
-                                </>
-                            ) : (
-                                <>
-                                    <span className="timestamp">[{msg.timestamp}]</span>
-                                    <span
-                                        className="username"
-                                        style={{ color: userColor }}
-                                        data-username={msg.username}
-                                    >
-                                        {msg.username}:
-                                    </span>
-                                </>
-                            )}
-                            <span className="timestamp">
-                                {msg.username === "System" ? `[${msg.timestamp}]` : ""}
-                            </span>
-                        </div>
-                        {msg.username !== "System" && (
-                            <span
-                                className="message-text"
-                                dangerouslySetInnerHTML={{ __html: formatMessage(msg) }}
-                            />
-                        )}
-                    </div>
-                );
-            })}
+    return (
+        <div
+            key={index}
+            className={`message-bubble ${
+                msg.username === "System"
+                    ? `system-message ${msg.fadeOut ? "fade-out" : ""}`
+                    : msg.username === username
+                    ? "current-user"
+                    : "other-user"
+            }`}
+        >
+            <div className="message-line">
+                {msg.username !== "System" && (
+                    <>
+                        <span className="timestamp">[{msg.timestamp}]</span>
+                        <span
+                            className="username"
+                            style={{ color: userColor }} // Use the dynamically determined color
+                        >
+                            {msg.username}:
+                        </span>
+                    </>
+                )}
+            </div>
+            {msg.file_url ? (
+                <a href={msg.file_url} target="_blank" rel="noopener noreferrer">
+                    {/\.(jpg|jpeg|png|gif)$/i.test(msg.file_url) ? (
+                        <img
+                            src={msg.file_url}
+                            alt={msg.message}
+                            className="chat-image"
+                        />
+                    ) : (
+                        <span className="highlight-file">{msg.message}</span>
+                    )}
+                </a>
+            ) : (
+                <span
+                    className="message-text"
+                    dangerouslySetInnerHTML={{ __html: formatMessage(msg) }}
+                />
+            )}
+        </div>
+    );
+})}
           </div>
         </div>
 
@@ -421,6 +441,7 @@ const ChatRoom = () => {
             if (e.target.files.length > 0) {
               setPendingFile(e.target.files[0]);
               setInput(`[File ready to be sent: ${e.target.files[0].name}]`);
+              e.target.value = ""; // Reset the file input to allow the same file to be selected again
             }
           }}
         />

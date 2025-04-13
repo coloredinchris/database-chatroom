@@ -69,13 +69,16 @@ def upload_file():
             file.save(filepath)
 
             # Send file to chat
-            file_url = f"/download/{filename}"
+            file_url = f"http://localhost:5000/download/{filename}"
+            timestamp = datetime.now().strftime("%I:%M:%S %p")  # 12-hour AM/PM format
             print(f"[UPLOAD] {username} uploaded: {file.filename} from IP: {request.remote_addr}")
             
             socketio.emit('message', {
                 'username': username, 
                 'message': f"Shared a file: {file.filename}", 
-                "file_url": file_url})
+                "file_url": file_url,
+                "timestamp": timestamp  # Include timestamp
+            })
             
             return jsonify({
                 "message": "File uploaded successfully",
@@ -91,7 +94,11 @@ def upload_file():
 
 @app.route('/download/<filename>', methods=['GET'])
 def download_file(filename):
-    return send_from_directory(UPLOAD_FOLDER, filename, as_attachment=True)
+    try:
+        return send_from_directory(UPLOAD_FOLDER, filename)
+    except Exception as e:
+        print(f"[ERROR] Failed to serve file: {e}")
+        return jsonify({"error": "File not found"}), 404
 
 user_colors = {}
 
@@ -99,7 +106,7 @@ sid_username_dict = {}
 
 active_users = {}
 
-chat_history = deque(maxlen=30)
+chat_history = deque(maxlen=20)
 
 readable_colors = [
     "#3498db", "#9b59b6", "#1abc9c"
@@ -111,7 +118,6 @@ def handle_connect():
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    print(f"[DISCONNECTED] SID: {request.sid}, IP: {request.remote_addr}")  # Log disconnect
     sid = request.sid
     username = sid_username_dict.pop(sid, None)  # Remove the SID from the dictionary
 
@@ -122,7 +128,7 @@ def handle_disconnect():
             'message': f"{username} has left the chat.",
             'user': username,  # Include the username separately
             'color': user_colors.get(username, "#888"),  # Include the user's color
-            'timestamp': datetime.now().strftime("%H:%M:%S")
+            'timestamp': datetime.now().strftime("%I:%M:%S %p")  # 12-hour AM/PM format
         }
         chat_history.append(disconnect_message)  # Add to chat history
         socketio.emit('message', disconnect_message)  # Broadcast the message
@@ -133,6 +139,7 @@ def handle_disconnect():
         # Update the user list for all clients
         user_list = [{"username": u, "color": c} for u, c in user_colors.items()]
         socketio.emit('update_user_list', user_list)
+
 
 @socketio.on('request_username')
 def handle_custom_username(data):
@@ -158,7 +165,9 @@ def handle_custom_username(data):
         'color': user_colors[username]
     }, room=request.sid)
     
-    socketio.emit('chat_history', list(chat_history), room=request.sid)
+    # Filter out system messages from the chat history
+    filtered_history = [msg for msg in chat_history if msg['username'] != "System"]
+    socketio.emit('chat_history', filtered_history, room=request.sid)  # Send filtered chat history
 
     # Broadcast message from server when a user connects
     join_message = {
@@ -166,7 +175,7 @@ def handle_custom_username(data):
         'message': f"{username} has joined the chat.",
         'user': username,  # Include the username separately
         'color': user_colors[username],  # Include the user's color
-        'timestamp': datetime.now().strftime("%H:%M:%S")
+        'timestamp': datetime.now().strftime("%I:%M:%S %p")
     }
     chat_history.append(join_message)
     socketio.emit('message', join_message)
@@ -175,29 +184,28 @@ def handle_custom_username(data):
 @socketio.on('message')
 def handle_message(data):
     try:
-        # Ensure that data is a dictionary and contains the 'message' field
         if isinstance(data, dict) and 'message' in data:
             username = session.get('username', 'Anonymous')
             message = data['message']
-            color = user_colors.get(username, "#888")
+            color = user_colors.get(username, "#888")  # Get the user's color
 
             print(f"[MESSAGE] {username}: {message}")
             
             # Profanity filter
             clean_message = profanity.censor(data['message'])
 
-            # Get the list of valid usernames (all active users)
-            valid_usernames = list(user_colors.keys())
+            # Extract mentions from the message
+            mentions = [word[1:] for word in message.split() if word.startswith("@")]
 
             # Broadcast the message to all clients
             message_data = {
                 'username': username, 
                 'message': clean_message, 
-                'color': color,
-                'timestamp': datetime.now().strftime("%H:%M:%S"),
-                'validUsernames': valid_usernames  # Include valid usernames
+                'color': color,  # Include the user's color
+                'timestamp': datetime.now().strftime("%I:%M:%S %p"),  # 12-hour AM/PM format
+                'validUsernames': mentions  # Include mentions
             }
-            chat_history.append(message_data)
+            chat_history.append(message_data)  # Save the message with the color
             socketio.emit('message', message_data)
         else:
             print("Error: Received data is not a valid object or missing 'message' field.")
