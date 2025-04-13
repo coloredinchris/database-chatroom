@@ -169,7 +169,10 @@ const ChatRoom = () => {
           //   console.error("File upload failed:", data.error);
           //   }
           //   })
-          //   .catch((err) => console.error("Error uploading file:", err));
+          //   .catch((err) => {
+          //   console.error("Error uploading file:", err);
+          //   alert(err.message); // Notify the user about the rate limit
+          // });
 
         setPendingFile(null);
         setInput("");
