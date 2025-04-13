@@ -69,7 +69,7 @@ def upload_file():
             file.save(filepath)
 
             # Send file to chat
-            file_url = f"http://localhost:5000/download/{filename}"
+            file_url = f"{request.host_url}download/{filename}"
             timestamp = datetime.now().strftime("%I:%M:%S %p")  # 12-hour AM/PM format
             print(f"[UPLOAD] {username} uploaded: {file.filename} from IP: {request.remote_addr}")
             
