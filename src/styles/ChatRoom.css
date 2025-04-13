@@ -506,13 +506,13 @@ span.message-text {
     text-decoration: underline;
     padding: 0 0.2rem;
     border-radius: 4px;
-    /* cursor: pointer; */
+    cursor: pointer;
 }
 
-/* Removed until I can fix hyperlinks */
-/* .highlight-link:hover {
+.highlight-link:hover {
     text-decoration: underline;
-} */
+    background-color: var(--minty-moss);
+}
 
 .highlight-mention {
     background-color: var(--muted-sand);

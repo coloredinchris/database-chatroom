@@ -68,7 +68,7 @@ const ChatRoom = () => {
 
     // Highlight valid filenames (e.g., file.png, image.jpg)
     messageContent = messageContent.replace(
-        /\b\w+[-\w]*\.(txt|jpg|jpeg|png|gif|mp4|mov|avi|webm|pdf|docx|xlsx)\b/gi,
+        /\b\w+[-\w]*\.(txt|jpg|jpeg|png|gif|mp4|mov|avi|webm|pdf|docx|xlsx|html|css|js|json|xml|py|java|c|cpp|h|zip|rar|7z|tar|gz)\b/gi,
         (match) => `<span class="highlight-file">${match}</span>`
     );
 
@@ -77,8 +77,9 @@ const ChatRoom = () => {
         /\b((https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?)\b/gi,
         (match) => {
             // Ensure the match is not already highlighted as a file
-            if (!/\b\w+[-\w]*\.(txt|jpg|jpeg|png|gif|mp4|mov|avi|webm|pdf|docx|xlsx)\b/gi.test(match)) {
-                return `<span class="highlight-link">${match}</span>`;
+            if (!/\b\w+[-\w]*\.(txt|jpg|jpeg|png|gif|mp4|mov|avi|webm|pdf|docx|xlsx|html|css|js|json|xml|py|java|c|cpp|h|zip|rar|7z|tar|gz)\b/gi.test(match)) {
+                const url = match.startsWith("http") ? match : `http://${match}`;
+                return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="highlight-link">${match}</a>`;
             }
             return match; // Return the original text if it's a file
         }
