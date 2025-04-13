@@ -28,10 +28,10 @@ socketio = SocketIO(app, cors_allowed_origins=[
 profanity.load_censor_words()
 
 # Security config
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024 # 5MB max upload
+app.config['MAX_CONTENT_LENGTH'] = 5000 * 1024 * 1024  # 5000MB max upload
 
 # Rate limiter
-limiter = Limiter(get_remote_address, app=app, default_limits=["3 per minute"])
+limiter = Limiter(get_remote_address, app=app, default_limits=["10 per minute"])
 
 # Uploading files/file types
 UPLOAD_FOLDER = 'uploads'
@@ -52,7 +52,7 @@ def index():
     return render_template('index.html', favicon_version=favicon_version)
 
 @app.route('/upload', methods=['POST'])
-@limiter.limit("3 per minute")
+@limiter.limit("10 per minute")
 def upload_file():
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400

@@ -119,6 +119,16 @@ const ChatRoom = () => {
     if (!input.trim() && !pendingFile) return;
 
     if (pendingFile) {
+        // Check file size before uploading
+        const maxFileSize = 5000 * 1024 * 1024; // 5000MB
+        if (pendingFile.size > maxFileSize) {
+            console.error("File is too large. Maximum allowed size is 5000MB.");
+            alert("File is too large. Maximum allowed size is 5000MB.");
+            setPendingFile(null);
+            setInput("");
+            return;
+        }
+
         const formData = new FormData();
         formData.append("file", pendingFile);
         formData.append("username", username);
@@ -404,23 +414,29 @@ const ChatRoom = () => {
                 )}
             </div>
             {msg.file_url ? (
-                <a href={msg.file_url} target="_blank" rel="noopener noreferrer">
-                    {/\.(jpg|jpeg|png|gif)$/i.test(msg.file_url) ? (
-                        <img
-                            src={msg.file_url}
-                            alt={msg.message}
-                            className="chat-image"
-                        />
-                    ) : (
-                        <span className="highlight-file">{msg.message}</span>
-                    )}
-                </a>
-            ) : (
-                <span
-                    className="message-text"
-                    dangerouslySetInnerHTML={{ __html: formatMessage(msg) }}
-                />
-            )}
+  <a href={msg.file_url} target="_blank" rel="noopener noreferrer">
+    {/\.(jpg|jpeg|png|gif)$/i.test(msg.file_url) ? (
+      <img
+        src={msg.file_url}
+        alt={msg.message}
+        className="chat-image"
+      />
+    ) : /\.(mp4|mov|avi|webm)$/i.test(msg.file_url) ? (
+      <video
+        src={msg.file_url}
+        controls
+        className="chat-video"
+      />
+    ) : (
+      <span className="highlight-file">{msg.message}</span>
+    )}
+  </a>
+) : (
+  <span
+    className="message-text"
+    dangerouslySetInnerHTML={{ __html: formatMessage(msg) }}
+  />
+)}
         </div>
     );
 })}

@@ -356,6 +356,13 @@ span.message-text {
     object-fit: cover; /* Ensure the image scales properly */
 }
 
+.chat-video {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
 /* Input Area */
 .input-area {
     position: relative;
