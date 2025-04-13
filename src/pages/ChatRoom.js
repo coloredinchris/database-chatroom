@@ -123,7 +123,7 @@ const ChatRoom = () => {
         formData.append("file", pendingFile);
         formData.append("username", username);
 
-        fetch("http://localhost:5000/upload", {
+        fetch("https://chatroom-backend-qv2y.onrender.com/upload", {
             method: "POST",
             body: formData,
         })
