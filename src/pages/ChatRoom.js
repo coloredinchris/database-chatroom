@@ -123,19 +123,35 @@ const ChatRoom = () => {
         formData.append("file", pendingFile);
         formData.append("username", username);
 
-        fetch("https://chatroom-backend-qv2y.onrender.com/upload", {
-            method: "POST",
-            body: formData,
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.file_url) {
-                    console.log("File uploaded successfully:", data.file_url);
-                } else {
-                    console.error("File upload failed:", data.error);
-                }
-            })
-            .catch((err) => console.error("Error uploading file:", err));
+        // ********* FOR LOCAL TESTING *********
+        fetch("http://localhost:5000/upload", {
+          method: "POST",
+          body: formData,
+          })
+          .then((res) => res.json())
+          .then((data) => {
+          if (data.file_url) {
+          console.log("File uploaded successfully:", data.file_url);
+          } else {
+          console.error("File upload failed:", data.error);
+          }
+          })
+          .catch((err) => console.error("Error uploading file:", err));
+
+        // ********* FOR LIVE TESTING *********
+          // fetch("https://chatroom-backend-qv2y.onrender.com/upload", {
+          //   method: "POST",
+          //   body: formData,
+          //   })
+          //   .then((res) => res.json())
+          //   .then((data) => {
+          //   if (data.file_url) {
+          //   console.log("File uploaded successfully:", data.file_url);
+          //   } else {
+          //   console.error("File upload failed:", data.error);
+          //   }
+          //   })
+          //   .catch((err) => console.error("Error uploading file:", err));
 
         setPendingFile(null);
         setInput("");
