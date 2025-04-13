@@ -13,13 +13,16 @@ from collections import deque
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Needed for session management
-CORS(app, origins=[
-    "https://criticalfailcoding.com",
-    "http://localhost:3000"
-], supports_credentials=True)
+# CORS(app, origins=[
+#     "https://criticalfailcoding.com",
+#     "http://localhost:3000"
+# ], supports_credentials=True)
+
+CORS(app, supports_credentials=True)  # Allow all origins
 
 socketio = SocketIO(app, cors_allowed_origins=[
     "https://criticalfailcoding.com",
+    "https://chatroom-backend-qv2y.onrender.com",
     "http://localhost:3000"
 ])
 
