@@ -500,6 +500,12 @@ span.message-text {
     border-radius: 4px;
 }
 
+.highlight-file:hover {
+    background-color: var(--muted-sand);
+    color: var(--midnight-bark);
+    text-decoration: underline;
+}
+
 .highlight-link {
     background-color: var(--seafoam);
     color: var(--midnight-bark);
