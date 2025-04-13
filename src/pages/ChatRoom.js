@@ -421,20 +421,32 @@ const ChatRoom = () => {
                     </>
                 )}
             </div>
-            {msg.file_url ? (
+        {msg.file_url ? (
   <a href={msg.file_url} target="_blank" rel="noopener noreferrer">
-    {/\.(jpg|jpeg|png|gif)$/i.test(msg.file_url) ? (
+    {/\.(jpg|jpeg|png|gif|webp|bmp|svg|tiff|ico)$/i.test(msg.file_url) ? (
       <img
         src={msg.file_url}
         alt={msg.message}
         className="chat-image"
       />
-    ) : /\.(mp4|mov|avi|webm)$/i.test(msg.file_url) ? (
+    ) : /\.(mp4|webm|ogg|ogv|mov|avi|mkv)$/i.test(msg.file_url) ? (
       <video
         src={msg.file_url}
         controls
         className="chat-video"
       />
+    ) : /\.(mp3|wav|oga|flac|m4a|aac)$/i.test(msg.file_url) ? (
+      <audio
+        src={msg.file_url}
+        controls
+        className="chat-audio"
+      />
+    ) : /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|txt|rtf|csv|md|epub|odt)$/i.test(msg.file_url) ? (
+      <span className="highlight-file">📄 {msg.message}</span>
+    ) : /\.(zip|rar|7z|tar|gz)$/i.test(msg.file_url) ? (
+      <span className="highlight-file">🗜️ {msg.message}</span>
+    ) : /\.(html|css|js|json|xml|py|java|c|cpp|h)$/i.test(msg.file_url) ? (
+      <span className="highlight-file">🧱 {msg.message}</span>
     ) : (
       <span className="highlight-file">{msg.message}</span>
     )}
@@ -473,18 +485,18 @@ const ChatRoom = () => {
       <div className="input-area">
         <button onClick={() => document.getElementById("fileInput").click()}>+</button>
         <input
-          type="file"
-          id="fileInput"
-          accept=".txt,.jpg,.jpeg,.png,.gif,.mov,.avi,.mp4,.webm"
-          style={{ display: "none" }}
-          onChange={(e) => {
-            if (e.target.files.length > 0) {
-              setPendingFile(e.target.files[0]);
-              setInput(`[File ready to be sent: ${e.target.files[0].name}]`);
-              e.target.value = ""; // Reset the file input to allow the same file to be selected again
-            }
-          }}
-        />
+  type="file"
+  id="fileInput"
+  accept=".jpg,.jpeg,.png,.gif,.webp,.bmp,.svg,.tiff,.ico,.mp4,.webm,.ogg,.ogv,.mov,.avi,.mkv,.mp3,.wav,.oga,.flac,.m4a,.aac,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.rtf,.csv,.md,.epub,.odt,.zip,.rar,.7z,.tar,.gz,.html,.css,.js,.json,.xml,.py,.java,.c,.cpp,.h"
+  style={{ display: "none" }}
+  onChange={(e) => {
+    if (e.target.files.length > 0) {
+      setPendingFile(e.target.files[0]);
+      setInput(`[File ready to be sent: ${e.target.files[0].name}]`);
+      e.target.value = ""; // Reset the file input to allow the same file to be selected again
+    }
+  }}
+/>
         <input
           id="input"
           type="text"

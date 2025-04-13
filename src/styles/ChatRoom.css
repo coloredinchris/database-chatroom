@@ -363,6 +363,11 @@ span.message-text {
     margin-top: 8px;
 }
 
+.chat-audio {
+    width: 100%;
+    margin-top: 8px;
+}
+
 /* Input Area */
 .input-area {
     position: relative;

@@ -36,7 +36,20 @@ limiter = Limiter(get_remote_address, app=app, default_limits=["10 per minute"])
 # Uploading files/file types
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Creates folder if not already there
-ALLOWED_EXTENSIONS = {'txt', 'jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov', 'avi', 'webm'}  # Allow image and video file types
+ALLOWED_EXTENSIONS = {
+    # Images
+    'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'tiff', 'ico',
+    # Videos
+    'mp4', 'webm', 'ogg', 'ogv', 'mov', 'avi', 'mkv',
+    # Audio
+    'mp3', 'wav', 'oga', 'ogg', 'flac', 'm4a', 'aac',
+    # Documents
+    'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'rtf', 'csv', 'md', 'epub', 'odt',
+    # Archives
+    'zip', 'rar', '7z', 'tar', 'gz',
+    # Code / Developer Files
+    'html', 'css', 'js', 'json', 'xml', 'py', 'java', 'c', 'cpp', 'h'
+}
 
 def allowed_file(filename):
     ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
@@ -58,7 +71,7 @@ def upload_file():
         return jsonify({"error": "No file part"}), 400
 
     file = request.files['file']
-    username = request.form.get('username', 'Unknown1')
+    username = request.form.get('username', 'Unknown')
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
@@ -69,24 +82,34 @@ def upload_file():
             filepath = os.path.join(UPLOAD_FOLDER, filename)
             file.save(filepath)
 
-            # Send file to chat
+            # Construct file URL
             file_url = f"{request.host_url}download/{filename}"
             timestamp = datetime.now().strftime("%I:%M:%S %p")  # 12-hour AM/PM format
+            user_color = user_colors.get(username, "#888")  # Get the user's color
+
             print(f"[UPLOAD] {username} uploaded: {file.filename} from IP: {request.remote_addr}")
-            
-            socketio.emit('message', {
-                'username': username, 
-                'message': f"Shared a file: {file.filename}", 
-                "file_url": file_url,
-                "timestamp": timestamp  # Include timestamp
-            })
-            
+
+            # Create the media message
+            media_message = {
+                'username': username,
+                'message': f"Shared a file: {file.filename}",
+                'file_url': file_url,
+                'timestamp': timestamp,
+                'color': user_color  # Include the user's color
+            }
+
+            # Add the media message to chat history
+            chat_history.append(media_message)
+
+            # Broadcast the media message to all clients
+            socketio.emit('message', media_message)
+
             return jsonify({
                 "message": "File uploaded successfully",
                 "file_url": file_url,
                 "file_name": file.filename
             })
-    
+
         except Exception as e:
             print(f"[ERROR] Upload failed: {e}")
             return jsonify({"error": "Upload failed"}), 500
