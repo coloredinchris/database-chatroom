@@ -134,21 +134,191 @@ body {
     background: var(--translucent-river-teal);
 }
 
-/* User List */
-.user-list {
-    flex: 2;
+/*TODO CHATROOM SIDEBAR*/
+
+.chatroom.dark-mode .sidebar {
+    background-color: #1e1e1e;
+    color: #ccc;
+    border-left: 1px solid #333;
+}
+
+.chatroom.dark-mode .sidebar h2 {
+    color: green;
+}
+
+.chatroom.light-mode .sidebar {
+    background-color: var(--minty-moss);
+    color: var(--midnight-bark);
+}
+
+.sidebar {
+    flex:2;
     max-width: 20vw;
     background-color: var(--minty-moss);
     border-left: 1px solid var(--translucent-midnight-bark);
+    padding: 1rem;
+    transition: background-color .3s ease;
+}
+
+.sidebar-header {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.sidebar-content{
+    text-align: center;
+    border-top: 1px solid var(--translucent-midnight-bark);
+    padding-bottom: 1rem;
+    color: var(--midnight-bark);
+}
+
+.sidebar-header h2{
+    text-align: center;
+    padding-bottom: 1rem;
+    color: var(--midnight-bark);
+    text-transform: capitalize;
+}
+
+.sidebar-header button{
+    position: relative;
+    top: 40vh;
+    background-color: rgba(120, 150, 120, 0.2);  /* more visible olive tone */
+    border: 1px solid rgba(120, 150, 120, 0.3);
+    color: #2d2d2d; /* dark olive-gray text */
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.dark-mode .sidebar-header button {
+    color: var(--lavender-gray);
+}
+
+.dark-mode .chat-rules-list {
+    color: var(--lavender-gray);
+}
+
+.chat-rules-list {
+    list-style-type: disc;
+    padding: 0 2rem 0 2rem;
+    text-align: left;
+    color: inherit;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.chat-rules-list li {
+    margin-bottom: 0.6rem;
+}
+
+
+/* formatting tips */
+.formatting-panel h4 {
+    margin-bottom: 1rem;
+    color: inherit;
+    text-align: left;
+    font-size: 1.2rem;
+    padding-left: 2rem;
+    padding-bottom: 0.5rem;
+}
+
+.formatting-list {
+    list-style-type: none;
+    padding: 0 2rem, 0, 2rem;
+    margin: 0;
+    color: inherit;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.formatting-list li {
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.formatting-list code {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.dark-mode .formatting-list{
+    color: var(--lavender-gray);
+}
+
+.dark-mode .formatting-panel h4{
+    color: var(--lavender-gray);
+}
+
+/* welcome intro*/
+
+.welcome-overview {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    text-align: left;
+    padding: 0.5rem;
+}
+
+.welcome-overview h4 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.4rem;
+}
+
+.welcome-overview-list {
+    list-style: disc;
+    padding: 0 2rem 0 2rem;
+    margin-bottom: 1rem;
+}
+
+.welcome-overview-list li {
+    margin-bottom: 0.75rem;
+}
+
+.welcome-overview code {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.welcome-note {
+    font-style: italic;
+    padding: 0 2rem;
+    color: inherit;
+}
+
+.dark-mode .welcome-note{
+    color: var(--lavender-gray);
+}
+
+.dark-mode .welcome-overview-list{
+    color: var(--lavender-gray);
+}
+
+.dark-mode .welcome-overview p{
+    color: var(--lavender-gray);
+}
+
+.dark-mode .welcome-overview h4{
+    color: var(--lavender-gray);
+}
+
+/* User List */
+.user-list {
+    background-color: var(--minty-moss);
     padding: 1rem;
     overflow-y: auto;
     transition: background-color .3s ease;
 }
 
 .chatroom.dark-mode .user-list {
-    background-color: #1b1b1b;
-    border-left: 1px solid #333;
-    color: #ccc;
+    background-color: #1e1e1e;
+    
 }
 
 .user-list h3 {
