@@ -15,8 +15,9 @@ import WelcomeScreen from "./WelcomeScreen";
 /**********           for testing LOCAL            **********/
 const socket = io("http://localhost:5000");
 
-const panelViews = ["welcome", "rules", "formatting", "online"];
-
+const panelViews = ["online"];
+//const panelViews = ["welcome", "rules", "formatting", "online"];
+const tooltipViews = ["rules", "formatting"];
 const usernameColorMap = {
     "#3498db": { light: "#3498db", dark: "#2E2E2E" },
     "#9b59b6": { light: "#9b59b6", dark: "#C67F36" },
@@ -41,7 +42,9 @@ const ChatRoom = () => {
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [showToolTip, setShowToolTip] = useState(false);
-    const [activePanel, setActivePanel] = useState("welcome");
+    //const [tooltipViews, setTooltipViews] = useState("rules");
+
+    const [activePanel, setActivePanel] = useState("rules");
 
 
     const handleJoin = (customName) => {
@@ -68,22 +71,22 @@ const ChatRoom = () => {
     };
 
     const switchPanel = (direction) => {
-        const currentIndex = panelViews.indexOf(activePanel);
+        const currentIndex = tooltipViews.indexOf(activePanel);
         let newIndex;
 
         if (direction == "left") {
             newIndex = currentIndex-1;
             if (newIndex < 0) {
-                newIndex = 2;
+                newIndex = 1;
             }
         }
         else if (direction === "right") {
             newIndex = currentIndex + 1;
-            if(newIndex > panelViews.length - 1) {
+            if(newIndex > tooltipViews.length - 1) {
                 newIndex = 0;
             }
         }
-        setActivePanel(panelViews[newIndex]);
+        setActivePanel(tooltipViews[newIndex]);
     }
 
     // Function to format messages
@@ -498,26 +501,34 @@ const ChatRoom = () => {
     })}
             </div>
             </div>
-            {/*
-                <h3>Online</h3>
-                <ul>
-                    {onlineUsers.map((user, i) => {
-                        const normalizedUsername = user.username.toLowerCase(); // Normalize username for consistent lookup
-                        const userColor = darkMode ? userColors.current[normalizedUsername]?.darkColor || "#888" : userColors.current[normalizedUsername]?.lightColor || "#888";
-                        return (
-                            <li
-                                key={i}
-                                style={{ color: userColor }} // Use the dynamically determined color
-                                className={selectedUser === user.username ? "selected" : ""}
-                                onClick={() => setSelectedUser(user.username)} // Set the selected user
-                            >
-                                {user.username}
-                            </li>
-                        );
-                    })}
-                </ul>
-            */}
             <div className="sidebar">
+                <div className="sidebar-header">
+                    <h2>Online</h2>
+                </div>
+                <div className="sidebar-content">
+                    <div className="user-list">
+                        <ul>
+                            {onlineUsers.map((user, i) => {
+                                const normalizedUsername = user.username.toLowerCase(); // Normalize username for consistent lookup
+                                const userColor = darkMode ? userColors.current[normalizedUsername]?.darkColor || "#888" : userColors.current[normalizedUsername]?.lightColor || "#888";
+                                return (
+                                    <li
+                                        key={i}
+                                        style={{ color: userColor }} // Use the dynamically determined color
+                                        className={selectedUser === user.username ? "selected" : ""}
+                                        onClick={() => setSelectedUser(user.username)} // Set the selected user
+                                    >
+                                        {user.username}
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
+                </div>
+                
+            </div>              
+           
+            {/* <div className="sidebar">
                 <div className="sidebar-header">
                     <button onClick={() => switchPanel("left")}>←</button>
                     <h2 >{activePanel}</h2>
@@ -615,10 +626,11 @@ const ChatRoom = () => {
                     ) : null }
                 </div>
                 
-            </div>
+            </div> */}
         </div>
 
         <div className="input-area">
+            <button onClick={() => setShowToolTip(prev => !prev)}>❔</button>
             <button onClick={() => document.getElementById("fileInput").click()}>+</button>
             <input
                 type="file"
@@ -669,6 +681,74 @@ const ChatRoom = () => {
             </div>
             )}
         </div>
+
+        {showToolTip && (
+             <div className="tooltip">
+             <div className="tooltip-header">
+                 <button onClick={() => switchPanel("left")}>←</button>
+                 <h2 >{activePanel}</h2>
+                 <button onClick={() => switchPanel("right")}>→</button>
+             </div>
+             <div className="tooltip-content">
+                 { activePanel === "rules" ? (
+                     <ul className="chat-rules-list">
+                         <li><strong>Be kind and respectful.</strong> Treat everyone with courtesy, even if you disagree.</li>
+                         <li><strong>No harassment or hate speech.</strong> Discrimination of any kind will not be tolerated.</li>
+                         <li><strong>Keep it clean.</strong> Avoid excessive profanity, NSFW content, or offensive language.</li>
+                         <li><strong>No spam or flooding.</strong> Don’t repeatedly send the same messages or flood the chat.</li>
+                         <li><strong>Stay on topic.</strong> Keep the conversation relevant to the chatroom’s purpose.</li>
+                         <li><strong>No self-promotion or advertising.</strong> Unless it’s part of the conversation or allowed by the admin.</li>
+                         <li><strong>Protect your privacy.</strong> Don’t share personal information — yours or anyone else’s.</li>
+                         <li><strong>Report issues.</strong> If someone is breaking the rules, let a mod/admin know (if available).</li>
+                     </ul>
+ 
+                 ) : activePanel === "formatting" ? (
+                     <div className="formatting-panel">
+                         <h4>Formatting Messages</h4>
+                         <ul className="formatting-list">
+                             <li>
+                             <strong>@username</strong> – Mention someone by typing <code>@</code> followed by their name.<br />
+                             <span className="highlight-mention">@Username</span>
+                             </li>
+ 
+                             <li>
+                             <strong>#text#</strong> – Highlight important words or labels.<br />
+                             <span className="highlight-hashtag">This is important</span>
+                             </li>
+ 
+                             <li>
+                             <strong>!text!</strong> – Emphasize warnings or urgent notes.<br />
+                             <span className="highlight-exclamation">Don't forget!</span>
+                             </li>
+ 
+                             <li>
+                             <strong>$text$</strong> – Style monetary or value-based terms.<br />
+                             <span className="highlight-dollar">reward</span>
+                             </li>
+ 
+                             <li>
+                             <strong>~text~</strong> – Add a playful or alternate tone.<br />
+                             <span className="highlight-tilde">suspicious</span>
+                             </li>
+ 
+                             <li>
+                             <strong>filename.ext</strong> – Valid file types (e.g. <code>.pdf</code>, <code>.png</code>) are auto-highlighted.<br />
+                             <span className="highlight-file">project.pdf</span>
+                             </li>
+ 
+                             <li>
+                             <strong>Links</strong> – Paste any link (with or without http).<br />
+                             <span className="highlight-link">example.com</span>
+                             </li>
+                         </ul>
+                     </div>
+                 ) : null }
+             </div>
+                 
+         </div>
+        )}
+        
+        
         </div>
     );
 };

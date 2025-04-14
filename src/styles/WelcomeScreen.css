@@ -1,3 +1,32 @@
+/* Root Variables */
+:root {
+  --midnight-bark: #2e2e2e;
+  --translucent-midnight-bark-button: rgba(46, 46, 46, 0.8);
+  --translucent-midnight-bark: rgba(46, 46, 46, 0.3);
+  --river-teal: #117C88;
+  --translucent-river-teal: rgba(17, 124, 136, 0.7);        
+  --misty-blue: #B5C7C7;
+  --translucent-misty-blue: rgba(181, 199, 199, 0.7);
+  --deep-moss: #1D3520;      
+  --slate: #545F66;
+  --translucent-slate-button: rgba(84, 95, 102, 0.8);     
+  --pine-green: #3A6B35;       
+  --mudstone: #665544;        
+  --earthy-orange: #C67F36;
+  --translucent-earthy-orange: rgba(198, 127, 54, 0.3);       
+  --minty-moss: #C4DFAA;
+  --translucent-minty-moss: rgba(196, 223, 170, 0.5);
+  --tuscan-yellow: #FCD12A;
+  --translucent-tuscan-yellow: rgba(252, 209, 42, 0.85);
+  --muted-red: #961E1E;
+  --success-green: #4EEA4E;
+  --sky-blue: #76D7EA;
+  --lavender-gray: #C4C3D0;
+  --soft-gold: #E6C87A;
+  --muted-sand: #D9CBA3;
+  --seafoam: #A0D6B4;
+}
+
 .welcome-overlay {
     position: fixed;
     top: 0;
@@ -10,10 +39,10 @@
     justify-content: center;
     align-items: center;
     z-index: 999;
+    overflow-y: scroll;
+    overflow-x: scroll;
   }
-  .test{
-    background-color: red;
-  }
+
   .welcome-box {
     background-color: #ffffff;
     padding: 2.5rem 2rem;
@@ -24,16 +53,13 @@
     text-align: center;
     animation: fadeIn 0.3s ease-in-out;
   }
-  
-  .welcome-box h2 {
-    margin-bottom: 0.5rem;
-    font-size: 1.8rem;
-    color: #333;
-  }
-  
+    
   .welcome-box p {
     margin-bottom: 1.5rem;
     color: #555;
+    padding-top: 0rem;
+    font-size: 1.2rem;
+    
   }
   
   .welcome-box input {
@@ -81,6 +107,52 @@
   .welcome-buttons button:hover {
     transform: scale(1.02);
   }
+
+
+  /* welcome intro*/
+
+.welcome-overview {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  text-align: center;
+  padding: 0;
+}
+
+.welcome-overview h3 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--translucent-midnight-bark);
+}
+
+.welcome-overview-list {
+  list-style: none;
+  padding: 0 2rem 0 2rem;
+  margin-bottom: 1rem;
+}
+
+.welcome-overview-list li {
+  margin-bottom: 0.75rem;
+}
+
+.welcome-overview code {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.welcome-overview button {
+  font-size: 16px;
+  padding: 0.2rem .5rem;
+  border: none;
+  color: var (--deep-moss);
+  background-color: var(--misty-blue);
+  border-radius: 6px;
+  font-weight: bold;
+  pointer-events: none;
+}
+
   
   @keyframes fadeIn {
     from {

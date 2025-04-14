@@ -7,7 +7,18 @@ const WelcomeScreen = ({ onJoin }) => {
   return (
     <div className="welcome-overlay">
       <div className="welcome-box">
-        <h2>Welcome to the Chatroom</h2>
+        <div className="welcome-overview">
+          <h3>Welcome to the Chatroom 👋</h3>
+          <p>We're glad you're here! This space is designed to help you connect, collaborate, and share ideas in real time.</p>
+
+          <ul className="welcome-overview-list">
+              <li><strong>Send messages</strong> instantly with support for custom formatting.</li>
+              <li><strong>Mention other users</strong> using <code>@username</code> to get their attention.</li>
+              <li><strong>Upload files</strong> like images, documents, or code using the <button>+</button> button next to input.</li>
+              <li><strong>Paste links</strong> and watch them turn clickable — no formatting needed.</li>
+          </ul>
+        </div>
+        
         <p>You can join with a custom name or anonymously.</p>
         <input
           type="text"
