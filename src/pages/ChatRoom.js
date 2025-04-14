@@ -67,10 +67,6 @@ const ChatRoom = () => {
         }
     };
 
-    const toggleToolTip = () => {
-        setShowToolTip((prev) => !prev);
-    }
-
     const switchPanel = (direction) => {
         const currentIndex = panelViews.indexOf(activePanel);
         let newIndex;
@@ -555,7 +551,7 @@ const ChatRoom = () => {
                             <ul className="welcome-overview-list">
                                 <li><strong>Send messages</strong> instantly with support for custom formatting.</li>
                                 <li><strong>Mention other users</strong> using <code>@username</code> to get their attention.</li>
-                                <li><strong>Upload files</strong> like images, documents, or code using the + button next to input.</li>
+                                <li><strong>Upload files</strong> like images, documents, or code using the <button>+</button> button next to input.</li>
                                 <li><strong>Paste links</strong> and watch them turn clickable — no formatting needed.</li>
                             </ul>
 
@@ -623,7 +619,6 @@ const ChatRoom = () => {
         </div>
 
         <div className="input-area">
-            <button id="tooltip" onClick={toggleToolTip}>i</button>
             <button onClick={() => document.getElementById("fileInput").click()}>+</button>
             <input
                 type="file"

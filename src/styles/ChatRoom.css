@@ -292,6 +292,17 @@ body {
     color: inherit;
 }
 
+.welcome-overview button {
+    font-size: 16px;
+    padding: 0.2rem .5rem;
+    border: none;
+    color: var (--deep-moss);
+    background-color: var(--misty-blue);
+    border-radius: 6px;
+    font-weight: bold;
+    pointer-events: none;
+}
+
 .dark-mode .welcome-note{
     color: var(--lavender-gray);
 }
