@@ -224,8 +224,6 @@ def handle_message(data):
             ts for ts in message_timestamps[user_key] if now - ts < TIME_WINDOW
         ]
 
-        
-
         if len(message_timestamps[user_key]) >= RATE_LIMIT:
             oldest = min(message_timestamps[user_key])
             time_remaining = int(TIME_WINDOW - (now - oldest))
