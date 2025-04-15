@@ -134,8 +134,10 @@ active_users = {}
 chat_history = deque(maxlen=20)
 
 readable_colors = [
-    "#3498db", "#9b59b6", "#1abc9c"
+    "#00D0E0", "#00D0F0", "#00E000", "#00E060", "#CBCC32",
+    "#99D65B", "#26D8D8", "#DBC1BC", "#EFD175", "#D6D65B"
 ]
+random.shuffle(readable_colors)  # Shuffle the colors to randomize the order
 
 @socketio.on('connect')
 def handle_connect():
@@ -150,10 +152,10 @@ def handle_disconnect():
         # Broadcast message from server when a user disconnects
         disconnect_message = {
             'username': 'System',
-            'message': f"<span style='color: {user_colors.get(username, '#888')}; font-weight: bold;'>{username}</span> has left the chat.",
+            'message': f"{username} has left the chat.",
             'user': username,  # Include the username separately
-            'color': user_colors.get(username, "#888"),  # Include the user's color
-            'timestamp': datetime.now().strftime("%I:%M:%S %p")  # 12-hour AM/PM format
+            'color': user_colors.get(username, "#888"),  # Include the user's base color
+            'timestamp': datetime.now().strftime("%I:%M:%S %p")
         }
         chat_history.append(disconnect_message)  # Add to chat history
         socketio.emit('message', disconnect_message)  # Broadcast the message
@@ -162,6 +164,7 @@ def handle_disconnect():
         if username in user_colors:
             readable_colors.append(user_colors[username])  # Re-add the color to the pool
             user_colors.pop(username, None)  # Remove the user from the color map
+            random.shuffle(readable_colors)  # Shuffle the colors to maintain randomness
 
         # Update the user list for all clients
         user_list = [{"username": u, "color": c} for u, c in user_colors.items()]
@@ -202,9 +205,9 @@ def handle_custom_username(data):
     # Broadcast message from server when a user connects
     join_message = {
         'username': 'System',
-        'message': f"<span style='color: {user_colors[username]}; font-weight: bold;'>{username}</span> has joined the chat.",
+        'message': f"{username} has joined the chat.",
         'user': username,  # Include the username separately
-        'color': user_colors[username],  # Include the user's color
+        'color': user_colors[username],  # Include the user's base color
         'timestamp': datetime.now().strftime("%I:%M:%S %p")
     }
     chat_history.append(join_message)
