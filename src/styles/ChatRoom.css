@@ -6,12 +6,14 @@
     --river-teal: #117C88;
     --translucent-river-teal: rgba(17, 124, 136, 0.7);        
     --misty-blue: #B5C7C7;
+    --dark-misty-blue: rgba(181, 199, 199, 0.15);
     --translucent-misty-blue: rgba(181, 199, 199, 0.7);
     --deep-moss: #1D3520;      
     --slate: #545F66;
     --translucent-slate-button: rgba(84, 95, 102, 0.8);     
     --pine-green: #3A6B35;       
-    --mudstone: #665544;        
+    --mudstone: #665544; 
+    --translucent-mudstone-button: rgba(102, 85, 68, 0.8); 
     --earthy-orange: #C67F36;
     --translucent-earthy-orange: rgba(198, 127, 54, 0.3);       
     --minty-moss: #C4DFAA;
@@ -25,6 +27,7 @@
     --soft-gold: #E6C87A;
     --muted-sand: #D9CBA3;
     --seafoam: #A0D6B4;
+    --moss-bronze: #99814D;
 }
 
 /* Global Styles */
@@ -42,13 +45,13 @@ body {
 }
 
 .chatroom.light-mode {
-    color: var(--minty-moss);
     background: var(--minty-moss);
+    color: var(--minty-moss);
 }
 
 .chatroom.dark-mode {
-    background: #1e1e1e;
-    color: #ddd;
+    background: var(--deep-moss);
+    color: var(--minty-moss);
 }
 
 /* Header */
@@ -57,6 +60,10 @@ body {
     margin: 1rem 0 0.5rem;
     font-size: 1.8rem;
     color: var(--midnight-bark);
+}
+
+.dark-mode.chatroom h1 {
+    color: var(--minty-moss);
 }
 
 /* Chatroom Main Section */
@@ -83,18 +90,25 @@ body {
     font-size: 16px;
 }
 
-#toggleMode:hover {
-    background-color: var(--translucent-midnight-bark-button);
-}
-
 .light-mode #toggleMode {
-    border: none;
+    border: 0.1rem solid var(--translucent-midnight-bark);
     background-color: var(--slate);
     color: var(--minty-moss);
     text-shadow: var(--midnight-bark) 2px 2px 1px;
 }
 
 .light-mode #toggleMode:hover {
+    background-color: var(--translucent-slate-button);
+}
+
+.dark-mode #toggleMode {
+    border: 0.1rem solid var(--translucent-minty-moss);
+    background-color: var(--midnight-bark);
+    color: var(--minty-moss);
+    text-shadow: var(--midnight-bark) 2px 2px 1px;
+}
+
+.dark-mode #toggleMode:hover {
     background-color: var(--translucent-slate-button);
 }
 
@@ -137,18 +151,12 @@ body {
 /*TODO CHATROOM SIDEBAR*/
 
 .chatroom.dark-mode .sidebar {
-    background-color: #1e1e1e;
-    color: #ccc;
-    border-left: 1px solid #333;
+    background-color: var(--deep-moss);
+    border-left: 1px solid var(--translucent-minty-moss);
 }
 
 .chatroom.dark-mode .sidebar h2 {
-    color: green;
-}
-
-.chatroom.light-mode .sidebar {
-    background-color: var(--minty-moss);
-    color: var(--midnight-bark);
+    color: var(--minty-moss);
 }
 
 .sidebar {
@@ -158,6 +166,8 @@ body {
     border-left: 1px solid var(--translucent-midnight-bark);
     padding: 1rem;
     transition: background-color .3s ease;
+    background-color: var(--minty-moss);
+    color: var(--midnight-bark);
 }
 
 .sidebar-header {
@@ -171,6 +181,10 @@ body {
     border-top: 1px solid var(--translucent-midnight-bark);
     padding-bottom: 1rem;
     color: var(--midnight-bark);
+}
+
+.dark-mode .sidebar-content {
+    border-color: var(--translucent-minty-moss)
 }
 
 .sidebar-header h2{
@@ -328,9 +342,8 @@ body {
     transition: background-color .3s ease;
 }
 
-.chatroom.dark-mode .user-list {
-    background-color: #1e1e1e;
-    
+.dark-mode .user-list {
+    background-color: var(--deep-moss);
 }
 
 .user-list h3 {
@@ -350,6 +363,7 @@ body {
     padding: .4rem .6rem;
     margin-bottom: .4rem;
     font-weight: 500;
+    cursor: pointer;
 }
 
 .light-mode .chatroom-main .user-list li {
@@ -357,15 +371,16 @@ body {
 }
 
 .light-mode .chatroom-main .user-list li:hover {
-    background-color: var(--mudstone);
+    background-color: var(--translucent-mudstone-button);
 }
 
 .chatroom.dark-mode .user-list li {
-    background-color: #282828;
+    background-color: var(--midnight-bark);
+    border: 0.1rem solid var(--translucent-minty-moss);
 }
 
 .chatroom.dark-mode .user-list li:hover {
-    background-color: #3a3f47;
+    background-color: var(--translucent-slate-button);
 }
 
 /* Highlight the selected user */
@@ -376,6 +391,15 @@ body {
 
 .user-list li.selected:hover {
     background-color: var(--mudstone);
+}
+
+.dark-mode .user-list li.selected {
+    background-color: var(--slate);
+    transition: background-color 0.3s ease;
+}
+
+.dark-mode .user-list li.selected:hover {
+    background-color: var(--slate);
 }
 
 /* Message Bubble */
@@ -391,20 +415,16 @@ body {
     transition: background-color 0.5s ease;
 }
 
-.dark-mode .message-bubble {
-    background-color: #282828;
-    border-left: 4px solid #555;
-}
-
-.light-mode .message-bubble {
-    background-color: var(--deep-moss);
-}
-
 .message-bubble.current-user {
     align-self: flex-end; /* Align the message bubble to the right */
     background-color: var(--mudstone); /* Keep the current user's background color */
     border-right: 0.5rem solid var(--river-teal); /* Optional: Add a right border for styling */
     text-align: right; /* Align text inside the bubble to the right */
+}
+
+.dark-mode .message-bubble.message-bubble.current-user {
+    background-color: var(--moss-bronze);
+    border-right: 0.5rem solid var(--river-teal);
 }
 
 .message-bubble.other-user {
@@ -414,7 +434,11 @@ body {
     text-align: left; /* Align text inside the bubble to the left */
 }
 
-/* Adjust the username and timestamp for other-user messages */
+.dark-mode .message-bubble.other-user {
+    background-color: var(--minty-moss);
+    border-left: 0.5rem solid var(--moss-bronze);
+}
+
 .message-bubble.other-user .username {
     order: 0; /* Ensure the username is on the left */
     font-weight: bold; /* Make the username bold */
@@ -427,6 +451,10 @@ body {
     font-size: 0.8rem; /* Adjust font size for better readability */
     color: var(--translucent-minty-moss); /* Use a subtle color */
     padding-bottom: 0.5rem; /* Add spacing between the timestamp and message text */
+}
+
+.dark-mode .message-bubble.other-user .timestamp {
+    color: var(--translucent-midnight-bark-button);
 }
 
 /* System Message */
@@ -448,11 +476,8 @@ body {
     word-break: break-word; /* Ensure long words break properly */
 }
 
-/* Align the timestamp to the right */
-.message-bubble.system-message .timestamp {
-    margin-left: auto; /* Push the timestamp to the right */
-    font-size: 0.8rem; /* Adjust font size for better readability */
-    color: var(--translucent-minty-moss); /* Use a subtle color */
+.dark-mode .message-bubble.system-message {
+    background-color: var(--midnight-bark);
 }
 
 /* Username styling */
@@ -468,6 +493,12 @@ body {
 }
 
 /* Message Text */
+.username {
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+    align-items: start;
+}
+
 span.message-text {
     display: flex;
     left: 0;
@@ -475,25 +506,13 @@ span.message-text {
     justify-content: left;
     justify-items: left;
     text-align: left;
-    gap: 0.2rem;
-}
-
-.username {
-    font-weight: bold;
-    margin-bottom: 0.3rem;
-    align-items: start;
-}
-
-.message-text {
     font-size: 1rem;
-}
-
-.light-mode .message-text {
+    gap: 0.2rem;
     color: var(--minty-moss);
 }
 
 .dark-mode .message-text {
-    color: #ddd;
+    color: var(--midnight-bark);
 }
 
 /* Timestamp */
@@ -502,10 +521,10 @@ span.message-text {
     margin-bottom: 0.5rem; /* Add spacing between the timestamp and message text */
     margin-left: 0.5rem; /* Add spacing between the username and timestamp */
     font-size: 0.8rem; /* Adjust font size for better readability */
-    color: var(--translucent-minty-moss); /* Use a subtle color */
+    color: var(--translucent-midnight-bark-button); /* Use a subtle color */
 }
 
-/* Ensure system messages are unaffected */
+
 .message-line {
     display: flex;
     justify-content: space-between; /* Space out the username and timestamp */
@@ -621,8 +640,8 @@ span.message-text {
 }
 
 .dark-mode .input-area {
-    background-color: #2c2c2c;
-    border-top: 1px solid #444;
+    background-color: var(--midnight-bark);
+    border-top: 1px solid var(--translucent-minty-moss);
 }
 
 .input-area input[type="text"] {
@@ -635,13 +654,13 @@ span.message-text {
 
 .dark-mode .input-area input[type="text"] {
     background-color: #1f1f1f;
-    border-color: #444;
-    color: #eee;
+    border-color: var(--translucent-minty-moss);
+    color: var(--minty-moss);
 }
 
 .light-mode .input-area input[type="text"] {
     background-color: white;
-    border-color: var(--translucent-midnight-bark);
+    border-color: var(--translucent-minty-moss);
     color: var(--deep-moss);
 }
 
@@ -649,7 +668,7 @@ span.message-text {
     font-size: 16px;
     padding: 0.6rem 1rem;
     border: none;
-    color: var (--deep-moss);
+    color: var(--deep-moss);
     background-color: var(--misty-blue);
     border-radius: 8px;
     font-weight: bold;
@@ -659,6 +678,15 @@ span.message-text {
 
 .input-area button:hover {
     background-color: var(--translucent-misty-blue);
+}
+
+.dark-mode .input-area button {
+    background-color: var(--minty-moss);
+    color: var(--deep-moss);
+}
+
+.dark-mode .input-area button:hover {
+    background-color: var(--translucent-minty-moss);
 }
 
 /* Autocomplete Box */
@@ -718,15 +746,19 @@ span.message-text {
     color: var(--midnight-bark);
 }
 
-.light-mode .autocomplete-suggestions div:hover {
-    background-color: var(--midnight-bark);
-    color: var (--minty-moss);
+.dark-mode .autocomplete-suggestions div {
+    background-color: var(--dark-misty-blue);
+    color: var(--minty-moss);
 }
 
-/* Hover Effect for Autocomplete Suggestions */
-.autocomplete-suggestions div:hover {
-    background-color: var(--midnight-bark); /* Background changes to midnight bark */
-    color: var(--minty-moss); /* Text changes to minty moss */
+.light-mode .autocomplete-suggestions div:hover {
+    background-color: var(--midnight-bark);
+    color: var(--minty-moss);
+}
+
+.dark-mode .autocomplete-suggestions div:hover {
+    background-color: var(--slate);
+    color: var(--minty-moss);
 }
 
 /* Highlight Styles */
@@ -735,13 +767,11 @@ span.message-text {
     color: var(--midnight-bark);
     font-weight: bold;
     padding: 0 0.2rem;
-    border-radius: 4px;
+    border-radius: 0.5rem;
 }
 
-.highlight-file:hover {
-    background-color: var(--muted-sand);
-    color: var(--midnight-bark);
-    text-decoration: underline;
+.dark-mode .highlight-file {
+    border: 0.1rem solid var(--midnight-bark);
 }
 
 .highlight-link {
@@ -749,8 +779,12 @@ span.message-text {
     color: var(--midnight-bark);
     text-decoration: underline;
     padding: 0 0.2rem;
-    border-radius: 4px;
+    border-radius: 0.5rem;
     cursor: pointer;
+}
+
+.dark-mode .highlight-link {
+    border: 0.1rem solid var(--midnight-bark);
 }
 
 .highlight-link:hover {
@@ -763,7 +797,11 @@ span.message-text {
     color: var(--midnight-bark);
     font-weight: bold;
     padding: 0 0.2rem;
-    border-radius: 4px;
+    border-radius: 0.5rem;
+}
+
+.dark-mode .highlight-mention {
+    border: 0.1rem solid var(--midnight-bark);
 }
 
 /* Custom Highlight Style */
@@ -771,9 +809,13 @@ span.message-text {
     background-color: var(--lavender-gray);
     color: var(--midnight-bark);
     padding: 0 0.3rem;
-    border-radius: 0.3rem;
+    border-radius: 0.5rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
+}
+
+.dark-mode .custom-highlight {
+    border: 0.1rem solid var(--midnight-bark);
 }
 
 .custom-highlight:hover {
@@ -788,7 +830,11 @@ span.message-text {
     font-style: italic;
     font-weight: bold;
     padding: 0 0.3rem;
-    border-radius: 4px;
+    border-radius: 0.5rem;
+}
+
+.dark-mode .highlight-hashtag {
+    border: 0.1rem solid var(--midnight-bark);
 }
 
 /* Highlight for exclamation points (!) */
@@ -798,7 +844,11 @@ span.message-text {
     font-weight: 800;
     text-decoration: underline !important;
     padding: 0 0.3rem;
-    border-radius: 4px;
+    border-radius: 0.5rem;
+}
+
+.dark-mode .highlight-exclamation {
+    border: 0.1rem solid var(--midnight-bark);
 }
 
 /* Highlight for dollar sign ($) */
@@ -808,7 +858,11 @@ span.message-text {
     font-style: italic;
     font-weight: 600;
     padding: 0 0.3rem;
-    border-radius: 4px;
+    border-radius: 0.5rem;
+}
+
+.dark-mode .highlight-dollar {
+    border: 0.1rem solid var(--midnight-bark);
 }
 
 /* Highlight for tilde (~) */
@@ -816,7 +870,11 @@ span.message-text {
     background-color: var(--success-green);
     color: var(--midnight-bark);
     padding: 0 0.3rem;
-    border-radius: 4px;
+    border-radius: 0.5rem;
+}
+
+.dark-mode .highlight-tilde {
+    border: 0.1rem solid var(--midnight-bark);
 }
 
 /* Fade Out Animation */

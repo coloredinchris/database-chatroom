@@ -630,7 +630,7 @@ const ChatRoom = () => {
         </div>
 
         <div className="input-area">
-            <button onClick={() => setShowToolTip(prev => !prev)}>❔</button>
+            <button onClick={() => setShowToolTip(prev => !prev)}>?</button>
             <button onClick={() => document.getElementById("fileInput").click()}>+</button>
             <input
                 type="file"
