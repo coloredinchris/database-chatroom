@@ -81,6 +81,19 @@ class Message(db.Model):
 
     user = db.relationship('User', backref='messages')
 
+class Moderator(db.Model):
+    __tablename__ = 'Moderators'
+    mod_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), unique=True, nullable=False)
+
+class BannedUser(db.Model):
+    __tablename__ = 'Banned_Users'
+    ban_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), unique=True, nullable=False)
+    banned_by = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=True)
+    ban_reason = db.Column(db.Text, nullable=False)
+    ban_date = db.Column(db.TIMESTAMP, default=db.func.current_timestamp())
+
 def allowed_file(filename):
     ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
     mime_type, _ = mimetypes.guess_type(filename)
@@ -196,6 +209,10 @@ def login():
     # Verify the password
     if not bcrypt.checkpw(password.encode('utf-8'), user.password_hash.encode('utf-8')):
         return jsonify({"error": "Invalid email or password"}), 401
+
+    # Update the last_login field
+    user.last_login = datetime.now()
+    db.session.commit()
 
     # Save the user in the session
     session['user_id'] = user.user_id
