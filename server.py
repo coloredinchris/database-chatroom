@@ -7,6 +7,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.utils import secure_filename
 from better_profanity import profanity
+from flask_sqlalchemy import SQLAlchemy
 import uuid, random, string, os, mimetypes
 from datetime import datetime
 from time import time
@@ -51,6 +52,33 @@ ALLOWED_EXTENSIONS = {
     # Code / Developer Files
     'html', 'css', 'js', 'json', 'xml', 'py', 'java', 'c', 'cpp', 'h'
 }
+
+# SQLAlchemy configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:MySQLPasswordIsDaBomb!@localhost:3306/chat_db'  # Replace with your credentials
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Disable overhead tracking
+
+# Initialize SQLAlchemy
+db = SQLAlchemy(app)
+
+# Example models
+class User(db.Model):
+    __tablename__ = 'Users'
+    user_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.TIMESTAMP, default=db.func.current_timestamp())
+    last_login = db.Column(db.TIMESTAMP, onupdate=db.func.current_timestamp())
+
+class Message(db.Model):
+    __tablename__ = 'Messages'
+    message_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.user_id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.TIMESTAMP, default=db.func.current_timestamp())
+    edited_at = db.Column(db.TIMESTAMP, nullable=True)
+
+    user = db.relationship('User', backref='messages')
 
 def allowed_file(filename):
     ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
@@ -264,4 +292,6 @@ def handle_message(data):
         print(f"Error handling message: {e}")
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()  # Creates tables based on the models
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)

@@ -659,8 +659,6 @@ const ChatRoom = () => {
                  
          </div>
         )}
-        
-        
         </div>
     );
 };
