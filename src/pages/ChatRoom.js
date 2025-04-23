@@ -51,8 +51,21 @@ const ChatRoom = () => {
 
     const [activePanel, setActivePanel] = useState("rules");
 
+    const handleLogout = () => {
+        fetch("http://localhost:5000/logout", { method: "POST", credentials: "include" })
+            .then((response) => {
+                if (response.ok) {
+                    localStorage.removeItem("username"); // Clear the username from localStorage
+                    window.location.href = "/login"; // Redirect to the login page
+                } else {
+                    console.error("Logout failed:", response.statusText);
+                }
+            })
+            .catch((err) => console.error("Logout failed:", err));
+    };
 
     const handleJoin = (customName) => {
+        if (!customName) return; // Ensure a username is provided
         socket.emit("request_username", { custom: customName });
         setHasJoined(true);
     };
@@ -516,6 +529,9 @@ const ChatRoom = () => {
             <div className="sidebar">
                 <div className="sidebar-header">
                     <h2>Online</h2>
+                    <button className="logout-button" onClick={handleLogout}>
+                        Logout
+                    </button>
                 </div>
                 <div className="sidebar-content">
                     <div className="user-list">

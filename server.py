@@ -12,6 +12,7 @@ import uuid, random, string, os, mimetypes
 from datetime import datetime
 from time import time
 from collections import deque, defaultdict
+import bcrypt
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Needed for session management
@@ -152,6 +153,83 @@ def download_file(filename):
     except Exception as e:
         print(f"[ERROR] Failed to serve file: {e}")
         return jsonify({"error": "File not found"}), 404
+
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.json
+    username = data.get('username')
+    email = data.get('email')
+    password = data.get('password')
+
+    if not username or not email or not password:
+        return jsonify({"error": "All fields are required"}), 400
+
+    # Check if the username or email already exists
+    existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
+    if existing_user:
+        return jsonify({"error": "Username or email already exists"}), 400
+
+    # Hash the password
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+    # Create a new user
+    new_user = User(username=username, email=email, password_hash=hashed_password.decode('utf-8'))
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({"message": "User registered successfully"}), 201
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({"error": "Email and password are required"}), 400
+
+    # Find the user by email
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"error": "Invalid email or password"}), 401
+
+    # Verify the password
+    if not bcrypt.checkpw(password.encode('utf-8'), user.password_hash.encode('utf-8')):
+        return jsonify({"error": "Invalid email or password"}), 401
+
+    # Save the user in the session
+    session['user_id'] = user.user_id
+    session['username'] = user.username
+
+    return jsonify({"message": "Login successful", "username": user.username}), 200
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    username = session.get('username')
+
+    if username:
+        # Remove the user from the online list
+        if username in user_colors:
+            readable_colors.append(user_colors[username])  # Re-add the color to the pool
+            user_colors.pop(username, None)  # Remove the user from the color map
+
+        # Remove the username from sid_username_dict
+        sid_to_remove = None
+        for sid, user in sid_username_dict.items():
+            if user == username:
+                sid_to_remove = sid
+                break
+        if sid_to_remove:
+            sid_username_dict.pop(sid_to_remove)
+
+        # Update the user list for all clients
+        user_list = [{"username": u, "color": c} for u, c in user_colors.items()]
+        socketio.emit('update_user_list', user_list)
+
+    # Clear the session
+    session.clear()
+
+    return jsonify({"message": "Logged out successfully"}), 200
 
 user_colors = {}
 
