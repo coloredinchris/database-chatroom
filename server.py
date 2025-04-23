@@ -170,8 +170,10 @@ def upload_file():
     return jsonify({"error": "Invalid file type"}), 400
 
 @app.route('/download/<filename>', methods=['GET'])
+@login_required
 def download_file(filename):
     try:
+        # Ensure the file exists in the upload folder
         return send_from_directory(UPLOAD_FOLDER, filename)
     except Exception as e:
         print(f"[ERROR] Failed to serve file: {e}")
