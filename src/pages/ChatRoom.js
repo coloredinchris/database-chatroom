@@ -183,10 +183,11 @@ const ChatRoom = () => {
             fetch("http://localhost:5000/upload", {
                 method: "POST",
                 body: formData,
+                credentials: "include", // Ensure cookies are sent with the request
             })
                 .then((res) => {
-                    if (res.status === 429) {
-                        throw new Error("Too many requests. Please wait before trying again.");
+                    if (!res.ok) {
+                        throw new Error("File upload failed: " + res.statusText);
                     }
                     return res.json();
                 })
@@ -386,6 +387,48 @@ const ChatRoom = () => {
         return () => {
             document.removeEventListener("click", handleClickOutside);
         };
+    }, []);
+
+    useEffect(() => {
+        const username = localStorage.getItem("username");
+        if (!username) {
+            window.location.href = "/login"; // Redirect to login if not authenticated
+        }
+    }, []);
+
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            navigator.sendBeacon("http://localhost:5000/logout"); // Send logout request
+            localStorage.removeItem("username"); // Clear username from localStorage
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, []);
+
+    useEffect(() => {
+        const verifySession = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/verify-session", {
+                    method: "GET",
+                    credentials: "include", // Ensure cookies are sent
+                });
+
+                if (!response.ok) {
+                    localStorage.removeItem("username"); // Clear username from localStorage
+                    window.location.href = "/login"; // Redirect to login
+                }
+            } catch (err) {
+                console.error("Failed to verify session:", err);
+                localStorage.removeItem("username");
+                window.location.href = "/login";
+            }
+        };
+
+        verifySession();
     }, []);
 
     const handleTextHighlight = () => {

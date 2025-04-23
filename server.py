@@ -13,14 +13,14 @@ from datetime import datetime
 from time import time
 from collections import deque, defaultdict
 import bcrypt
+from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Needed for session management
-CORS(app, origins=[
-    "https://criticalfailcoding.com",
-    "http://localhost:3000"
-], supports_credentials=True)
-
+app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevent JavaScript access to cookies
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Allow cookies for same-site requests
+app.config['SESSION_COOKIE_SECURE'] = False  # Set to True if using HTTPS
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": ["http://localhost:3000"]}})
 
 socketio = SocketIO(app, cors_allowed_origins=[
     "https://criticalfailcoding.com",
@@ -102,6 +102,15 @@ def allowed_file(filename):
 def gen_username():
     return "User-" + ''.join(random.choices(string.digits, k=4))
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        print(f"[DEBUG] Session data in protected route: {session}")  # Debugging log
+        if 'user_id' not in session:
+            return jsonify({"error": "Unauthorized"}), 401
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route('/')
 def index():
     favicon_version = str(uuid.uuid4())
@@ -109,12 +118,13 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 @limiter.limit("3 per minute")
+@login_required
 def upload_file():
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
 
     file = request.files['file']
-    username = request.form.get('username', 'Unknown')
+    username = session.get('username', 'Unknown')
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
@@ -218,6 +228,8 @@ def login():
     session['user_id'] = user.user_id
     session['username'] = user.username
 
+    print(f"[DEBUG] Session set during login: {session}")  # Debugging log
+
     return jsonify({"message": "Login successful", "username": user.username}), 200
 
 @app.route('/logout', methods=['POST'])
@@ -247,6 +259,12 @@ def logout():
     session.clear()
 
     return jsonify({"message": "Logged out successfully"}), 200
+
+@app.route('/verify-session', methods=['GET'])
+def verify_session():
+    if 'user_id' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+    return jsonify({"message": "Session is valid"}), 200
 
 user_colors = {}
 
