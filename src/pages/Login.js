@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "../styles/WelcomeScreen.css"; // Reuse WelcomeScreen styles
+import "../styles/WelcomeScreen.css";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -37,8 +37,8 @@ const Login = () => {
                 {error && <p style={{ color: "red" }}>{error}</p>}
                 <form onSubmit={handleLogin}>
                     <input
-                        type="email"
-                        placeholder="Email"
+                        type="text"
+                        placeholder="Email or Username"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required

@@ -207,20 +207,20 @@ def register():
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
-    email = data.get('email')
+    identifier = data.get('email')
     password = data.get('password')
 
-    if not email or not password:
-        return jsonify({"error": "Email and password are required"}), 400
+    if not identifier or not password:
+        return jsonify({"error": "Email/Username and password are required"}), 400
 
-    # Find the user by email
-    user = User.query.filter_by(email=email).first()
+    # Find the user by email or username
+    user = User.query.filter((User.email == identifier) | (User.username == identifier)).first()
     if not user:
-        return jsonify({"error": "Invalid email or password"}), 401
+        return jsonify({"error": "Invalid email/username or password"}), 401
 
     # Verify the password
     if not bcrypt.checkpw(password.encode('utf-8'), user.password_hash.encode('utf-8')):
-        return jsonify({"error": "Invalid email or password"}), 401
+        return jsonify({"error": "Invalid email/username or password"}), 401
 
     # Update the last_login field
     user.last_login = datetime.now()
@@ -230,7 +230,7 @@ def login():
     session['user_id'] = user.user_id
     session['username'] = user.username
 
-    print(f"[DEBUG] Session set during login: {session}")  # Debugging log
+    print(f"[DEBUG] Session set during login: {session}")
 
     return jsonify({"message": "Login successful", "username": user.username}), 200
 
