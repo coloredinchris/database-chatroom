@@ -4,7 +4,7 @@ import "../styles/HamburgerMenu.css";
 
 const HamburgerMenu = ({ menuType = "default", username }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [showDeleteOverlay, setShowDeleteOverlay] = useState(false);
     const [confirmationInput, setConfirmationInput] = useState("");
     const navigate = useNavigate();
 
@@ -31,7 +31,6 @@ const HamburgerMenu = ({ menuType = "default", username }) => {
     };
 
     const handleDeleteAccount = async () => {
-        // Trim and compare the input with the username
         if (confirmationInput.trim() !== username) {
             alert("Username does not match. Please type your username exactly as it appears.");
             return;
@@ -58,53 +57,59 @@ const HamburgerMenu = ({ menuType = "default", username }) => {
     };
 
     return (
-        <div className="hamburger-menu">
-            <button className="hamburger-icon" onClick={toggleMenu}>
-                ☰
-            </button>
-            {isOpen && (
-                <div className="menu-dropdown">
-                    {menuType === "default" && (
-                        <>
-                            <button onClick={() => navigate("/login")}>Login</button>
-                            <button onClick={() => navigate("/register")}>Register</button>
-                            <button onClick={() => navigate("/forgot-password")}>Forgot Password</button>
-                        </>
-                    )}
-                    {menuType === "chatroom" && (
-                        <>
-                            <button onClick={handleLogout} className="logout-button">Logout</button>
-                            <button
-                                onClick={() => setShowDeleteConfirmation(true)}
-                                className="delete-account-button"
-                            >
-                                Delete Account
-                            </button>
-                        </>
-                    )}
-                    {showDeleteConfirmation && (
-                        <div className="delete-confirmation">
-                            <p>Type your username to confirm account deletion:</p>
-                            <input
-                                type="text"
-                                placeholder="Enter your username"
-                                value={confirmationInput}
-                                onChange={(e) => setConfirmationInput(e.target.value)}
-                            />
-                            <button onClick={handleDeleteAccount} className="confirm-delete-button">
-                                Confirm Delete
-                            </button>
-                            <button
-                                onClick={() => setShowDeleteConfirmation(false)}
-                                className="cancel-delete-button"
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    )}
+        <>
+            <div className="hamburger-menu">
+                <button className="hamburger-icon" onClick={toggleMenu}>
+                    ☰
+                </button>
+                {isOpen && (
+                    <div className="menu-dropdown">
+                        {menuType === "default" && (
+                            <>
+                                <button onClick={() => navigate("/login")}>Login</button>
+                                <button onClick={() => navigate("/register")}>Register</button>
+                                <button onClick={() => navigate("/forgot-password")}>Forgot Password</button>
+                            </>
+                        )}
+                        {menuType === "chatroom" && (
+                            <>
+                                <button onClick={handleLogout} className="logout-button">Logout</button>
+                                <button
+                                    onClick={() => setShowDeleteOverlay(true)}
+                                    className="delete-account-button"
+                                >
+                                    Delete Account
+                                </button>
+                            </>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            {showDeleteOverlay && (
+                <div className="delete-confirmation-overlay">
+                    <div className="delete-confirmation">
+                        <h3>Confirm Account Deletion</h3>
+                        <p>Type your username to confirm:</p>
+                        <input
+                            type="text"
+                            placeholder="Enter your username"
+                            value={confirmationInput}
+                            onChange={(e) => setConfirmationInput(e.target.value)}
+                        />
+                        <button onClick={handleDeleteAccount} className="confirm-delete-button">
+                            Confirm Delete
+                        </button>
+                        <button
+                            onClick={() => setShowDeleteOverlay(false)}
+                            className="cancel-delete-button"
+                        >
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             )}
-        </div>
+        </>
     );
 };
 

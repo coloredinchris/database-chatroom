@@ -27,6 +27,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    align-items: center; /* Center align buttons */
+    width: 12rem; /* Set a fixed width for the dropdown */
 }
 
 /* Style for both links and buttons in the dropdown */
@@ -42,6 +44,9 @@
     text-align: center;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    width: 100%; /* Ensure all buttons are the same width */
+    max-width: 10rem; /* Prevent buttons from being too wide */
+    white-space: nowrap; /* Prevent text from wrapping */
 }
 
 /* Hover effect for both links and buttons */
@@ -50,6 +55,23 @@
     background-color: var(--translucent-river-teal); /* Match the Logout button's hover effect */
 }
 
+/* Logout Button */
+.logout-button {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+    border: none;
+    background-color: var(--river-teal);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+    background-color: var(--translucent-river-teal);
+}
+
+/* Delete Account Button */
 .delete-account-button {
     background-color: #d9534f;
     color: white;
@@ -59,17 +81,34 @@
     border: none;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    width: 100%; /* Match the width of other buttons */
 }
 
 .delete-account-button:hover {
     background-color: #c9302c;
 }
 
-.delete-confirmation {
-    margin-top: 1rem;
+/* Overlay for Delete Confirmation */
+.delete-confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Dimmed background */
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.delete-confirmation {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.4rem 0.6rem rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 20rem; /* Fixed width for the confirmation box */
 }
 
 .delete-confirmation input {
@@ -77,9 +116,12 @@
     font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 0.5rem;
+    width: 100%; /* Full width input */
+    margin-bottom: 1rem;
 }
 
-.confirm-delete-button {
+.confirm-delete-button,
+.cancel-delete-button {
     background-color: #d9534f;
     color: white;
     font-size: 1rem;
@@ -88,6 +130,8 @@
     border: none;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    width: 100%; /* Match the width of other buttons */
+    margin-bottom: 0.5rem;
 }
 
 .confirm-delete-button:hover {
@@ -96,13 +140,6 @@
 
 .cancel-delete-button {
     background-color: #6c757d;
-    color: white;
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
 }
 
 .cancel-delete-button:hover {

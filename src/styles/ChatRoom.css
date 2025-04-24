@@ -172,34 +172,6 @@ body {
     margin-bottom: 1rem;
 }
 
-.sidebar-header .logout-button {
-    border: 0.1rem solid var(--translucent-midnight-bark);
-    background-color: var(--slate);
-    color: var(--minty-moss);
-    text-shadow: var(--midnight-bark) 2px 2px 1px;
-    margin: 0 auto 1rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-size: 0.9rem;
-} 
-
-.sidebar-header .logout-button:hover {
-    background-color: var(--translucent-slate-button);
-}
-
-.dark-mode .sidebar-header .logout-button {
-    border: 0.1rem solid var(--translucent-minty-moss);
-    background-color: var(--midnight-bark);
-    color: var(--minty-moss);
-    text-shadow: var(--midnight-bark) 2px 2px 1px;
-}
-
-.dark-mode .sidebar-header .logout-button:hover {
-    background-color: var(--translucent-slate-button);
-}
-
 .sidebar-content{
     text-align: center;
     border-top: 1px solid var(--translucent-midnight-bark);
@@ -226,23 +198,6 @@ body {
 
 .chat-rules-list li {
     margin-bottom: 0.6rem;
-}
-
-/* Logout Button */
-.logout-button {
-    font-size: 0.8rem;
-    padding: 0.3rem 0.6rem;
-    border: none;
-    background-color: var(--river-teal);
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-left: auto; /* Align to the right */
-}
-
-.logout-button:hover {
-    background-color: var(--translucent-river-teal);
 }
 
 /* formatting tips */
