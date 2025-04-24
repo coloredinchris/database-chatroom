@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import HamburgerMenu from "../components/HamburgerMenu";
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");
@@ -35,6 +36,7 @@ const ForgotPassword = () => {
 
     return (
         <div className="welcome-overlay">
+            <HamburgerMenu />
             <div className="welcome-box">
                 <h2>Forgot Password</h2>
                 {error && <p style={{ color: "red" }}>{error}</p>}

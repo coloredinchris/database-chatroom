@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "../styles/WelcomeScreen.css"; // Reuse WelcomeScreen styles
+import HamburgerMenu from "../components/HamburgerMenu";
+import "../styles/WelcomeScreen.css";
 
 const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -51,6 +52,7 @@ const Register = () => {
 
     return (
         <div className="welcome-overlay">
+            <HamburgerMenu />
             <div className="welcome-box">
                 <h2>Register</h2>
                 {error && <p style={{ color: "red" }}>{error}</p>}

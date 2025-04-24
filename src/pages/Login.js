@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import HamburgerMenu from "../components/HamburgerMenu";
 import "../styles/WelcomeScreen.css";
 
 const Login = () => {
@@ -32,6 +33,7 @@ const Login = () => {
 
     return (
         <div className="welcome-overlay">
+            <HamburgerMenu />
             <div className="welcome-box">
                 <h2>Login</h2>
                 {error && <p style={{ color: "red" }}>{error}</p>}
