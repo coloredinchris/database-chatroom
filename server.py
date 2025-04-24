@@ -333,6 +333,33 @@ def generate_reset_token():
     reset_token = serializer.dumps(email, salt="password-reset-salt")
     return jsonify({"reset_token": reset_token}), 200
 
+@app.route('/delete-user', methods=['DELETE'])
+@login_required
+def delete_user():
+    username = session.get('username')  # Get the username from the session
+
+    if not username:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    try:
+        # Find the user by username
+        user = User.query.filter_by(username=username).first()
+
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        # Delete the user
+        db.session.delete(user)
+        db.session.commit()
+
+        # Clear the session
+        session.clear()
+
+        return jsonify({"message": f"User '{username}' deleted successfully"}), 200
+    except Exception as e:
+        print(f"[ERROR] Failed to delete user: {e}")
+        return jsonify({"error": "An error occurred while deleting the user"}), 500
+
 user_colors = {}
 
 sid_username_dict = {}

@@ -469,254 +469,255 @@ const ChatRoom = () => {
 
     return (
         <div className={`chatroom ${darkMode ? "dark-mode" : "light-mode"}`}>
-            <HamburgerMenu menuType="chatroom" />
-        <div className="chatroom-main">
-            <div className="left-group">    
-            <h1>Chatroom</h1>
-            <button id="toggleMode" onClick={handleToggleMode}>
-                Toggle Dark/Light Mode
-            </button>
+            {/* Pass the username prop to HamburgerMenu */}
+            <HamburgerMenu menuType="chatroom" username={username} />
+            <div className="chatroom-main">
+                <div className="left-group">    
+                <h1>Chatroom</h1>
+                <button id="toggleMode" onClick={handleToggleMode}>
+                    Toggle Dark/Light Mode
+                </button>
 
-            <div
-                id="messages"
-                className="messages"
-                ref={messagesRef}
-                onMouseUp={handleTextHighlight} // Add this event listener
-            >
-                {messages.map((msg, index) => {
-        const normalizedUsername = msg.username.toLowerCase(); // Normalize username for consistent lookup
-        const userColor = darkMode
-            ? userColors.current[normalizedUsername]?.darkColor || "#888"
-            : userColors.current[normalizedUsername]?.lightColor || "#888";
+                <div
+                    id="messages"
+                    className="messages"
+                    ref={messagesRef}
+                    onMouseUp={handleTextHighlight} // Add this event listener
+                >
+                    {messages.map((msg, index) => {
+            const normalizedUsername = msg.username.toLowerCase(); // Normalize username for consistent lookup
+            const userColor = darkMode
+                ? userColors.current[normalizedUsername]?.darkColor || "#888"
+                : userColors.current[normalizedUsername]?.lightColor || "#888";
 
-        return (
-            <div
-                key={index}
-                className={`message-bubble ${
-                    msg.username === "System"
-                        ? `system-message ${msg.fadeOut ? "fade-out" : ""}`
-                        : msg.username === username
-                        ? "current-user"
-                        : "other-user"
-                }`}
-            >
-                <div className="message-line">
-                    {msg.username === "System" ? (
-                        <span
-                            className="message-text"
-                            style={{ textAlign: "left" }}
-                            dangerouslySetInnerHTML={{
-                                __html: msg.message.replace(
-                                    msg.user,
-                                    `<span style="color: ${
-                                        darkMode
-                                            ? getAdjustedColor(msg.color, true)
-                                            : getAdjustedColor(msg.color, false)
-                                    }; font-weight: bold;">${msg.user}</span>`
-                                ),
-                            }}
-                        />
-                    ) : (
-                        <>
-                            <span className="timestamp">[{msg.timestamp}]</span>
+            return (
+                <div
+                    key={index}
+                    className={`message-bubble ${
+                        msg.username === "System"
+                            ? `system-message ${msg.fadeOut ? "fade-out" : ""}`
+                            : msg.username === username
+                            ? "current-user"
+                            : "other-user"
+                    }`}
+                >
+                    <div className="message-line">
+                        {msg.username === "System" ? (
                             <span
-                                className="username"
-                                style={{ color: userColor }} // Apply the dynamically determined color
-                            >
-                                {msg.username}:
-                            </span>
-                        </>
+                                className="message-text"
+                                style={{ textAlign: "left" }}
+                                dangerouslySetInnerHTML={{
+                                    __html: msg.message.replace(
+                                        msg.user,
+                                        `<span style="color: ${
+                                            darkMode
+                                                ? getAdjustedColor(msg.color, true)
+                                                : getAdjustedColor(msg.color, false)
+                                        }; font-weight: bold;">${msg.user}</span>`
+                                    ),
+                                }}
+                            />
+                        ) : (
+                            <>
+                                <span className="timestamp">[{msg.timestamp}]</span>
+                                <span
+                                    className="username"
+                                    style={{ color: userColor }} // Apply the dynamically determined color
+                                >
+                                    {msg.username}:
+                                </span>
+                            </>
+                        )}
+                    </div>
+                    {msg.file_url ? (
+                        <a href={msg.file_url} target="_blank" rel="noopener noreferrer">
+                            {/\.(jpg|jpeg|png|gif|webp|bmp|svg|tiff|ico)$/i.test(msg.file_url) ? (
+                                <img
+                                    src={msg.file_url}
+                                    alt={msg.message}
+                                    className="chat-image"
+                                />
+                            ) : /\.(mp4|webm|ogg|ogv|mov|avi|mkv)$/i.test(msg.file_url) ? (
+                                <video
+                                    src={msg.file_url}
+                                    controls
+                                    className="chat-video"
+                                />
+                            ) : /\.(mp3|wav|oga|flac|m4a|aac)$/i.test(msg.file_url) ? (
+                                <audio
+                                    src={msg.file_url}
+                                    controls
+                                    className="chat-audio"
+                                />
+                            ) : /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|txt|rtf|csv|md|epub|odt)$/i.test(msg.file_url) ? (
+                                <span className="highlight-file">📄 {msg.message}</span>
+                            ) : /\.(zip|rar|7z|tar|gz)$/i.test(msg.file_url) ? (
+                                <span className="highlight-file">🗜️ {msg.message}</span>
+                            ) : /\.(html|css|js|json|xml|py|java|c|cpp|h)$/i.test(msg.file_url) ? (
+                                <span className="highlight-file">🧱 {msg.message}</span>
+                            ) : (
+                                <span className="highlight-file">{msg.message}</span>
+                            )}
+                        </a>
+                    ) : (
+                        msg.username !== "System" && (
+                            <span
+                                className="message-text"
+                                dangerouslySetInnerHTML={{ __html: formatMessage(msg) }}
+                            />
+                        )
                     )}
                 </div>
-                {msg.file_url ? (
-                    <a href={msg.file_url} target="_blank" rel="noopener noreferrer">
-                        {/\.(jpg|jpeg|png|gif|webp|bmp|svg|tiff|ico)$/i.test(msg.file_url) ? (
-                            <img
-                                src={msg.file_url}
-                                alt={msg.message}
-                                className="chat-image"
-                            />
-                        ) : /\.(mp4|webm|ogg|ogv|mov|avi|mkv)$/i.test(msg.file_url) ? (
-                            <video
-                                src={msg.file_url}
-                                controls
-                                className="chat-video"
-                            />
-                        ) : /\.(mp3|wav|oga|flac|m4a|aac)$/i.test(msg.file_url) ? (
-                            <audio
-                                src={msg.file_url}
-                                controls
-                                className="chat-audio"
-                            />
-                        ) : /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|txt|rtf|csv|md|epub|odt)$/i.test(msg.file_url) ? (
-                            <span className="highlight-file">📄 {msg.message}</span>
-                        ) : /\.(zip|rar|7z|tar|gz)$/i.test(msg.file_url) ? (
-                            <span className="highlight-file">🗜️ {msg.message}</span>
-                        ) : /\.(html|css|js|json|xml|py|java|c|cpp|h)$/i.test(msg.file_url) ? (
-                            <span className="highlight-file">🧱 {msg.message}</span>
-                        ) : (
-                            <span className="highlight-file">{msg.message}</span>
-                        )}
-                    </a>
-                ) : (
-                    msg.username !== "System" && (
-                        <span
-                            className="message-text"
-                            dangerouslySetInnerHTML={{ __html: formatMessage(msg) }}
-                        />
-                    )
-                )}
-            </div>
-        );
-    })}
-            </div>
-            </div>
-            <div className="sidebar">
-                <div className="sidebar-header">
-                    <h2>Online</h2>
+            );
+        })}
                 </div>
-                <div className="sidebar-content">
-                    <div className="user-list">
-                        <ul>
-                            {onlineUsers.map((user, i) => {
-                                const normalizedUsername = user.username.toLowerCase(); // Normalize username for consistent lookup
-                                const userColor = darkMode ? userColors.current[normalizedUsername]?.darkColor || "#888" : userColors.current[normalizedUsername]?.lightColor || "#888";
-                                return (
-                                    <li
-                                        key={i}
-                                        style={{ color: userColor }} // Use the dynamically determined color
-                                        className={selectedUser === user.username ? "selected" : ""}
-                                        onClick={() => setSelectedUser(user.username)} // Set the selected user
-                                    >
-                                        {user.username}
-                                    </li>
-                                );
-                            })}
-                        </ul>
+                </div>
+                <div className="sidebar">
+                    <div className="sidebar-header">
+                        <h2>Online</h2>
                     </div>
-                </div>
-                
-            </div>              
-        </div>
+                    <div className="sidebar-content">
+                        <div className="user-list">
+                            <ul>
+                                {onlineUsers.map((user, i) => {
+                                    const normalizedUsername = user.username.toLowerCase(); // Normalize username for consistent lookup
+                                    const userColor = darkMode ? userColors.current[normalizedUsername]?.darkColor || "#888" : userColors.current[normalizedUsername]?.lightColor || "#888";
+                                    return (
+                                        <li
+                                            key={i}
+                                            style={{ color: userColor }} // Use the dynamically determined color
+                                            className={selectedUser === user.username ? "selected" : ""}
+                                            onClick={() => setSelectedUser(user.username)} // Set the selected user
+                                        >
+                                            {user.username}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                </div>              
+            </div>
 
-        <div className="input-area">
-            <button onClick={() => setShowToolTip(prev => !prev)}>?</button>
-            <button onClick={() => document.getElementById("fileInput").click()}>+</button>
-            <input
-                type="file"
-                id="fileInput"
-                accept=".jpg,.jpeg,.png,.gif,.webp,.bmp,.svg,.tiff,.ico,.mp4,.webm,.ogg,.ogv,.mov,.avi,.mkv,.mp3,.wav,.oga,.flac,.m4a,.aac,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.rtf,.csv,.md,.epub,.odt,.zip,.rar,.7z,.tar,.gz,.html,.css,.js,.json,.xml,.py,.java,.c,.cpp,.h"
-                style={{ display: "none" }}
-                onChange={(e) => {
-                    if (e.target.files.length > 0) {
-                    setPendingFile(e.target.files[0]);
-                    setInput(`[File ready to be sent: ${e.target.files[0].name}]`);
-                    e.target.value = ""; // Reset the file input to allow the same file to be selected again
+            <div className="input-area">
+                <button onClick={() => setShowToolTip(prev => !prev)}>?</button>
+                <button onClick={() => document.getElementById("fileInput").click()}>+</button>
+                <input
+                    type="file"
+                    id="fileInput"
+                    accept=".jpg,.jpeg,.png,.gif,.webp,.bmp,.svg,.tiff,.ico,.mp4,.webm,.ogg,.ogv,.mov,.avi,.mkv,.mp3,.wav,.oga,.flac,.m4a,.aac,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.rtf,.csv,.md,.epub,.odt,.zip,.rar,.7z,.tar,.gz,.html,.css,.js,.json,.xml,.py,.java,.c,.cpp,.h"
+                    style={{ display: "none" }}
+                    onChange={(e) => {
+                        if (e.target.files.length > 0) {
+                        setPendingFile(e.target.files[0]);
+                        setInput(`[File ready to be sent: ${e.target.files[0].name}]`);
+                        e.target.value = ""; // Reset the file input to allow the same file to be selected again
+                        }
+                    }}
+                />
+                <input
+                id="input"
+                type="text"
+                value={input}
+                placeholder="Type a message..."
+                autoComplete="off"
+                onChange={handleInputChange}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleSend();
                     }
                 }}
-            />
-            <input
-            id="input"
-            type="text"
-            value={input}
-            placeholder="Type a message..."
-            autoComplete="off"
-            onChange={handleInputChange}
-            onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                e.preventDefault();
-                handleSend();
-                }
-            }}
-            />
-            <button id="sendButton" onClick={handleSend}>
-            Send
-            </button>
-            {suggestions.length > 0 && (
-            <div id="autocomplete-box" className="autocomplete-suggestions">
-                {suggestions.map((word, i) => (
-                <div
-                    key={i}
-                    onClick={() => {
-                    const words = input.split(" ");
-                    words.pop();
-                    words.push(word);
-                    setInput(words.join(" ") + " ");
-                    setSuggestions([]);
-                    }}
-                >
-                    {word}
+                />
+                <button id="sendButton" onClick={handleSend}>
+                Send
+                </button>
+                {suggestions.length > 0 && (
+                <div id="autocomplete-box" className="autocomplete-suggestions">
+                    {suggestions.map((word, i) => (
+                    <div
+                        key={i}
+                        onClick={() => {
+                        const words = input.split(" ");
+                        words.pop();
+                        words.push(word);
+                        setInput(words.join(" ") + " ");
+                        setSuggestions([]);
+                        }}
+                    >
+                        {word}
+                    </div>
+                    ))}
                 </div>
-                ))}
+                )}
             </div>
-            )}
-        </div>
 
-        {showToolTip && (
-             <div className="tooltip">
-             <div className="tooltip-header">
-                 <button onClick={() => switchPanel("left")}>←</button>
-                 <h2 >{activePanel}</h2>
-                 <button onClick={() => switchPanel("right")}>→</button>
-             </div>
-             <div className="tooltip-content">
-                 { activePanel === "rules" ? (
-                     <ul className="chat-rules-list">
-                         <li><strong>Be kind and respectful.</strong> Treat everyone with courtesy, even if you disagree.</li>
-                         <li><strong>No harassment or hate speech.</strong> Discrimination of any kind will not be tolerated.</li>
-                         <li><strong>Keep it clean.</strong> Avoid excessive profanity, NSFW content, or offensive language.</li>
-                         <li><strong>No spam or flooding.</strong> Don’t repeatedly send the same messages or flood the chat.</li>
-                         <li><strong>Stay on topic.</strong> Keep the conversation relevant to the chatroom’s purpose.</li>
-                         <li><strong>No self-promotion or advertising.</strong> Unless it’s part of the conversation or allowed by the admin.</li>
-                         <li><strong>Protect your privacy.</strong> Don’t share personal information — yours or anyone else’s.</li>
-                         <li><strong>Report issues.</strong> If someone is breaking the rules, let a mod/admin know (if available).</li>
-                     </ul>
- 
-                 ) : activePanel === "formatting" ? (
-                     <div className="formatting-panel">
-                         <h4>Formatting Messages</h4>
-                         <ul className="formatting-list">
-                             <li>
-                             <strong>@username</strong> – Mention someone by typing <code>@</code> followed by their name.<br />
-                             <span className="highlight-mention">@Username</span>
-                             </li>
- 
-                             <li>
-                             <strong>#text#</strong> – Highlight important words or labels.<br />
-                             <span className="highlight-hashtag">This is important</span>
-                             </li>
- 
-                             <li>
-                             <strong>!text!</strong> – Emphasize warnings or urgent notes.<br />
-                             <span className="highlight-exclamation">Don't forget!</span>
-                             </li>
- 
-                             <li>
-                             <strong>$text$</strong> – Style monetary or value-based terms.<br />
-                             <span className="highlight-dollar">reward</span>
-                             </li>
- 
-                             <li>
-                             <strong>~text~</strong> – Add a playful or alternate tone.<br />
-                             <span className="highlight-tilde">suspicious</span>
-                             </li>
- 
-                             <li>
-                             <strong>filename.ext</strong> – Valid file types (e.g. <code>.pdf</code>, <code>.png</code>) are auto-highlighted.<br />
-                             <span className="highlight-file">project.pdf</span>
-                             </li>
- 
-                             <li>
-                             <strong>Links</strong> – Paste any link (with or without http).<br />
-                             <span className="highlight-link">example.com</span>
-                             </li>
+            {showToolTip && (
+                 <div className="tooltip">
+                 <div className="tooltip-header">
+                     <button onClick={() => switchPanel("left")}>←</button>
+                     <h2 >{activePanel}</h2>
+                     <button onClick={() => switchPanel("right")}>→</button>
+                 </div>
+                 <div className="tooltip-content">
+                     { activePanel === "rules" ? (
+                         <ul className="chat-rules-list">
+                             <li><strong>Be kind and respectful.</strong> Treat everyone with courtesy, even if you disagree.</li>
+                             <li><strong>No harassment or hate speech.</strong> Discrimination of any kind will not be tolerated.</li>
+                             <li><strong>Keep it clean.</strong> Avoid excessive profanity, NSFW content, or offensive language.</li>
+                             <li><strong>No spam or flooding.</strong> Don’t repeatedly send the same messages or flood the chat.</li>
+                             <li><strong>Stay on topic.</strong> Keep the conversation relevant to the chatroom’s purpose.</li>
+                             <li><strong>No self-promotion or advertising.</strong> Unless it’s part of the conversation or allowed by the admin.</li>
+                             <li><strong>Protect your privacy.</strong> Don’t share personal information — yours or anyone else’s.</li>
+                             <li><strong>Report issues.</strong> If someone is breaking the rules, let a mod/admin know (if available).</li>
                          </ul>
-                     </div>
-                 ) : null }
+ 
+                     ) : activePanel === "formatting" ? (
+                         <div className="formatting-panel">
+                             <h4>Formatting Messages</h4>
+                             <ul className="formatting-list">
+                                 <li>
+                                 <strong>@username</strong> – Mention someone by typing <code>@</code> followed by their name.<br />
+                                 <span className="highlight-mention">@Username</span>
+                                 </li>
+ 
+                                 <li>
+                                 <strong>#text#</strong> – Highlight important words or labels.<br />
+                                 <span className="highlight-hashtag">This is important</span>
+                                 </li>
+ 
+                                 <li>
+                                 <strong>!text!</strong> – Emphasize warnings or urgent notes.<br />
+                                 <span className="highlight-exclamation">Don't forget!</span>
+                                 </li>
+ 
+                                 <li>
+                                 <strong>$text$</strong> – Style monetary or value-based terms.<br />
+                                 <span className="highlight-dollar">reward</span>
+                                 </li>
+ 
+                                 <li>
+                                 <strong>~text~</strong> – Add a playful or alternate tone.<br />
+                                 <span className="highlight-tilde">suspicious</span>
+                                 </li>
+ 
+                                 <li>
+                                 <strong>filename.ext</strong> – Valid file types (e.g. <code>.pdf</code>, <code>.png</code>) are auto-highlighted.<br />
+                                 <span className="highlight-file">project.pdf</span>
+                                 </li>
+ 
+                                 <li>
+                                 <strong>Links</strong> – Paste any link (with or without http).<br />
+                                 <span className="highlight-link">example.com</span>
+                                 </li>
+                             </ul>
+                         </div>
+                     ) : null }
+                 </div>
+                     
              </div>
-                 
-         </div>
-        )}
+            )}
         </div>
     );
 };

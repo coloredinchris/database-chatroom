@@ -49,3 +49,62 @@
 .menu-dropdown button:hover {
     background-color: var(--translucent-river-teal); /* Match the Logout button's hover effect */
 }
+
+.delete-account-button {
+    background-color: #d9534f;
+    color: white;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.delete-account-button:hover {
+    background-color: #c9302c;
+}
+
+.delete-confirmation {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.delete-confirmation input {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+}
+
+.confirm-delete-button {
+    background-color: #d9534f;
+    color: white;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.confirm-delete-button:hover {
+    background-color: #c9302c;
+}
+
+.cancel-delete-button {
+    background-color: #6c757d;
+    color: white;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.cancel-delete-button:hover {
+    background-color: #5a6268;
+}
