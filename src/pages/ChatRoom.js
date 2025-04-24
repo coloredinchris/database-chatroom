@@ -6,6 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import "../styles/ChatRoom.css";
 import WelcomeScreen from "./WelcomeScreen";
+import HamburgerMenu from "../components/HamburgerMenu";
 
 // Comment out the LIVE socket connection and uncomment the LOCAL one for local testing
 /**********           for testing LIVE             **********/
@@ -468,6 +469,7 @@ const ChatRoom = () => {
 
     return (
         <div className={`chatroom ${darkMode ? "dark-mode" : "light-mode"}`}>
+            <HamburgerMenu menuType="chatroom" />
         <div className="chatroom-main">
             <div className="left-group">    
             <h1>Chatroom</h1>
@@ -572,9 +574,6 @@ const ChatRoom = () => {
             <div className="sidebar">
                 <div className="sidebar-header">
                     <h2>Online</h2>
-                    <button className="logout-button" onClick={handleLogout}>
-                        Logout
-                    </button>
                 </div>
                 <div className="sidebar-content">
                     <div className="user-list">
