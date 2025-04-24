@@ -101,6 +101,7 @@
   
   .welcome-buttons button:hover {
     transform: scale(1.02);
+    background-color: var(--translucent-river-teal);
   }
 
   /* welcome intro*/
