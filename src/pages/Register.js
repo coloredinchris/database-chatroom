@@ -2,6 +2,17 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/WelcomeScreen.css"; // Reuse WelcomeScreen styles
 
+const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
+
+const validatePassword = (password) => {
+    // At least 8 characters, one uppercase, one lowercase, one number, one special character
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
+};
+
 const Register = () => {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
@@ -11,6 +22,15 @@ const Register = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+        if (!validateEmail(email)) {
+            setError("Invalid email format");
+            return;
+        }
+        if (!validatePassword(password)) {
+            setError("Password must be at least 8 characters long and include uppercase, lowercase, numbers, and special characters");
+            return;
+        }
+
         try {
             const response = await fetch("http://localhost:5000/register", {
                 method: "POST",

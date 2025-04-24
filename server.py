@@ -8,7 +8,7 @@ from flask_limiter.util import get_remote_address
 from werkzeug.utils import secure_filename
 from better_profanity import profanity
 from flask_sqlalchemy import SQLAlchemy
-import uuid, random, string, os, mimetypes
+import uuid, random, string, os, mimetypes, re
 from datetime import datetime
 from time import time
 from collections import deque, defaultdict
@@ -111,6 +111,15 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def is_valid_email(email):
+    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    return re.match(email_regex, email)
+
+def is_strong_password(password):
+    # At least 8 characters, one uppercase, one lowercase, one number, one special character
+    password_regex = r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
+    return re.match(password_regex, password)
+
 @app.route('/')
 def index():
     favicon_version = str(uuid.uuid4())
@@ -183,11 +192,21 @@ def download_file(filename):
 def register():
     data = request.json
     username = data.get('username')
+
+    if profanity.contains_profanity(username):
+        return jsonify({"error": "Username contains inappropriate language"}), 400
+
     email = data.get('email')
     password = data.get('password')
 
     if not username or not email or not password:
         return jsonify({"error": "All fields are required"}), 400
+
+    if not is_valid_email(email):
+        return jsonify({"error": "Invalid email format"}), 400
+
+    if not is_strong_password(password):
+        return jsonify({"error": "Password must be at least 8 characters long and include uppercase, lowercase, numbers, and special characters"}), 400
 
     # Check if the username or email already exists
     existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
