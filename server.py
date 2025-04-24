@@ -8,6 +8,7 @@ from flask_limiter.util import get_remote_address
 from werkzeug.utils import secure_filename
 from better_profanity import profanity
 from flask_sqlalchemy import SQLAlchemy
+from itsdangerous import URLSafeTimedSerializer
 import uuid, random, string, os, mimetypes, re
 from datetime import datetime
 from time import time
@@ -60,6 +61,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Disable overhead trackin
 
 # Initialize SQLAlchemy
 db = SQLAlchemy(app)
+
+# Initialize a serializer for generating and validating tokens
+serializer = URLSafeTimedSerializer(app.secret_key)
 
 # Example models
 class User(db.Model):
@@ -286,6 +290,48 @@ def verify_session():
     if 'user_id' not in session:
         return jsonify({"error": "Unauthorized"}), 401
     return jsonify({"message": "Session is valid"}), 200
+
+@app.route('/reset-password/<token>', methods=['POST'])
+def reset_password(token):
+    data = request.json
+    new_password = data.get('password')
+
+    if not new_password:
+        return jsonify({"error": "Password is required"}), 400
+
+    try:
+        # Validate the token and extract the email
+        email = serializer.loads(token, salt="password-reset-salt", max_age=3600)  # Token expires in 1 hour
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            return jsonify({"error": "Invalid token or user not found"}), 404
+
+        # Update the user's password
+        hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+        user.password_hash = hashed_password.decode('utf-8')
+        db.session.commit()
+
+        return jsonify({"message": "Password reset successfully"}), 200
+    except Exception as e:
+        print(f"[ERROR] Failed to reset password: {e}")
+        return jsonify({"error": "Invalid or expired token"}), 400
+
+@app.route('/generate-reset-token', methods=['POST'])
+def generate_reset_token():
+    data = request.json
+    email = data.get('email')
+
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"error": "No account found with this email"}), 404
+
+    # Generate a reset token
+    reset_token = serializer.dumps(email, salt="password-reset-salt")
+    return jsonify({"reset_token": reset_token}), 200
 
 user_colors = {}
 
