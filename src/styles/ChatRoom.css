@@ -148,8 +148,6 @@ body {
     background: var(--translucent-river-teal);
 }
 
-/*TODO CHATROOM SIDEBAR*/
-
 .chatroom.dark-mode .sidebar {
     background-color: var(--deep-moss);
     border-left: 1px solid var(--translucent-minty-moss);
@@ -170,8 +168,36 @@ body {
     color: var(--midnight-bark);
 }
 
+.sidebar h2 {
+    margin-bottom: 0.4rem;
+}
+
 .sidebar-header .logout-button {
-    margin-bottom: 1rem;
+    border: 0.1rem solid var(--translucent-midnight-bark);
+    background-color: var(--slate);
+    color: var(--minty-moss);
+    text-shadow: var(--midnight-bark) 2px 2px 1px;
+    margin: 0 auto 1rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 0.9rem;
+} 
+
+.sidebar-header .logout-button:hover {
+    background-color: var(--translucent-slate-button);
+}
+
+.dark-mode .sidebar-header .logout-button {
+    border: 0.1rem solid var(--translucent-minty-moss);
+    background-color: var(--midnight-bark);
+    color: var(--minty-moss);
+    text-shadow: var(--midnight-bark) 2px 2px 1px;
+}
+
+.dark-mode .sidebar-header .logout-button:hover {
+    background-color: var(--translucent-slate-button);
 }
 
 .sidebar-content{
