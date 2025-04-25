@@ -15,6 +15,15 @@
     cursor: pointer;
 }
 
+.hamburger-icon:not(:disabled):hover {
+    background-color: var(--translucent-river-teal); /* Darker shade on hover */
+    transition: background-color 0.2s ease, transform 0.2s ease; /* Smooth transition */
+}
+
+.hamburger-icon.active {
+    background-color: var(--river-teal); /* Active state color */
+}
+
 .menu-dropdown {
     position: absolute;
     top: 3rem; /* Dropdown appears below the hamburger icon */
@@ -50,8 +59,8 @@
 }
 
 /* Hover effect for both links and buttons */
-.menu-dropdown a:hover,
-.menu-dropdown button:hover {
+.menu-dropdown a:not(:disabled):hover,
+.menu-dropdown button:not(:disabled):hover {
     background-color: var(--translucent-river-teal); /* Match the Logout button's hover effect */
 }
 

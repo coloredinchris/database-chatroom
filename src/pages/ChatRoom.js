@@ -8,6 +8,7 @@ import TooltipPanel from "../components/TooltipPanel";
 import HamburgerMenu from "../components/HamburgerMenu";
 import WelcomeScreen from "./WelcomeScreen";
 import "../styles/ChatRoom.css";
+import { socket } from "../hooks/useChatSocket";
 
 const ChatRoom = () => {
   const {
@@ -83,12 +84,11 @@ const ChatRoom = () => {
 
       setPendingFile(null);
       setInput("");
+      setSuggestions([]);
     } else {
-      import("socket.io-client").then(({ default: io }) => {
-        const socket = io("http://localhost:5000");
-        socket.emit("message", { username, message: input });
-      });
-      setInput("");
+        socket.emit("message", { message: input });
+        setInput("");
+        setSuggestions([]);
     }
   };
 
@@ -158,6 +158,7 @@ const ChatRoom = () => {
         showToolTip={showToolTip}
         activePanel={activePanel}
         switchPanel={switchPanel}
+        darkMode={darkMode}
       />
     </div>
   );

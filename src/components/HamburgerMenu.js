@@ -59,7 +59,11 @@ const HamburgerMenu = ({ menuType = "default", username }) => {
     return (
         <>
             <div className="hamburger-menu">
-                <button className="hamburger-icon" onClick={toggleMenu}>
+                {/* Add the 'active' class when isOpen is true */}
+                <button
+                    className={`hamburger-icon ${isOpen ? "active" : ""}`}
+                    onClick={toggleMenu}
+                >
                     ☰
                 </button>
                 {isOpen && (

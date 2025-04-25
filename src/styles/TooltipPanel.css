@@ -1,0 +1,136 @@
+.scrollable-list {
+    scrollbar-color: var(--river-teal) var(--translucent-midnight-bark);
+    scrollbar-width: thin;
+    overflow-y: auto;
+    margin-top: 1rem;
+    padding: 0 1rem;
+    padding-bottom: 2rem;
+}
+
+.tooltip-panel {
+    position: fixed;
+    left: 1rem;
+    bottom: 6rem; /* Still above the input bar */
+    width: 300px;
+    height: 400px;
+    z-index: 999;
+    background: var(--minty-moss);
+    box-shadow: 0 0 8px rgba(0, 0, 0, .7);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Light mode */
+.tooltip-panel.light-mode {
+    background-color: var(--minty-moss);
+    color: var(--midnight-bark);
+    border: none;
+}
+
+/* Dark mode */
+.tooltip-panel.dark-mode {
+    background-color: var(--deep-moss);
+    color: var(--minty-moss);
+    border: none;
+}
+
+/* Header layout: ← Title → */
+.tooltip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--translucent-midnight-bark);
+}
+
+.dark-mode .tooltip-header {
+    border-bottom: 1px solid var(--translucent-minty-moss);
+}
+
+.tooltip-header h2 {
+    text-align: center;
+    padding-bottom: 0;
+    color: var(--midnight-bark);
+    text-transform: capitalize;
+}
+
+.dark-mode .tooltip-header h2 {
+    color: var(--minty-moss);
+}
+
+/* Buttons inside header */
+.tooltip-header button {
+    background-color: rgba(120, 150, 120, 0.2);
+    border: 1px solid rgba(120, 150, 120, 0.3);
+    color: var(--midnight-bark);
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 0.3rem 0.5rem;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    top: unset; /* Remove the awkward top offset */
+    position: relative;
+}
+
+.tooltip-panel.light-mode .tooltip-header button:hover {
+    background-color: var(--translucent-mudstone-button);
+}
+
+.tooltip-panel.dark-mode .tooltip-header button {
+    color: var(--minty-moss);
+}
+
+.tooltip-panel.dark-mode .tooltip-header button:hover {
+    background-color: var(--translucent-slate-button);
+}
+
+/* Content list */
+.tooltip-panel ul {
+    padding-left: 18px;
+    list-style: none;
+}
+
+.tooltip-panel li {
+    margin-bottom: 6px;
+    color: inherit;
+}
+
+.tooltip-panel li .highlight {
+    font-weight: bold;
+    color: #336633;
+}
+
+.tooltip-panel.dark-mode li .highlight {
+    color: #A3F9A4;
+}
+
+.rules-list {
+    text-align: left;
+    padding: 0 2rem;
+    list-style: circle !important;
+}
+
+.rules-list li {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.formatting-list {
+    padding: 0 1rem;
+}
+
+.formatting-list li {
+    border-top: var(--translucent-midnight-bark) 1px solid;
+}
+
+.dark-mode .formatting-list li {
+    border-top: var(--translucent-minty-moss) 1px solid;
+    color: var(--minty-moss);
+}
+
+.formatting-list li:first-child {
+    border-top: none;
+}

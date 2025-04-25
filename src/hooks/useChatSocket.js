@@ -94,6 +94,16 @@ const useChatSocket = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      navigator.sendBeacon("http://localhost:5000/logout");
+      localStorage.removeItem("username");
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
+
   return {
     messages,
     setMessages,
@@ -108,3 +118,4 @@ const useChatSocket = () => {
 };
 
 export default useChatSocket;
+export {socket};
