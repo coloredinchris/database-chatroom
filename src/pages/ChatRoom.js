@@ -16,7 +16,6 @@ import HamburgerMenu from "../components/HamburgerMenu";
 /**********           for testing LOCAL            **********/
 const socket = io("http://localhost:5000");
 
-const panelViews = ["online"];
 const tooltipViews = ["rules", "formatting"];
 const usernameColorMap = {
     "#00D0E0": { light: "#00D0E0", dark: "#144AB7" },
@@ -52,19 +51,6 @@ const ChatRoom = () => {
 
     const [activePanel, setActivePanel] = useState("rules");
 
-    const handleLogout = () => {
-        fetch("http://localhost:5000/logout", { method: "POST", credentials: "include" })
-            .then((response) => {
-                if (response.ok) {
-                    localStorage.removeItem("username"); // Clear the username from localStorage
-                    window.location.href = "/login"; // Redirect to the login page
-                } else {
-                    console.error("Logout failed:", response.statusText);
-                }
-            })
-            .catch((err) => console.error("Logout failed:", err));
-    };
-
     const handleJoin = (customName) => {
         if (!customName) return; // Ensure a username is provided
         socket.emit("request_username", { custom: customName });
@@ -93,7 +79,7 @@ const ChatRoom = () => {
         const currentIndex = tooltipViews.indexOf(activePanel);
         let newIndex;
 
-        if (direction == "left") {
+        if (direction === "left") {
             newIndex = currentIndex-1;
             if (newIndex < 0) {
                 newIndex = 1;
@@ -112,7 +98,15 @@ const ChatRoom = () => {
     const formatMessage = (msg) => {
         let messageContent = msg.message || "";
 
-        // Highlight valid filenames (e.g., file.png, image.jpg)
+        // Highlight mentioned usernames (e.g., @username)
+        messageContent = messageContent.replace(/@([^\s]+)/g, (match, username) => {
+            if (msg.validUsernames?.includes(username)) {
+                return `<span class="highlight-mention">@${username}</span>`;
+            }
+            return match;
+        });
+
+        // Highlight other patterns (e.g., hashtags, links, etc.)
         messageContent = messageContent.replace(
             /\b\w+[-\w]*\.(txt|jpg|jpeg|png|gif|mp4|mov|avi|webm|pdf|docx|xlsx|html|css|js|json|xml|py|java|c|cpp|h|zip|rar|7z|tar|gz)\b/gi,
             (match) => `<span class="highlight-file">${match}</span>`
@@ -316,6 +310,7 @@ const ChatRoom = () => {
         socket.on("rate_limited", (data) => alert(`You are sending messages too quickly! You can send another message in ${data.time_remaining} seconds...`));
         socket.on("connect", () => console.log("Connected to server"));
         socket.on("set_username", (data) => {
+            console.log("[DEBUG] Received set_username event:", data);
             setUsername(data.username);
 
             // Save the user's light mode color
@@ -324,6 +319,7 @@ const ChatRoom = () => {
             };
         });
         socket.on("chat_history", (history) => {
+            console.log("[DEBUG] Received chat history:", history);
             const updatedHistory = history.map((msg) => {
                 const normalizedUsername = msg.username.toLowerCase(); // Normalize username for consistent lookup
                 if (!userColors.current[normalizedUsername]) {
@@ -336,9 +332,9 @@ const ChatRoom = () => {
                 }
 
                 return {
-                    ...msg,
-                    validUsernames: msg.validUsernames || [], // Add fallback for older messages
-                };
+                ...msg,
+                validUsernames: msg.validUsernames || [], // Add fallback for older messages
+            };
             });
             setMessages(updatedHistory);
         });

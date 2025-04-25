@@ -74,6 +74,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.TIMESTAMP, default=db.func.current_timestamp())
     last_login = db.Column(db.TIMESTAMP, onupdate=db.func.current_timestamp())
+    color = db.Column(db.String(7), default="#888")  # Add the color field
 
 class Message(db.Model):
     __tablename__ = 'Messages'
@@ -360,6 +361,28 @@ def delete_user():
         print(f"[ERROR] Failed to delete user: {e}")
         return jsonify({"error": "An error occurred while deleting the user"}), 500
 
+@app.route('/update-color', methods=['POST'])
+@login_required
+def update_color():
+    data = request.json
+    color = data.get('color')
+    username = session.get('username')
+
+    if not color or color not in readable_colors:
+        return jsonify({"error": "Invalid color"}), 400
+
+    try:
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        user.color = color
+        db.session.commit()
+        return jsonify({"message": "Color updated successfully"}), 200
+    except Exception as e:
+        print(f"[ERROR] Failed to update color: {e}")
+        return jsonify({"error": "An error occurred while updating the color"}), 500
+
 user_colors = {}
 
 sid_username_dict = {}
@@ -373,6 +396,7 @@ readable_colors = [
     "#99D65B", "#26D8D8", "#DBC1BC", "#EFD175", "#D6D65B"
 ]
 random.shuffle(readable_colors)  # Shuffle the colors to randomize the order
+print(f"[DEBUG] Initial readable_colors: {readable_colors}")
 
 @socketio.on('connect')
 def handle_connect():
@@ -411,38 +435,59 @@ def handle_custom_username(data):
     username = custom if custom else gen_username()
     session['username'] = username
 
-    # Assign a unique color for the user
-    if username not in user_colors:
-        if len(readable_colors) > 0:
-            color = readable_colors.pop(0)  # Assign the first available color
-        else:
-            # Recycle colors if all are used
-            color = random.choice(list(user_colors.values()))
-        user_colors[username] = color
+    # Fetch or assign a color for the user
+    user = User.query.filter_by(username=username).first()
+    if user:
+        if user.color == "#888":  # Check if the user has the default color
+            if readable_colors:
+                user.color = readable_colors.pop(0)  # Assign a new color
+                db.session.commit()
+                print(f"[DEBUG] Updated color for existing user: {username}, new color: {user.color}")
+            else:
+                print(f"[DEBUG] No colors left in the pool for user: {username}")
+        color = user.color
+        print(f"[DEBUG] Found existing user: {username}, using color: {color}")
+    else:
+        # Assign a random color from the pool for new users
+        color = readable_colors.pop(0) if readable_colors else "#888"
+        new_user = User(username=username, color=color)
+        db.session.add(new_user)
+        db.session.commit()
+        print(f"[DEBUG] Created new user: {username}, assigned color: {color}")
 
-    print(f"User joined with username: {username}")
-
+    user_colors[username] = color
     sid_username_dict[request.sid] = username
 
+    # Update the user list for all clients
     user_list = [{"username": u, "color": c} for u, c in user_colors.items()]
-
     socketio.emit('update_user_list', user_list)
 
+    # Send the username and color to the client
     socketio.emit('set_username', {
         'username': username,
-        'color': user_colors[username]
+        'color': color
     }, room=request.sid)
-    
-    # Filter out system messages from the chat history
-    filtered_history = [msg for msg in chat_history if msg['username'] != "System"]
-    socketio.emit('chat_history', filtered_history, room=request.sid)  # Send filtered chat history
 
-    # Broadcast message from server when a user connects
+    # Fetch chat history from the database
+    chat_history = Message.query.order_by(Message.timestamp.asc()).all()
+    valid_usernames = [u.username for u in User.query.all()]  # Get all valid usernames
+    filtered_history = [
+        {
+            'username': msg.user.username,
+            'message': msg.content,
+            'timestamp': msg.timestamp.strftime("%I:%M:%S %p"),
+            'color': msg.user.color or "#888",  # Use stored color
+            'validUsernames': valid_usernames  # Include valid usernames for mentions
+        } for msg in chat_history
+    ]
+    socketio.emit('chat_history', filtered_history, room=request.sid)
+
+    # Broadcast join message
     join_message = {
         'username': 'System',
         'message': f"{username} has joined the chat.",
-        'user': username,  # Include the username separately
-        'color': user_colors[username],  # Include the user's base color
+        'user': username,
+        'color': color,
         'timestamp': datetime.now().strftime("%I:%M:%S %p")
     }
     chat_history.append(join_message)
@@ -455,46 +500,32 @@ TIME_WINDOW = 60 # Seconds
 @socketio.on('message')
 def handle_message(data):
     try:
-        user_key = session.get("username") or request.sid or request.remote_addr
-        now = time()
-        
-        message_timestamps[user_key] = [
-            ts for ts in message_timestamps[user_key] if now - ts < TIME_WINDOW
-        ]
+        username = session.get('username', 'Anonymous')
+        user = User.query.filter_by(username=username).first()
+        color = user.color if user else "#888"  # Use the stored color
 
-        if len(message_timestamps[user_key]) >= RATE_LIMIT:
-            oldest = min(message_timestamps[user_key])
-            time_remaining = int(TIME_WINDOW - (now - oldest))
-            socketio.emit('rate_limited', { "time_remaining" : time_remaining }, room=request.sid)
-            return
+        message = data['message']
+        clean_message = profanity.censor(message)
 
-        message_timestamps[user_key].append(now)
+        # Save the message to the database
+        if user:
+            new_message = Message(user_id=user.user_id, content=clean_message)
+            db.session.add(new_message)
+            db.session.commit()
 
-        if isinstance(data, dict) and 'message' in data:
-            username = session.get('username', 'Anonymous')
-            message = data['message']
-            color = user_colors.get(username, "#888")  # Get the user's color
+        # Get the list of all usernames for @mentions
+        valid_usernames = [u.username for u in User.query.all()]
 
-            print(f"[MESSAGE] {username}: {message}")
-            
-            # Profanity filter
-            clean_message = profanity.censor(data['message'])
-
-            # Extract mentions from the message
-            mentions = [word[1:] for word in message.split() if word.startswith("@")]
-
-            # Broadcast the message to all clients
-            message_data = {
-                'username': username, 
-                'message': clean_message, 
-                'color': color,  # Include the user's color
-                'timestamp': datetime.now().strftime("%I:%M:%S %p"),  # 12-hour AM/PM format
-                'validUsernames': mentions  # Include mentions
-            }
-            chat_history.append(message_data)  # Save the message with the color
-            socketio.emit('message', message_data)
-        else:
-            print("Error: Received data is not a valid object or missing 'message' field.")
+        # Broadcast the message
+        message_data = {
+            'username': username,
+            'message': clean_message,
+            'color': color,  # Include the user's color
+            'timestamp': datetime.now().strftime("%I:%M:%S %p"),
+            'validUsernames': valid_usernames  # Include valid usernames for mentions
+        }
+        chat_history.append(message_data)
+        socketio.emit('message', message_data)
     except Exception as e:
         print(f"Error handling message: {e}")
 

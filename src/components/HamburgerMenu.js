@@ -80,6 +80,25 @@ const HamburgerMenu = ({ menuType = "default", username }) => {
                                 >
                                     Delete Account
                                 </button>
+                                <button
+                                    onClick={() => navigate("/account")}
+                                    className="account-button"
+                                >
+                                    Account Info
+                                </button>
+                            </>
+                        )}
+                        {menuType === "account" && (
+                            <>
+                                <button
+                                    onClick={() => navigate("/chatroom")}
+                                    className="back-to-chatroom-button"
+                                >
+                                    Back to Chatroom
+                                </button>
+                                <button onClick={handleLogout} className="logout-button">
+                                    Logout
+                                </button>
                             </>
                         )}
                     </div>

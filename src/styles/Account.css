@@ -1,0 +1,108 @@
+.account-page {
+    padding: 2rem;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.account-page h1 {
+    font-size: 2.5rem; /* Scales with screen size */
+    color: #333;
+    margin-bottom: 2rem;
+}
+
+.account-page p {
+    font-size: 1.5rem; /* Scales with screen size */
+    color: #555;
+    margin-bottom: 3rem;
+}
+
+.reset-password-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 1rem 2rem; /* Scales with screen size */
+    font-size: 1.2rem; /* Scales with screen size */
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin-bottom: 2rem;
+    transition: background-color 0.3s ease;
+}
+
+.reset-password-button:hover {
+    background-color: #0056b3;
+}
+
+.color-selection {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.color-selection h3 {
+    font-size: 2rem; /* Scales with screen size */
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.color-options {
+    display: flex;
+    justify-content: center;
+    gap: 1rem; /* Adjusts spacing between color boxes */
+    margin-top: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.color-box {
+    width: 5vw; /* Scales with viewport width */
+    height: 5vw; /* Scales with viewport width */
+    max-width: 50px; /* Ensures it doesn't get too large */
+    max-height: 50px; /* Ensures it doesn't get too large */
+    border: 2px solid transparent;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.color-box:hover {
+    transform: scale(1.1);
+    border-color: #ccc;
+}
+
+.color-box.selected {
+    border: 3px solid #007bff;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+button:not(:disabled) {
+    transition: background-color 0.3s ease;
+}
+
+button:not(:disabled):hover {
+    background-color: #0056b3;
+}
+
+.save-color-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 1rem 2rem; /* Scales with screen size */
+    font-size: 1.2rem; /* Scales with screen size */
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin-top: 2rem;
+    transition: background-color 0.3s ease;
+}
+
+.save-color-button:hover {
+    background-color: #218838;
+}

@@ -1,8 +1,8 @@
 .hamburger-menu {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    z-index: 1000;
+    position: fixed; /* Ensures the menu stays in place while scrolling */
+    top: 1rem; /* Distance from the top of the viewport */
+    left: 1rem; /* Distance from the left of the viewport */
+    z-index: 1000; /* Keeps the menu above other elements */
 }
 
 .hamburger-icon {
@@ -17,7 +17,7 @@
 
 .menu-dropdown {
     position: absolute;
-    top: 3rem;
+    top: 3rem; /* Dropdown appears below the hamburger icon */
     left: 0;
     background-color: white;
     border: 0.1rem solid #ccc;
@@ -144,4 +144,19 @@
 
 .cancel-delete-button:hover {
     background-color: #5a6268;
+}
+
+.back-to-chatroom-button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px 0;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.back-to-chatroom-button:hover {
+    background-color: #45a049;
 }
