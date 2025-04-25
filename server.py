@@ -529,6 +529,42 @@ def handle_message(data):
     except Exception as e:
         print(f"Error handling message: {e}")
 
+@app.route('/edit-message/<int:message_id>', methods=['PUT'])
+@login_required
+def edit_message(message_id):
+    data = request.json
+    new_content = data.get('content')
+
+    if not new_content:
+        return jsonify({"error": "Message content is required"}), 400
+
+    try:
+        # Find the message by ID
+        message = Message.query.get(message_id)
+        if not message:
+            return jsonify({"error": "Message not found"}), 404
+
+        # Ensure the user editing the message is the owner
+        if message.user_id != session.get('user_id'):
+            return jsonify({"error": "Unauthorized"}), 403
+
+        # Update the message content and edited_at timestamp
+        message.content = profanity.censor(new_content)
+        message.edited_at = datetime.now()
+        db.session.commit()
+
+        # Notify all clients about the updated message
+        socketio.emit('message_edited', {
+            'message_id': message_id,
+            'new_content': message.content,
+            'edited_at': message.edited_at.strftime("%I:%M:%S %p")
+        })
+
+        return jsonify({"message": "Message updated successfully"}), 200
+    except Exception as e:
+        print(f"[ERROR] Failed to edit message: {e}")
+        return jsonify({"error": "An error occurred while editing the message"}), 500
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Creates tables based on the models
