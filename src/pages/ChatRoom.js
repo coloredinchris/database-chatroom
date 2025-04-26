@@ -69,6 +69,16 @@ const ChatRoom = () => {
         return;
       }
 
+      if (input.startsWith("/unban ")) {
+        const parts = input.split(" ");
+        const targetUsername = parts[1];
+        if (targetUsername) {
+          socket.emit("unban_user_command", { username: targetUsername });
+        }
+        setInput(""); // Clear after sending
+        return;
+    }    
+
     if (pendingFile) {
       const maxSize = 5000 * 1024 * 1024;
       if (pendingFile.size > maxSize) {

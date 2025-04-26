@@ -114,6 +114,18 @@ const useChatSocket = () => {
       } else {
         alert(data.error || "Failed to ban user.");
       }
+    });
+
+    socket.on("unban_success", (data) => {
+      alert(`Successfully unbanned ${data.username}`);
+    });
+    
+    socket.on('unban_response', (data) => {
+      if (data.success) {
+        alert(data.message);
+      } else {
+        alert(data.error || "Failed to unban user.");
+      }
     });    
 
     return () => {
@@ -121,6 +133,7 @@ const useChatSocket = () => {
       socket.off("message_edited", handleMessageEdited);
       socket.off("ban_notice");
       socket.off("ban_response");
+      socket.off("unban_response");
     };
   }, []);
 

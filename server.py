@@ -26,7 +26,7 @@ CORS(app, supports_credentials=True, resources={r"/*": {"origins": ["http://loca
 socketio = SocketIO(app, cors_allowed_origins=[
     "https://criticalfailcoding.com",
     "http://localhost:3000"
-], manage_session=False)  # Set manage_session to False to avoid session issues
+], manage_session=True)
 
 # Profanity
 profanity.load_censor_words()
@@ -772,7 +772,44 @@ def handle_ban_user_command(data):
         print(f"[ERROR] Failed to handle ban_user_command: {e}")
         socketio.emit('ban_response', {'success': False, 'error': "Failed to ban user."}, room=request.sid)
 
+@socketio.on('unban_user_command')
+def handle_unban_user_command(data):
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            socketio.emit('unban_response', {'success': False, 'error': "Unauthorized."}, room=request.sid)
+            return
 
+        if not is_moderator(user_id):
+            socketio.emit('unban_response', {'success': False, 'error': "You must be a moderator."}, room=request.sid)
+            return
+
+        username = data.get('username')
+        if not username:
+            socketio.emit('unban_response', {'success': False, 'error': "Username is required."}, room=request.sid)
+            return
+
+        target_user = User.query.filter_by(username=username).first()
+        if not target_user:
+            socketio.emit('unban_response', {'success': False, 'error': "User not found."}, room=request.sid)
+            return
+
+        ban_record = BannedUser.query.filter_by(user_id=target_user.user_id).first()
+        if not ban_record:
+            socketio.emit('unban_response', {'success': False, 'error': "User is not banned."}, room=request.sid)
+            return
+
+        db.session.delete(ban_record)
+        db.session.commit()
+
+        print(f"[UNBAN] {username} was unbanned by {session.get('username')}.")
+
+        # Send success
+        socketio.emit('unban_response', {'success': True, 'message': f"User '{username}' unbanned successfully."}, room=request.sid)
+
+    except Exception as e:
+        print(f"[ERROR] Failed to unban user: {e}")
+        socketio.emit('unban_response', {'success': False, 'error': "Server error."}, room=request.sid)
 
 if __name__ == '__main__':
     with app.app_context():
