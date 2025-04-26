@@ -473,6 +473,7 @@ def handle_custom_username(data):
     valid_usernames = [u.username for u in User.query.all()]  # Get all valid usernames
     filtered_history = [
         {
+            'message_id': msg.message_id,
             'username': msg.user.username,
             'message': msg.content,
             'timestamp': msg.timestamp.strftime("%I:%M:%S %p"),
@@ -518,6 +519,7 @@ def handle_message(data):
 
         # Broadcast the message
         message_data = {
+            'message_id': new_message.message_id,
             'username': username,
             'message': clean_message,
             'color': color,  # Include the user's color
@@ -528,6 +530,44 @@ def handle_message(data):
         socketio.emit('message', message_data)
     except Exception as e:
         print(f"Error handling message: {e}")
+
+@socketio.on('edit_message')
+def handle_edit_message(data):
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return  # User must be logged in
+
+        message_id = data.get('message_id')
+        new_content = data.get('content')
+
+        if not message_id or not new_content:
+            return  # Invalid data
+
+        # Find the message in the database
+        message = Message.query.get(message_id)
+        if not message:
+            return  # Message not found
+
+        # Check ownership
+        if message.user_id != user_id:
+            return  # Not authorized
+
+        # Update content and edited time
+        message.content = profanity.censor(new_content)
+        message.edited_at = datetime.now()
+        db.session.commit()
+
+        # Notify clients about the edit
+        socketio.emit('message_edited', {
+            'message_id': message_id,
+            'new_content': message.content,
+            'edited_at': message.edited_at.strftime("%I:%M:%S %p")
+        })
+
+    except Exception as e:
+        print(f"[ERROR] Failed to handle edit_message: {e}")
+
 
 @app.route('/edit-message/<int:message_id>', methods=['PUT'])
 @login_required

@@ -352,12 +352,42 @@ body {
     align-self: flex-end; /* Align the message bubble to the right */
     background-color: var(--mudstone);
     border-right: 0.5rem solid var(--river-teal);
-    text-align: right;
+    text-align: left;
 }
 
 .dark-mode .message-bubble.message-bubble.current-user {
     background-color: var(--moss-bronze);
     border-right: 0.5rem solid var(--river-teal);
+}
+
+/* Styles for the edit button inside the message bubble */
+.current-user button {
+    padding: 0.1rem 0.4rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: background-color 0.2s ease;
+    background-color: var(--misty-blue);
+    color: var(--midnight-bark);
+}
+
+.dark-mode .current-user button {
+    background-color: var(--midnight-bark);
+    color: var(--misty-blue);
+}
+
+.current-user button:hover {
+    background-color: var(--translucent-misty-blue) !important;
+    color: var(--translucent-midnight-bark) !important;
+    transform: scale(.97) !important;
+}
+
+.dark-mode .current-user button:hover {
+    background-color: var(--translucent-midnight-bark-button) !important;
+    color: var(--translucent-misty-blue) !important;
+    transform: scale(.97) !important;
 }
 
 .message-bubble.other-user {
@@ -809,36 +839,70 @@ span.message-text {
     }
 }
 
-.edit-message {
+/* Inline (Edited) Tag */
+.edited-tag {
+    font-size: 0.75rem;
+    font-style: italic;
+    opacity: 0.8;
+    margin: 0 2rem;
+    color: var(--translucent-midnight-bark);
+  }
+  
+  .dark-mode .edited-tag {
+    color: var(--translucent-minty-moss);
+  }
+  
+  /* Edit Input Container */
+  .edit-message {
     display: flex;
     gap: 0.5rem;
     margin-top: 0.5rem;
-}
-
-.edit-message input {
+    flex-wrap: wrap;
+  }
+  
+  /* Edit Input Field */
+  .edit-message input {
     flex: 1;
-    padding: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 1rem;
     border: 1px solid var(--translucent-midnight-bark);
-    border-radius: 4px;
-}
-
-.edit-message button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    background-color: var(--misty-blue);
+    background-color: var(--minty-moss);
     color: var(--midnight-bark);
+  }
+  
+  .dark-mode .edit-message input {
+    background-color: #1f1f1f;
+    color: var(--minty-moss);
+    border-color: var(--translucent-minty-moss);
+  }
+  
+  /* Edit/Cancel Buttons */
+  .edit-message button {
+    padding: 0.4rem 0.9rem;
+    border: none;
+    border-radius: 6px;
     font-weight: bold;
-}
-
-.edit-message button:hover {
-    background-color: var(--translucent-misty-blue);
-}
-
-.edited-tag {
-    font-size: 0.8rem;
-    color: var(--translucent-minty-moss);
-    margin-left: 0.5rem;
-    font-style: italic;
-}
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+  }
+  
+  .edit-message button:first-of-type {
+    background-color: var(--muted-red);
+    color: var(--minty-moss);
+  }
+  
+  .edit-message button:first-of-type:hover {
+    background-color: var(--earthy-orange);
+  }
+  
+  .edit-message button:last-of-type {
+    background-color: var(--success-green);
+    color: var(--midnight-bark);
+  }
+  
+  .edit-message button:last-of-type:hover {
+    background-color: var(--seafoam);
+  }
+  

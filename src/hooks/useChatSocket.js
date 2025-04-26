@@ -45,6 +45,17 @@ const useChatSocket = () => {
       });
     };
 
+    const handleMessageEdited = (data) => {
+      const { message_id, new_content, edited_at } = data;
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.message_id === message_id
+            ? { ...msg, message: new_content, edited_at }
+            : msg
+        )
+      );
+    };
+
     socket.on("connect", () => console.log("Connected to server"));
     socket.on("rate_limited", (data) => alert(`You're sending messages too fast! Wait ${data.time_remaining}s...`));
 
@@ -76,6 +87,9 @@ const useChatSocket = () => {
     });
 
     socket.on("message", handleMessage);
+
+    socket.on("message_edited", handleMessageEdited); // 🛠️ LISTEN FOR EDITS
+
     socket.on("update_user_list", (users) => {
       setOnlineUsers(users);
       users.forEach((user) => {
@@ -91,6 +105,7 @@ const useChatSocket = () => {
 
     return () => {
       socket.off("message", handleMessage);
+      socket.off("message_edited", handleMessageEdited); // 🛠️ CLEAN UP EDIT LISTENER
     };
   }, []);
 
@@ -118,4 +133,4 @@ const useChatSocket = () => {
 };
 
 export default useChatSocket;
-export {socket};
+export { socket };
