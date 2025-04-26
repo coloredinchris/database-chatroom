@@ -26,7 +26,7 @@ CORS(app, supports_credentials=True, resources={r"/*": {"origins": ["http://loca
 socketio = SocketIO(app, cors_allowed_origins=[
     "https://criticalfailcoding.com",
     "http://localhost:3000"
-])
+], manage_session=False)  # Set manage_session to False to avoid session issues
 
 # Profanity
 profanity.load_censor_words()
@@ -115,6 +115,10 @@ def login_required(f):
             return jsonify({"error": "Unauthorized"}), 401
         return f(*args, **kwargs)
     return decorated_function
+
+def is_moderator(user_id):
+    return Moderator.query.filter_by(user_id=user_id).first() is not None
+
 
 def is_valid_email(email):
     email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
@@ -239,6 +243,10 @@ def login():
 
     # Find the user by email or username
     user = User.query.filter((User.email == identifier) | (User.username == identifier)).first()
+    # Check if banned
+    if user and BannedUser.query.filter_by(user_id=user.user_id).first():
+        return jsonify({"error": "This account has been banned."}), 403
+
     if not user:
         return jsonify({"error": "Invalid email/username or password"}), 401
 
@@ -459,6 +467,66 @@ def change_username():
 
     return jsonify({"message": "Username changed successfully", "new_username": new_username}), 200
 
+@app.route('/ban-user', methods=['POST'])
+@login_required
+def ban_user():
+    data = request.json
+    username_to_ban = data.get('username')
+    reason = data.get('reason', 'No reason provided.')
+
+    if not username_to_ban:
+        return jsonify({"error": "Username is required."}), 400
+
+    user_id = session.get('user_id')
+    if not is_moderator(user_id):
+        return jsonify({"error": "You must be a moderator to ban users."}), 403
+
+    user_to_ban = User.query.filter_by(username=username_to_ban).first()
+    if not user_to_ban:
+        return jsonify({"error": "User not found."}), 404
+
+    # Prevent banning other moderators or yourself
+    if is_moderator(user_to_ban.user_id) or user_to_ban.user_id == user_id:
+        return jsonify({"error": "You cannot ban another moderator or yourself."}), 403
+
+    banned_entry = BannedUser.query.filter_by(user_id=user_to_ban.user_id).first()
+    if banned_entry:
+        return jsonify({"error": "User is already banned."}), 400
+
+    try:
+        ban = BannedUser(user_id=user_to_ban.user_id, banned_by=user_id, ban_reason=reason)
+        db.session.add(ban)
+        db.session.commit()
+
+        print(f"[BAN] {username_to_ban} was banned by {session.get('username')}. Reason: {reason}")
+
+        # 👉 FIRST: Prepare HTTP success response but don't return yet
+        response = jsonify({"message": f"User '{username_to_ban}' has been banned successfully."})
+        response.status_code = 200
+
+        # 👉 THEN: emit ban_notice and disconnect
+        target_sid = None
+        for sid, user in sid_username_dict.items():
+            if user == username_to_ban:
+                target_sid = sid
+                break
+
+        if target_sid:
+            try:
+                socketio.emit('ban_notice', {'reason': reason}, room=target_sid)
+                socketio.sleep(0.1)  # give it time to deliver
+                socketio.disconnect(target_sid)
+            except Exception as e:
+                print(f"[WARN] Socket disconnect issue: {e}")
+
+        return response  # 👉 NOW actually return success
+
+    except Exception as e:
+        print(f"[ERROR] Ban user failed: {e}")
+        return jsonify({"error": "Failed to ban user."}), 500
+
+
+
 user_colors = {}
 
 sid_username_dict = {}
@@ -645,6 +713,66 @@ def handle_edit_message(data):
 
     except Exception as e:
         print(f"[ERROR] Failed to handle edit_message: {e}")
+
+@socketio.on('ban_user_command')
+def handle_ban_user_command(data):
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            socketio.emit('ban_response', {'success': False, 'error': "Unauthorized"}, room=request.sid)
+            return
+
+        username = data.get('username')
+        reason = data.get('reason', "No reason provided.")
+        if not username:
+            socketio.emit('ban_response', {'success': False, 'error': "Username is required."}, room=request.sid)
+            return
+
+        mod = Moderator.query.filter_by(user_id=user_id).first()
+        if not mod:
+            socketio.emit('ban_response', {'success': False, 'error': "You must be a moderator to ban users."}, room=request.sid)
+            return
+
+        target_user = User.query.filter_by(username=username).first()
+        if not target_user:
+            socketio.emit('ban_response', {'success': False, 'error': "User not found."}, room=request.sid)
+            return
+
+        # Check if already banned
+        existing_ban = BannedUser.query.filter_by(user_id=target_user.user_id).first()
+        if existing_ban:
+            socketio.emit('ban_response', {'success': False, 'error': "User is already banned."}, room=request.sid)
+            return
+
+        banned = BannedUser(user_id=target_user.user_id, banned_by=user_id, ban_reason=reason)
+        db.session.add(banned)
+        db.session.commit()
+
+        # Try disconnecting if online
+        target_sid = None
+        for sid, user in sid_username_dict.items():
+            if user == username:
+                target_sid = sid
+                break
+
+        if target_sid:
+            try:
+                socketio.emit('ban_notice', {'reason': reason}, room=target_sid)
+                socketio.sleep(0.1)
+                socketio.disconnect(target_sid)
+            except Exception as e:
+                print(f"[WARN] Socket disconnect issue: {e}")
+
+        print(f"[BAN] {username} was banned via /ban command by {session.get('username')}. Reason: {reason}")
+
+        # 👉 NOW send SUCCESS to the moderator
+        socketio.emit('ban_response', {'success': True, 'message': f"User '{username}' banned successfully."}, room=request.sid)
+
+    except Exception as e:
+        print(f"[ERROR] Failed to handle ban_user_command: {e}")
+        socketio.emit('ban_response', {'success': False, 'error': "Failed to ban user."}, room=request.sid)
+
+
 
 if __name__ == '__main__':
     with app.app_context():

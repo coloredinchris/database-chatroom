@@ -88,7 +88,7 @@ const useChatSocket = () => {
 
     socket.on("message", handleMessage);
 
-    socket.on("message_edited", handleMessageEdited); // 🛠️ LISTEN FOR EDITS
+    socket.on("message_edited", handleMessageEdited);
 
     socket.on("update_user_list", (users) => {
       setOnlineUsers(users);
@@ -103,9 +103,24 @@ const useChatSocket = () => {
       });
     });
 
+    socket.on("ban_notice", (data) => {
+      alert(`You have been banned.\nReason: ${data.reason}`);
+      window.location.href = "/login"; // Force redirect after clicking OK
+    });
+   
+    socket.on("ban_response", (data) => {
+      if (data.success) {
+        alert(data.message || "User banned successfully.");
+      } else {
+        alert(data.error || "Failed to ban user.");
+      }
+    });    
+
     return () => {
       socket.off("message", handleMessage);
-      socket.off("message_edited", handleMessageEdited); // 🛠️ CLEAN UP EDIT LISTENER
+      socket.off("message_edited", handleMessageEdited);
+      socket.off("ban_notice");
+      socket.off("ban_response");
     };
   }, []);
 

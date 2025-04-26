@@ -58,6 +58,17 @@ const ChatRoom = () => {
   const handleSend = () => {
     if (!input.trim() && !pendingFile) return;
 
+    if (input.startsWith("/ban ")) {
+        const parts = input.split(" ");
+        const targetUsername = parts[1];
+        const reason = parts.slice(2).join(" ") || "No reason provided.";
+        if (targetUsername) {
+          socket.emit("ban_user_command", { username: targetUsername, reason });
+        }
+        setInput(""); // Clear after sending
+        return;
+      }
+
     if (pendingFile) {
       const maxSize = 5000 * 1024 * 1024;
       if (pendingFile.size > maxSize) {
