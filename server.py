@@ -478,6 +478,7 @@ def handle_custom_username(data):
             'message': msg.content,
             'timestamp': msg.timestamp.strftime("%I:%M:%S %p"),
             'color': msg.user.color or "#888",  # Use stored color
+            'edited_at': msg.edited_at.strftime("%I:%M:%S %p") if msg.edited_at else None,  # Include edited_at
             'validUsernames': valid_usernames  # Include valid usernames for mentions
         } for msg in chat_history
     ]
@@ -524,6 +525,7 @@ def handle_message(data):
             'message': clean_message,
             'color': color,  # Include the user's color
             'timestamp': datetime.now().strftime("%I:%M:%S %p"),
+            'edited_at': None,  # New messages are not edited
             'validUsernames': valid_usernames  # Include valid usernames for mentions
         }
         chat_history.append(message_data)

@@ -103,14 +103,14 @@ const [editContent, setEditContent] = useState(msg.message);
               dangerouslySetInnerHTML={{ __html: formatMessage(msg) }}
             />
           )}
-          {!msg.file_url && msg.edited_at && (
-            <span className="edited-tag">(Edited)</span>
-          )}
-
           {msg.username === username && !msg.file_url && (
             <button onClick={() => setIsEditing(true)} style={{ marginTop: "0.5rem" }}>
               Edit
             </button>
+          )}
+
+          {!msg.file_url && msg.edited_at && (
+            <span className="edited-tag">(Edited)</span>
           )}
         </>
       )}

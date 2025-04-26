@@ -18,10 +18,13 @@
     --translucent-earthy-orange: rgba(198, 127, 54, 0.3);       
     --minty-moss: #C4DFAA;
     --translucent-minty-moss: rgba(196, 223, 170, 0.5);
+    --translucent-minty-moss-button: rgba(196, 223, 170, 0.75);
     --tuscan-yellow: #FCD12A;
     --translucent-tuscan-yellow: rgba(252, 209, 42, 0.85);
+    --translucent-tuscan-yellow-button: rgba(252, 209, 42, 0.4);
     --muted-red: #961E1E;
     --success-green: #4EEA4E;
+    --translucent-success-green: rgba(78, 234, 78, 0.8);
     --sky-blue: #76D7EA;
     --lavender-gray: #C4C3D0;
     --soft-gold: #E6C87A;
@@ -375,7 +378,7 @@ body {
 
 .dark-mode .current-user button {
     background-color: var(--midnight-bark);
-    color: var(--misty-blue);
+    color: var(--minty-moss);
 }
 
 .current-user button:hover {
@@ -843,13 +846,14 @@ span.message-text {
 .edited-tag {
     font-size: 0.75rem;
     font-style: italic;
+    font-weight: bold;
     opacity: 0.8;
-    margin: 0 2rem;
-    color: var(--translucent-midnight-bark);
+    margin-left: 0.2rem;
+    color: var(--translucent-minty-moss);
   }
   
   .dark-mode .edited-tag {
-    color: var(--translucent-minty-moss);
+    color: var(--translucent-midnight-bark-button);
   }
   
   /* Edit Input Container */
@@ -889,20 +893,42 @@ span.message-text {
   }
   
   .edit-message button:first-of-type {
-    background-color: var(--muted-red);
+    background-color: var(--misty-blue);
+    color: var(--midnight-bark);
+  }
+
+  .dark-mode .edit-message button:first-of-type {
+    background-color: var(--midnight-bark);
     color: var(--minty-moss);
   }
   
   .edit-message button:first-of-type:hover {
-    background-color: var(--earthy-orange);
+    background-color: var(--translucent-misty-blue) !important;
+    color: var(--midnight-bark) !important;
+  }
+
+  .dark-mode .edit-message button:first-of-type:hover {
+    background-color: var(--translucent-midnight-bark-button) !important;
+    color: var(--minty-moss) !important;
   }
   
   .edit-message button:last-of-type {
     background-color: var(--success-green);
     color: var(--midnight-bark);
   }
+
+  .dark-mode .edit-message button:last-of-type {
+    background-color: var(--minty-moss);
+    color: var(--midnight-bark);
+  }
   
   .edit-message button:last-of-type:hover {
-    background-color: var(--seafoam);
+    background-color: var(--translucent-success-green) !important;
+    color: var(--midnight-bark) !important;
+  }
+
+  .dark-mode .edit-message button:last-of-type:hover {
+    background-color: var(--translucent-minty-moss) !important;
+    color: var(--midnight-bark) !important;
   }
   
