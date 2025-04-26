@@ -397,7 +397,7 @@ body {
     align-self: flex-start; /* Align the message bubble to the left */
     background-color: var(--deep-moss);
     border-left: 0.5rem solid var(--mudstone);
-    text-align: left;
+    text-align: right;
 }
 
 .dark-mode .message-bubble.other-user {
