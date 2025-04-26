@@ -12,6 +12,47 @@ const Account = ({ username }) => {
     const [selectedColor, setSelectedColor] = useState("");
     const navigate = useNavigate();
 
+    const [newUsername, setNewUsername] = useState("");
+
+    const handleUsernameChange = async () => {
+        if (!newUsername.trim()) {
+          alert("Please enter a new username.");
+          return;
+        }
+      
+        const confirmed = window.confirm(`Are you sure you want to change your username to "${newUsername}"? You will be logged out afterward.`);
+        if (!confirmed) return; // user canceled
+      
+        try {
+          const res = await fetch("http://localhost:5000/change-username", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ new_username: newUsername }),
+          });
+      
+          const data = await res.json();
+          if (res.ok) {
+            alert("Username updated successfully! You will now be logged out.");
+      
+            // After successful username change, force logout
+            await fetch("http://localhost:5000/logout", {
+              method: "POST",
+              credentials: "include",
+            });
+      
+            // Now redirect to login page
+            navigate("/login");
+          } else {
+            alert(data.error || "Failed to update username.");
+          }
+        } catch (err) {
+          console.error("Username update error:", err);
+          alert("Something went wrong.");
+        }
+      };
+
+
     const handleResetPassword = () => {
         navigate("/forgot-password");
     };
@@ -62,7 +103,19 @@ const Account = ({ username }) => {
                     Save Color
                 </button>
             </div>
+            <div className="username-change">
+                <h3>Change Username</h3>
+                <input
+                    type="text"
+                    value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value)}
+                    placeholder="Enter new username"
+                />
+            <button onClick={handleUsernameChange} disabled={!newUsername}>
+                Save Username
+            </button>
         </div>
+    </div>
     );
 };
 

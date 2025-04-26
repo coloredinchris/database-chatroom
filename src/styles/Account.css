@@ -106,3 +106,37 @@ button:not(:disabled):hover {
 .save-color-button:hover {
     background-color: #218838;
 }
+
+.username-change {
+    margin-top: 2rem;
+  }
+  
+  .username-change input {
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .username-change button {
+    padding: 0.5rem 1rem;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .username-change button:not(:disabled) {
+    background-color: #007bff;
+  }
+  
+  .username-change button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  .username-change button:hover:not(:disabled) {
+    background-color: #004494;
+  }

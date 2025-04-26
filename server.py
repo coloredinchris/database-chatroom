@@ -382,6 +382,82 @@ def update_color():
     except Exception as e:
         print(f"[ERROR] Failed to update color: {e}")
         return jsonify({"error": "An error occurred while updating the color"}), 500
+    
+@app.route('/edit-message/<int:message_id>', methods=['PUT'])
+@login_required
+def edit_message(message_id):
+    data = request.json
+    new_content = data.get('content')
+
+    if not new_content:
+        return jsonify({"error": "Message content is required"}), 400
+
+    try:
+        # Find the message by ID
+        message = Message.query.get(message_id)
+        if not message:
+            return jsonify({"error": "Message not found"}), 404
+
+        # Ensure the user editing the message is the owner
+        if message.user_id != session.get('user_id'):
+            return jsonify({"error": "Unauthorized"}), 403
+
+        # Update the message content and edited_at timestamp
+        message.content = profanity.censor(new_content)
+        message.edited_at = datetime.now()
+        db.session.commit()
+
+        # Notify all clients about the updated message
+        socketio.emit('message_edited', {
+            'message_id': message_id,
+            'new_content': message.content,
+            'edited_at': message.edited_at.strftime("%I:%M:%S %p")
+        })
+
+        return jsonify({"message": "Message updated successfully"}), 200
+    except Exception as e:
+        print(f"[ERROR] Failed to edit message: {e}")
+        return jsonify({"error": "An error occurred while editing the message"}), 500
+    
+@app.route('/change-username', methods=['POST'])
+@login_required
+def change_username():
+    data = request.json
+    new_username = data.get('new_username')
+
+    if not new_username:
+        return jsonify({"error": "New username is required"}), 400
+
+    if profanity.contains_profanity(new_username):
+        return jsonify({"error": "Username contains inappropriate language"}), 400
+
+    # Check if new username is already taken
+    if User.query.filter_by(username=new_username).first():
+        return jsonify({"error": "Username already taken"}), 400
+
+    user = User.query.get(session['user_id'])
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    old_username = user.username
+    user.username = new_username
+    db.session.commit()
+
+    # Update session and in-memory maps
+    session['username'] = new_username
+
+    if old_username in user_colors:
+        user_colors[new_username] = user_colors.pop(old_username)
+
+    for sid, name in list(sid_username_dict.items()):
+        if name == old_username:
+            sid_username_dict[sid] = new_username
+
+    # Broadcast updated user list
+    user_list = [{"username": u, "color": c} for u, c in user_colors.items()]
+    socketio.emit('update_user_list', user_list)
+
+    return jsonify({"message": "Username changed successfully", "new_username": new_username}), 200
 
 user_colors = {}
 
@@ -569,43 +645,6 @@ def handle_edit_message(data):
 
     except Exception as e:
         print(f"[ERROR] Failed to handle edit_message: {e}")
-
-
-@app.route('/edit-message/<int:message_id>', methods=['PUT'])
-@login_required
-def edit_message(message_id):
-    data = request.json
-    new_content = data.get('content')
-
-    if not new_content:
-        return jsonify({"error": "Message content is required"}), 400
-
-    try:
-        # Find the message by ID
-        message = Message.query.get(message_id)
-        if not message:
-            return jsonify({"error": "Message not found"}), 404
-
-        # Ensure the user editing the message is the owner
-        if message.user_id != session.get('user_id'):
-            return jsonify({"error": "Unauthorized"}), 403
-
-        # Update the message content and edited_at timestamp
-        message.content = profanity.censor(new_content)
-        message.edited_at = datetime.now()
-        db.session.commit()
-
-        # Notify all clients about the updated message
-        socketio.emit('message_edited', {
-            'message_id': message_id,
-            'new_content': message.content,
-            'edited_at': message.edited_at.strftime("%I:%M:%S %p")
-        })
-
-        return jsonify({"message": "Message updated successfully"}), 200
-    except Exception as e:
-        print(f"[ERROR] Failed to edit message: {e}")
-        return jsonify({"error": "An error occurred while editing the message"}), 500
 
 if __name__ == '__main__':
     with app.app_context():

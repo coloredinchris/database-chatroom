@@ -848,7 +848,7 @@ span.message-text {
     font-style: italic;
     font-weight: bold;
     opacity: 0.8;
-    margin-left: 0.2rem;
+    margin-left: 0.3rem;
     color: var(--translucent-minty-moss);
   }
   
