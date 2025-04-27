@@ -1,5 +1,5 @@
 .account-page {
-    padding: 2rem;
+    padding: 0 1rem 0 1rem;;
     text-align: center;
     font-family: Arial, sans-serif;
     background-color: #f9f9f9;
@@ -11,26 +11,25 @@
 }
 
 .account-page h1 {
-    font-size: 2.5rem; /* Scales with screen size */
+    font-size: 2.5rem; 
     color: #333;
-    margin-bottom: 2rem;
+    margin: 0;
 }
 
 .account-page p {
-    font-size: 1.5rem; /* Scales with screen size */
+    font-size: 1.5rem; 
     color: #555;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
 }
 
 .reset-password-button {
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 1rem 2rem; /* Scales with screen size */
-    font-size: 1.2rem; /* Scales with screen size */
+    padding: 1rem 1rem; 
+    font-size: 1.2rem; 
     border-radius: 0.5rem;
     cursor: pointer;
-    margin-bottom: 2rem;
     transition: background-color 0.3s ease;
 }
 
@@ -44,9 +43,9 @@
 }
 
 .color-selection h3 {
-    font-size: 2rem; /* Scales with screen size */
+    margin: 0;
+    font-size: 2rem; 
     color: #333;
-    margin-bottom: 1.5rem;
 }
 
 .color-options {
@@ -95,8 +94,8 @@ button:not(:disabled):hover {
     background-color: #28a745;
     color: white;
     border: none;
-    padding: 1rem 2rem; /* Scales with screen size */
-    font-size: 1.2rem; /* Scales with screen size */
+    padding: 1rem 2rem; 
+    font-size: 1.2rem; 
     border-radius: 0.5rem;
     cursor: pointer;
     margin-top: 2rem;
@@ -152,10 +151,82 @@ button:not(:disabled):hover {
     color: white;
     text-decoration: none;
     border-radius: 8px;
-    margin-top: 10px;
   }
   
   .manage-users-button:hover {
     background-color: #00B0C0;
   }
   
+  .delete-account-section {
+    padding-top: 1rem;
+}
+
+/* Overlay for Delete Confirmation */
+.delete-confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Dimmed background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.delete-confirmation {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.4rem 0.6rem rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 20rem; /* Fixed width for the confirmation box */
+}
+
+.delete-confirmation input {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    width: 100%; /* Full width input */
+    margin-bottom: 1rem;
+}
+
+.confirm-delete-button,
+.cancel-delete-button {
+    background-color: #d9534f;
+    color: white;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    width: 100%; /* Match the width of other buttons */
+    margin-bottom: 0.5rem;
+}
+
+.delete-account-button {
+    background-color: #d9534f;
+    color: white;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    width: 100%; /* Match the width of other buttons */
+}
+
+.confirm-delete-button:hover {
+    background-color: #c9302c;
+}
+
+.cancel-delete-button {
+    background-color: #6c757d;
+}
+
+.cancel-delete-button:hover {
+    background-color: #5a6268;
+}
