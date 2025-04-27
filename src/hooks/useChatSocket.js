@@ -144,9 +144,6 @@ const useChatSocket = () => {
 
     socket.on('success', (data) => {
       alert(data.message || 'Action succeeded');
-    
-      // Refetch registered users after promote/demote succeeds
-      fetchRegisteredUsers();
     });    
 
     socket.on("error", (data) => {
