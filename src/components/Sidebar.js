@@ -2,44 +2,57 @@
 import React, { useState } from "react";
 import "../styles/ChatRoom.css";
 
-const Sidebar = ({ onlineUsers, selectedUser, setSelectedUser, userColors, darkMode }) => {
+const Sidebar = ({ onlineUsers, selectedUser, setSelectedUser, userColors, darkMode, sessionUsername, isModerator }) => {
   const [contextMenu, setContextMenu] = useState(null);
 
-  const handleRightClick = (e, username) => {
+  const handleRightClick = (e, clickedUser) => {
     e.preventDefault();
-    setContextMenu({
-      mouseX: e.clientX,
-      mouseY: e.clientY,
-      username,
-    });
-  };
+    if (!isModerator) return; // normal users: no right click menu
+    if (clickedUser.username === sessionUsername) return; // cannot right-click yourself
 
-  const handleBanUser = async () => {
-    if (!contextMenu?.username) return;
-    const reason = prompt(`Ban reason for '${contextMenu.username}':`) || "No reason provided.";
-    try {
-      const response = await fetch("http://localhost:5000/ban-user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ username: contextMenu.username, reason }),
-      });
-      const data = await response.json();
-  
-      if (response.ok) {
-        alert(`User '${contextMenu.username}' banned.`);
+    const options = [];
+
+    if (sessionUsername === "coloredinchris") {
+      if (clickedUser.is_moderator) {
+        options.push({
+          label: "🛡️ Demote Moderator",
+          action: () => {
+            window.socket.emit("demote_user_command", { username: clickedUser.username });
+            setContextMenu(null);
+          },
+        });
       } else {
-        alert(data.error || "Failed to ban user.");
+        options.push({
+          label: "🛡️ Promote to Moderator",
+          action: () => {
+            window.socket.emit("promote_user_command", { username: clickedUser.username });
+            setContextMenu(null);
+          },
+        });
       }
-    } catch (err) {
-      console.error("Error banning user:", err);
-      // User was likely forcibly disconnected by ban — treat as success
-      alert(`User '${contextMenu.username}' banned (disconnect detected).`);
-    } finally {
-      setContextMenu(null);
+    }
+
+    if (!clickedUser.is_moderator || sessionUsername === "coloredinchris") {
+      options.push({
+        label: "🚫 Ban User",
+        action: () => {
+          const reason = prompt(`Enter a reason for banning '${clickedUser.username}':`, "Violation of rules.") || "No reason provided.";
+          if (reason !== null) {
+            window.socket.emit("ban_user_command", { username: clickedUser.username, reason });
+            setContextMenu(null);
+          }
+        },
+      });
+    }
+
+    if (options.length > 0) {
+      setContextMenu({
+        mouseX: e.clientX,
+        mouseY: e.clientY,
+        options,
+      });
     }
   };
-  
 
   const handleClickOutside = () => {
     if (contextMenu) setContextMenu(null);
@@ -52,8 +65,11 @@ const Sidebar = ({ onlineUsers, selectedUser, setSelectedUser, userColors, darkM
       </div>
       <div className="sidebar-content">
         <ul className="user-list">
-          {onlineUsers.map((user, idx) => {
-            const normalizedUsername = user.username.toLowerCase();
+          {onlineUsers.map((userObj, idx) => {
+            const username = userObj.username;
+            const isMod = userObj.is_moderator || false;
+
+            const normalizedUsername = username.toLowerCase();
             const userColor = darkMode
               ? userColors[normalizedUsername]?.darkColor || "#888"
               : userColors[normalizedUsername]?.lightColor || "#888";
@@ -62,15 +78,16 @@ const Sidebar = ({ onlineUsers, selectedUser, setSelectedUser, userColors, darkM
               <li
                 key={idx}
                 style={{ color: userColor }}
-                className={selectedUser === user.username ? "selected" : ""}
-                onClick={() => setSelectedUser(user.username)}
-                onContextMenu={(e) => handleRightClick(e, user.username)} // 🛠️ NEW
+                className={selectedUser === username ? "selected" : ""}
+                onClick={() => setSelectedUser(username)}
+                onContextMenu={(e) => handleRightClick(e, { username, is_moderator: isMod })}
               >
-                {user.username}
+                {isMod && <span role="img" aria-label="moderator">🛡️</span>} {username}
               </li>
             );
           })}
         </ul>
+
 
         {contextMenu && (
           <div
@@ -88,9 +105,15 @@ const Sidebar = ({ onlineUsers, selectedUser, setSelectedUser, userColors, darkM
               padding: "0.5rem",
             }}
           >
-            <button onClick={handleBanUser} style={{ background: "none", border: "none", cursor: "pointer", color: "inherit" }}>
-              🚫 Ban User
-            </button>
+            {contextMenu.options.map((opt, idx) => (
+              <button
+                key={idx}
+                onClick={opt.action}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "inherit", display: "block", width: "100%", textAlign: "left", padding: "5px 10px" }}
+              >
+                {opt.label}
+              </button>
+            ))}
           </div>
         )}
       </div>

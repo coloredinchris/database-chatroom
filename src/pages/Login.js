@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { initializeSocket } from "../hooks/socket";
 import HamburgerMenu from "../components/HamburgerMenu";
 import "../styles/WelcomeScreen.css";
 
@@ -21,7 +22,8 @@ const Login = () => {
 
             const data = await response.json();
             if (response.ok) {
-                localStorage.setItem("username", data.username); // Save username in localStorage
+                localStorage.setItem("username", data.username);
+                initializeSocket();
                 navigate("/chatroom"); // Redirect to chatroom
             } else {
                 setError(data.error || "Login failed");

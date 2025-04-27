@@ -1,7 +1,7 @@
 # This file contains the server-side code for the chat application.
 # It uses Flask and Flask-SocketIO to create a simple chat server that allows users to send and receive messages in real-time.
 from flask import Flask, render_template, session, request, send_from_directory, jsonify
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -286,8 +286,7 @@ def logout():
             sid_username_dict.pop(sid_to_remove)
 
         # Update the user list for all clients
-        user_list = [{"username": u, "color": c} for u, c in user_colors.items()]
-        socketio.emit('update_user_list', user_list)
+        emit_user_list()
 
     # Clear the session
     session.clear()
@@ -298,7 +297,13 @@ def logout():
 def verify_session():
     if 'user_id' not in session:
         return jsonify({"error": "Unauthorized"}), 401
-    return jsonify({"message": "Session is valid"}), 200
+    is_mod = is_moderator(session['user_id'])
+    return jsonify({
+        "message": "Session is valid",
+        "username": session.get('username'),
+        "is_moderator": is_mod
+    }), 200
+
 
 @app.route('/reset-password/<token>', methods=['POST'])
 def reset_password(token):
@@ -463,7 +468,7 @@ def change_username():
 
     # Broadcast updated user list
     user_list = [{"username": u, "color": c} for u, c in user_colors.items()]
-    socketio.emit('update_user_list', user_list)
+    emit_user_list()
 
     return jsonify({"message": "Username changed successfully", "new_username": new_username}), 200
 
@@ -477,7 +482,14 @@ def ban_user():
     if not username_to_ban:
         return jsonify({"error": "Username is required."}), 400
 
-    user_id = session.get('user_id')
+    user_info = sid_username_dict.get(request.sid)
+    if not user_info:
+        # disconnected user probably
+        return
+
+    user_id = user_info.get('user_id')
+    username = user_info.get('username')
+
     if not is_moderator(user_id):
         return jsonify({"error": "You must be a moderator to ban users."}), 403
 
@@ -485,9 +497,13 @@ def ban_user():
     if not user_to_ban:
         return jsonify({"error": "User not found."}), 404
 
-    # Prevent banning other moderators or yourself
-    if is_moderator(user_to_ban.user_id) or user_to_ban.user_id == user_id:
-        return jsonify({"error": "You cannot ban another moderator or yourself."}), 403
+    # Prevent banning yourself; allow "coloredinchris" to ban moderators
+    session_username = session.get('username')
+    if user_to_ban.user_id == user_id:
+        return jsonify({"error": "You cannot ban yourself."}), 403
+    if is_moderator(user_to_ban.user_id) and session_username != 'coloredinchris':
+        return jsonify({"error": "Only coloredinchris can ban moderators."}), 403
+
 
     banned_entry = BannedUser.query.filter_by(user_id=user_to_ban.user_id).first()
     if banned_entry:
@@ -525,13 +541,61 @@ def ban_user():
         print(f"[ERROR] Ban user failed: {e}")
         return jsonify({"error": "Failed to ban user."}), 500
 
+@app.route('/banned-users', methods=['GET'])
+@login_required
+def get_banned_users():
+    try:
+        user_id = session.get('user_id')
+        username = session.get('username')
 
+        if not user_id or not username:
+            return jsonify({"error": "Unauthorized"}), 401
+
+        if not is_moderator(user_id) and username != 'coloredinchris':
+            return jsonify({"error": "Forbidden"}), 403
+
+        banned_users = []
+        bans = BannedUser.query.all()
+
+        for ban in bans:
+            banned_user = User.query.get(ban.user_id)
+            if banned_user:
+                banned_users.append({
+                    "username": banned_user.username,
+                    "reason": ban.ban_reason,  # <-- use ban_reason
+                    "banned_at": ban.ban_date.strftime("%Y-%m-%d %H:%M:%S")  # <-- use ban_date
+                })
+
+        return jsonify({"banned_users": banned_users}), 200
+    except Exception as e:
+        print(f"[DEBUG] Error fetching banned users: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
+@app.route('/registered-users', methods=['GET'])
+@login_required
+def get_registered_users():
+    users = User.query.all()
+    banned_ids = {ban.user_id for ban in BannedUser.query.all()}  # get all banned user IDs
+    mods = {mod.user_id for mod in Moderator.query.all()}  # get all moderator IDs
+
+    user_data = [
+        {
+            "username": user.username,
+            "is_moderator": user.user_id in mods
+        }
+        for user in users
+        if user.user_id not in banned_ids  # filter out banned users
+    ]
+
+    return jsonify({"users": user_data}), 200
 
 user_colors = {}
 
 sid_username_dict = {}
 
 active_users = {}
+
+connected_users = {}
 
 chat_history = deque(maxlen=20)
 
@@ -542,36 +606,66 @@ readable_colors = [
 random.shuffle(readable_colors)  # Shuffle the colors to randomize the order
 print(f"[DEBUG] Initial readable_colors: {readable_colors}")
 
+def emit_user_list():
+    socketio.emit('update_user_list', build_online_user_list())
+
+def build_online_user_list():
+    mods = {mod.user_id for mod in Moderator.query.all()}
+    banned_ids = {ban.user_id for ban in BannedUser.query.all()}
+
+    user_list = []
+    for sid, username in connected_users.items():
+        info = sid_username_dict.get(sid)
+        if not info:
+            continue  # Skip if no user info
+
+        user_id = info['user_id']
+        if user_id not in banned_ids:
+            user_list.append({
+                "username": username,
+                "color": user_colors.get(username, "#888"),
+                "is_moderator": user_id in mods
+            })
+
+    return user_list
+
 @socketio.on('connect')
-def handle_connect():
-    print(f"[CONNECTED] SID: {request.sid}, IP: {request.remote_addr}") # log connect
+def handle_connect(auth):
+    print("[DEBUG] CONNECT event received")
+    print("[DEBUG] Auth payload:", auth)
+    username = auth.get('username')
+    if username:
+        connected_users[request.sid] = username
+        print(f"[DEBUG] Connected user: {username} with SID {request.sid}")
+    else:
+        print("[DEBUG] No username received at connect")
 
 @socketio.on('disconnect')
 def handle_disconnect():
     sid = request.sid
-    username = sid_username_dict.pop(sid, None)  # Remove the SID from the dictionary
 
-    if username:
-        # Broadcast message from server when a user disconnects
+    username_info = sid_username_dict.pop(sid, None)
+    connected_users.pop(sid, None)
+
+    if username_info:
+        username = username_info['username'] if isinstance(username_info, dict) else username_info
+
         disconnect_message = {
             'username': 'System',
             'message': f"{username} has left the chat.",
-            'user': username,  # Include the username separately
-            'color': user_colors.get(username, "#888"),  # Include the user's base color
+            'user': username,
+            'color': user_colors.get(username, "#888"),
             'timestamp': datetime.now().strftime("%I:%M:%S %p")
         }
-        chat_history.append(disconnect_message)  # Add to chat history
-        socketio.emit('message', disconnect_message)  # Broadcast the message
+        chat_history.append(disconnect_message)
+        socketio.emit('message', disconnect_message)
 
-        # Return the user's color to the pool
         if username in user_colors:
-            readable_colors.append(user_colors[username])  # Re-add the color to the pool
-            user_colors.pop(username, None)  # Remove the user from the color map
-            random.shuffle(readable_colors)  # Shuffle the colors to maintain randomness
+            readable_colors.append(user_colors[username])
+            user_colors.pop(username, None)
+            random.shuffle(readable_colors)
 
-        # Update the user list for all clients
-        user_list = [{"username": u, "color": c} for u, c in user_colors.items()]
-        socketio.emit('update_user_list', user_list)
+    emit_user_list()
 
 @socketio.on('request_username')
 def handle_custom_username(data):
@@ -600,11 +694,14 @@ def handle_custom_username(data):
         print(f"[DEBUG] Created new user: {username}, assigned color: {color}")
 
     user_colors[username] = color
-    sid_username_dict[request.sid] = username
+    sid_username_dict[request.sid] = {
+        'username': username,
+        'user_id': user.user_id if user else None
+    }
 
     # Update the user list for all clients
     user_list = [{"username": u, "color": c} for u, c in user_colors.items()]
-    socketio.emit('update_user_list', user_list)
+    emit_user_list()
 
     # Send the username and color to the client
     socketio.emit('set_username', {
@@ -680,7 +777,14 @@ def handle_message(data):
 @socketio.on('edit_message')
 def handle_edit_message(data):
     try:
-        user_id = session.get('user_id')
+        user_info = sid_username_dict.get(request.sid)
+        if not user_info:
+            # disconnected user probably
+            return
+
+        user_id = user_info.get('user_id')
+        username = user_info.get('username')
+
         if not user_id:
             return  # User must be logged in
 
@@ -717,7 +821,14 @@ def handle_edit_message(data):
 @socketio.on('ban_user_command')
 def handle_ban_user_command(data):
     try:
-        user_id = session.get('user_id')
+        user_info = sid_username_dict.get(request.sid)
+        if not user_info:
+            # disconnected user probably
+            return
+
+        user_id = user_info.get('user_id')
+        username = user_info.get('username')
+
         if not user_id:
             socketio.emit('ban_response', {'success': False, 'error': "Unauthorized"}, room=request.sid)
             return
@@ -767,6 +878,7 @@ def handle_ban_user_command(data):
 
         # 👉 NOW send SUCCESS to the moderator
         socketio.emit('ban_response', {'success': True, 'message': f"User '{username}' banned successfully."}, room=request.sid)
+        socketio.emit('update_user_list', build_online_user_list())
 
     except Exception as e:
         print(f"[ERROR] Failed to handle ban_user_command: {e}")
@@ -775,7 +887,14 @@ def handle_ban_user_command(data):
 @socketio.on('unban_user_command')
 def handle_unban_user_command(data):
     try:
-        user_id = session.get('user_id')
+        user_info = sid_username_dict.get(request.sid)
+        if not user_info:
+            # disconnected user probably
+            return
+
+        user_id = user_info.get('user_id')
+        username = user_info.get('username')
+
         if not user_id:
             socketio.emit('unban_response', {'success': False, 'error': "Unauthorized."}, room=request.sid)
             return
@@ -810,6 +929,73 @@ def handle_unban_user_command(data):
     except Exception as e:
         print(f"[ERROR] Failed to unban user: {e}")
         socketio.emit('unban_response', {'success': False, 'error': "Server error."}, room=request.sid)
+
+@socketio.on('promote_user_command')
+def handle_promote_user(data):
+    username = connected_users.get(request.sid)
+    if not username:
+        emit('error', {'error': 'Unauthorized'}, to=request.sid)
+        return
+
+    if username != 'coloredinchris':
+        emit('error', {'error': 'Unauthorized'}, to=request.sid)
+        return
+
+    target_username = data.get('username')
+    target_user = User.query.filter_by(username=target_username).first()
+
+    if target_user:
+        if target_user.username == 'coloredinchris':
+            emit('error', {'error': 'Cannot promote coloredinchris'}, to=request.sid)
+            return
+        
+        if Moderator.query.filter_by(user_id=target_user.user_id).first():
+            emit('error', {'error': 'User is already a moderator'}, to=request.sid)
+            return
+
+        new_moderator = Moderator(user_id=target_user.user_id)
+        db.session.add(new_moderator)
+        db.session.commit()
+
+        socketio.emit('user_role_updated', {'user_id': target_user.user_id, 'new_role': 'moderator'})
+        emit('success', {'message': f"{target_username} promoted to moderator."}, to=request.sid)
+        emit_user_list()
+    else:
+        emit('error', {'error': 'User not found'}, to=request.sid)
+
+@socketio.on('demote_user_command')
+def handle_demote_user(data):
+    username = connected_users.get(request.sid)
+    if not username:
+        emit('error', {'error': 'Unauthorized'}, to=request.sid)
+        return
+
+    if username != 'coloredinchris':
+        emit('error', {'error': 'Unauthorized'}, to=request.sid)
+        return
+
+    target_username = data.get('username')
+    target_user = User.query.filter_by(username=target_username).first()
+
+    if target_user:
+        if target_user.username == 'coloredinchris':
+            emit('error', {'error': 'Cannot demote coloredinchris'}, to=request.sid)
+            return
+        
+        moderator_entry = Moderator.query.filter_by(user_id=target_user.user_id).first()
+        if not moderator_entry:
+            emit('error', {'error': 'User is not a moderator'}, to=request.sid)
+            return
+
+        db.session.delete(moderator_entry)
+        db.session.commit()
+
+        socketio.emit('user_role_updated', {'user_id': target_user.user_id, 'new_role': 'user'})
+        emit('success', {'message': f"{target_username} demoted to user."}, to=request.sid)
+        emit_user_list()
+    else:
+        emit('error', {'error': 'User not found'}, to=request.sid)
+
 
 if __name__ == '__main__':
     with app.app_context():

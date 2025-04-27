@@ -1,5 +1,5 @@
 // src/pages/ChatRoom.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useChatSocket from "../hooks/useChatSocket";
 import MessageList from "../components/MessageList";
 import InputBar from "../components/InputBar";
@@ -9,6 +9,7 @@ import HamburgerMenu from "../components/HamburgerMenu";
 import WelcomeScreen from "./WelcomeScreen";
 import "../styles/ChatRoom.css";
 import { socket } from "../hooks/useChatSocket";
+import { useNavigate } from "react-router-dom";
 
 const ChatRoom = () => {
   const {
@@ -21,6 +22,10 @@ const ChatRoom = () => {
     userColors,
   } = useChatSocket();
 
+  if (typeof window.socket === 'undefined') {
+    window.socket = socket;
+  }  
+
   const [input, setInput] = useState("");
   const [pendingFile, setPendingFile] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
@@ -28,6 +33,8 @@ const ChatRoom = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [showToolTip, setShowToolTip] = useState(false);
   const [activePanel, setActivePanel] = useState("rules");
+  const [sessionUsername, setSessionUsername] = useState("");
+  const [isModerator, setIsModerator] = useState(false);
 
   const switchPanel = (dir) => {
     const views = ["rules", "formatting"];
@@ -36,6 +43,23 @@ const ChatRoom = () => {
       dir === "left" ? views[(idx - 1 + views.length) % views.length] : views[(idx + 1) % views.length]
     );
   };
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/verify-session", { credentials: "include" });
+        const data = await res.json();
+        if (res.ok) {
+          setSessionUsername(data.username);
+          setIsModerator(data.is_moderator);
+        }
+      } catch (err) {
+        console.error("Error verifying session:", err);
+      }
+    };
+
+    fetchSession();
+  }, []);
 
   const fetchSuggestions = async (prefix) => {
     const res = await fetch(`https://api.datamuse.com/words?sp=${prefix}*&max=10`);
@@ -59,25 +83,25 @@ const ChatRoom = () => {
     if (!input.trim() && !pendingFile) return;
 
     if (input.startsWith("/ban ")) {
-        const parts = input.split(" ");
-        const targetUsername = parts[1];
-        const reason = parts.slice(2).join(" ") || "No reason provided.";
-        if (targetUsername) {
-          socket.emit("ban_user_command", { username: targetUsername, reason });
-        }
-        setInput(""); // Clear after sending
-        return;
+      const parts = input.split(" ");
+      const targetUsername = parts[1];
+      const reason = parts.slice(2).join(" ") || "No reason provided.";
+      if (targetUsername) {
+        socket.emit("ban_user_command", { username: targetUsername, reason });
       }
+      setInput(""); // Clear after sending
+      return;
+    }
 
-      if (input.startsWith("/unban ")) {
-        const parts = input.split(" ");
-        const targetUsername = parts[1];
-        if (targetUsername) {
-          socket.emit("unban_user_command", { username: targetUsername });
-        }
-        setInput(""); // Clear after sending
-        return;
-    }    
+    if (input.startsWith("/unban ")) {
+      const parts = input.split(" ");
+      const targetUsername = parts[1];
+      if (targetUsername) {
+        socket.emit("unban_user_command", { username: targetUsername });
+      }
+      setInput(""); // Clear after sending
+      return;
+    }
 
     if (pendingFile) {
       const maxSize = 5000 * 1024 * 1024;
@@ -107,9 +131,9 @@ const ChatRoom = () => {
       setInput("");
       setSuggestions([]);
     } else {
-        socket.emit("message", { message: input });
-        setInput("");
-        setSuggestions([]);
+      socket.emit("message", { message: input });
+      setInput("");
+      setSuggestions([]);
     }
   };
 
@@ -158,10 +182,11 @@ const ChatRoom = () => {
           setSelectedUser={setSelectedUser}
           userColors={userColors.current}
           darkMode={darkMode}
+          sessionUsername={sessionUsername}
+          isModerator={isModerator}
         />
       </div>
 
-      {/* Move both + and ? into the styled input bar */}
       <InputBar
         input={input}
         setInput={setInput}
@@ -174,7 +199,6 @@ const ChatRoom = () => {
         setShowToolTip={setShowToolTip}
       />
 
-      {/* Tooltip panel appears above */}
       <TooltipPanel
         showToolTip={showToolTip}
         activePanel={activePanel}

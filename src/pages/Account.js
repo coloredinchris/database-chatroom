@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import "../styles/Account.css";
 import HamburgerMenu from "../components/HamburgerMenu";
 
@@ -10,9 +10,24 @@ const readableColors = [
 
 const Account = ({ username }) => {
     const [selectedColor, setSelectedColor] = useState("");
+    const [newUsername, setNewUsername] = useState("");
+    const [isModerator, setIsModerator] = useState(false);
     const navigate = useNavigate();
 
-    const [newUsername, setNewUsername] = useState("");
+    useEffect(() => {
+        const fetchSession = async () => {
+            try {
+                const res = await fetch("http://localhost:5000/verify-session", { credentials: "include" });
+                const data = await res.json();
+                if (res.ok && data.is_moderator) {
+                    setIsModerator(true);
+                }
+            } catch (err) {
+                console.error("Error verifying session:", err);
+            }
+        };
+        fetchSession();
+    }, []);
 
     const handleUsernameChange = async () => {
         if (!newUsername.trim()) {
@@ -114,6 +129,14 @@ const Account = ({ username }) => {
             <button onClick={handleUsernameChange} disabled={!newUsername}>
                 Save Username
             </button>
+            {isModerator && (
+                <div className="manage-users-section">
+                    <h3>Moderation</h3>
+                    <Link to="/manage-users" className="manage-users-button">
+                        Manage Users
+                    </Link>
+                </div>
+            )}
         </div>
     </div>
     );

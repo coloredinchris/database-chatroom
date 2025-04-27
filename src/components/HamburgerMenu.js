@@ -105,6 +105,25 @@ const HamburgerMenu = ({ menuType = "default", username }) => {
                                 </button>
                             </>
                         )}
+                        {menuType === "manage-users" && (
+                            <>
+                                <button 
+                                    onClick={() => navigate("/account")} 
+                                    className="account-button"
+                                >
+                                    Back to Account
+                                </button>
+                                <button
+                                    onClick={() => navigate("/chatroom")}
+                                    className="back-to-chatroom-button"
+                                >
+                                    Back to Chatroom
+                                </button>
+                                <button onClick={handleLogout} className="logout-button">
+                                    Logout
+                                </button>
+                            </>
+                        )}
                     </div>
                 )}
             </div>

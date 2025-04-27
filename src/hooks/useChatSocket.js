@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { getAdjustedColor } from "../components/ColorUtils";
-import { socket } from "./socket"; // use centralized socket
+import { socket } from "./socket";
 
 const useChatSocket = () => {
   const [messages, setMessages] = useState([]);
@@ -14,6 +14,18 @@ const useChatSocket = () => {
     socket.emit("request_username", { custom: customName });
     setHasJoined(true);
   };
+
+  const fetchRegisteredUsers = async () => {
+    console.log("[DEBUG] fetchRegisteredUsers called");
+    try {
+      const res = await fetch("http://localhost:5000/registered-users", { credentials: "include" });
+      const data = await res.json();
+      console.log("[DEBUG] Registered users data fetched:", data);
+      setOnlineUsers(data.users);
+    } catch (err) {
+      console.error("Error fetching registered users:", err);
+    }
+  };    
 
   useEffect(() => {
     const handleMessage = (data) => {
@@ -56,9 +68,12 @@ const useChatSocket = () => {
       );
     };
 
+    const handleUserRoleUpdated = () => {
+      console.log("[DEBUG] Received user_role_updated");
+    };
+
     socket.on("connect", () => console.log("Connected to server"));
     socket.on("rate_limited", (data) => alert(`You're sending messages too fast! Wait ${data.time_remaining}s...`));
-
     socket.on("set_username", (data) => {
       setUsername(data.username);
       userColors.current[data.username] = {
@@ -66,7 +81,6 @@ const useChatSocket = () => {
         darkColor: getAdjustedColor(data.color, true),
       };
     });
-
     socket.on("chat_history", (history) => {
       const updated = history.map((msg) => {
         const normalized = msg.username.toLowerCase();
@@ -77,17 +91,11 @@ const useChatSocket = () => {
             darkColor: getAdjustedColor(light, true),
           };
         }
-
-        return {
-          ...msg,
-          validUsernames: msg.validUsernames || [],
-        };
+        return { ...msg, validUsernames: msg.validUsernames || [] };
       });
       setMessages(updated);
     });
-
     socket.on("message", handleMessage);
-
     socket.on("message_edited", handleMessageEdited);
 
     socket.on("update_user_list", (users) => {
@@ -103,37 +111,66 @@ const useChatSocket = () => {
       });
     });
 
+    socket.on("user_role_updated", handleUserRoleUpdated);
+
     socket.on("ban_notice", (data) => {
       alert(`You have been banned.\nReason: ${data.reason}`);
-      window.location.href = "/login"; // Force redirect after clicking OK
+      window.location.href = "/login";
     });
-   
+
     socket.on("ban_response", (data) => {
-      if (data.success) {
-        alert(data.message || "User banned successfully.");
-      } else {
-        alert(data.error || "Failed to ban user.");
-      }
+      alert(data.success ? (data.message || "User banned successfully.") : (data.error || "Failed to ban user."));
     });
 
     socket.on("unban_success", (data) => {
       alert(`Successfully unbanned ${data.username}`);
     });
+
+    socket.on("unban_response", (data) => {
+      alert(data.success ? (data.message) : (data.error || "Failed to unban user."));
+    });
+
+    socket.on("promoted_notice", () => {
+      alert("Congratulations! You have been promoted to Moderator.");
+    });
+
+    socket.on("demote_response", (data) => {
+      alert(data.success ? (data.message || "User demoted successfully.") : (data.error || "Failed to demote user."));
+    });
+
+    socket.on("demoted_notice", () => {
+      alert("You have been demoted from Moderator.");
+    });
+
+    socket.on('success', (data) => {
+      alert(data.message || 'Action succeeded');
     
-    socket.on('unban_response', (data) => {
-      if (data.success) {
-        alert(data.message);
-      } else {
-        alert(data.error || "Failed to unban user.");
-      }
+      // Refetch registered users after promote/demote succeeds
+      fetchRegisteredUsers();
     });    
 
+    socket.on("error", (data) => {
+      alert(data.error || "Action failed");
+    });
+
     return () => {
+      socket.off("connect");
+      socket.off("rate_limited");
+      socket.off("set_username");
+      socket.off("chat_history");
       socket.off("message", handleMessage);
       socket.off("message_edited", handleMessageEdited);
+      socket.off("update_user_list");
+      socket.off("user_role_updated", handleUserRoleUpdated);
       socket.off("ban_notice");
       socket.off("ban_response");
+      socket.off("unban_success");
       socket.off("unban_response");
+      socket.off("promoted_notice");
+      socket.off("demote_response");
+      socket.off("demoted_notice");
+      socket.off("success");
+      socket.off("error");
     };
   }, []);
 

@@ -140,3 +140,22 @@ button:not(:disabled):hover {
   .username-change button:hover:not(:disabled) {
     background-color: #004494;
   }
+
+  .manage-users-section {
+    margin-top: 20px;
+  }
+  
+  .manage-users-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #00D0E0;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-top: 10px;
+  }
+  
+  .manage-users-button:hover {
+    background-color: #00B0C0;
+  }
+  

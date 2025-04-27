@@ -6,6 +6,7 @@ import ChatRoom from "./pages/ChatRoom";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Account from "./pages/Account";
+import ManageUsers from "./pages/ManageUsers";
 import './styles/global.css';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password/:token" element={<ResetPassword />} />
                 <Route path="/account" element={<Account username={localStorage.getItem("username")} />} />
+                <Route path="/manage-users" element={<ManageUsers />} />
             </Routes>
         </Router>
     );
