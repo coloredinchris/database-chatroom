@@ -8,6 +8,7 @@ import TooltipPanel from "../components/TooltipPanel";
 import HamburgerMenu from "../components/HamburgerMenu";
 import WelcomeScreen from "./WelcomeScreen";
 import "../styles/ChatRoom.css";
+import useDarkMode from "../hooks/useDarkMode.js";
 import { socket } from "../hooks/useChatSocket";
 
 const ChatRoom = () => {
@@ -29,7 +30,7 @@ const ChatRoom = () => {
   const [pendingFile, setPendingFile] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useDarkMode();
   const [showToolTip, setShowToolTip] = useState(false);
   const [activePanel, setActivePanel] = useState("rules");
   const [sessionUsername, setSessionUsername] = useState("");
@@ -41,17 +42,7 @@ const ChatRoom = () => {
     setActivePanel(
       dir === "left" ? views[(idx - 1 + views.length) % views.length] : views[(idx + 1) % views.length]
     );
-  };
-
-  useEffect(() => {
-          if (darkMode) {
-            document.body.classList.add('dark-mode');
-            document.body.classList.remove('light-mode');
-          } else {
-            document.body.classList.add('light-mode');
-            document.body.classList.remove('dark-mode');
-          }
-        }, [darkMode]);  
+  }; 
 
   useEffect(() => {
     const fetchSession = async () => {

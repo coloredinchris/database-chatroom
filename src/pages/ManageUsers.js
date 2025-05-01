@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { socket, initializeSocket } from "../hooks/socket";
 import HamburgerMenu from "../components/HamburgerMenu";
 import UserContextMenu from "../components/UserContextMenu";
+import useDarkMode from "../hooks/useDarkMode";
 import "../styles/ManageUsers.css";
 
 const ManageUsers = () => {
@@ -14,18 +15,8 @@ const ManageUsers = () => {
   const [isModerator, setIsModerator] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useDarkMode();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add('dark-mode');
-      document.body.classList.remove('light-mode');
-    } else {
-      document.body.classList.add('light-mode');
-      document.body.classList.remove('dark-mode');
-    }
-  }, [darkMode]); 
 
   useEffect(() => {
     if (!socket || !socket.connected) {

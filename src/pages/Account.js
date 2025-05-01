@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/Account.css";
 import HamburgerMenu from "../components/HamburgerMenu";
+import useDarkMode from "../hooks/useDarkMode.js";
 
 const readableColors = [
     "#00D0E0", "#00D0F0", "#00E000", "#00E060", "#CBCC32",
@@ -14,7 +15,7 @@ const Account = ({ username }) => {
     const [isModerator, setIsModerator] = useState(false);
     const [showDeleteOverlay, setShowDeleteOverlay] = useState(false);
     const [confirmationInput, setConfirmationInput] = useState("");
-    const [darkMode, setDarkMode] = useState(false);
+    const [darkMode, setDarkMode] = useDarkMode();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -30,17 +31,7 @@ const Account = ({ username }) => {
             }
         };
         fetchSession();
-    }, []);
-
-    useEffect(() => {
-        if (darkMode) {
-          document.body.classList.add('dark-mode');
-          document.body.classList.remove('light-mode');
-        } else {
-          document.body.classList.add('light-mode');
-          document.body.classList.remove('dark-mode');
-        }
-      }, [darkMode]);      
+    }, []);      
 
     const handleUsernameChange = async () => {
         if (!newUsername.trim()) {

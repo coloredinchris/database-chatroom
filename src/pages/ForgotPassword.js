@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import HamburgerMenu from "../components/HamburgerMenu";
+import useDarkMode from "../hooks/useDarkMode";
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
-    const [darkMode, setDarkMode] = useState(false);
+    const [darkMode, setDarkMode] = useDarkMode();
     const navigate = useNavigate();
 
     const handleForgotPassword = async (e) => {
@@ -34,16 +35,6 @@ const ForgotPassword = () => {
             setError("An error occurred. Please try again.");
         }
     };
-
-    useEffect(() => {
-            if (darkMode) {
-              document.body.classList.add('dark-mode');
-              document.body.classList.remove('light-mode');
-            } else {
-              document.body.classList.add('light-mode');
-              document.body.classList.remove('dark-mode');
-            }
-          }, [darkMode]);
 
     return (
         <div className="welcome-overlay">
