@@ -243,22 +243,6 @@ body {
     color: var(--lavender-gray);
 }
 
-.dark-mode .welcome-note{
-    color: var(--lavender-gray);
-}
-
-.dark-mode .welcome-overview-list{
-    color: var(--lavender-gray);
-}
-
-.dark-mode .welcome-overview p{
-    color: var(--lavender-gray);
-}
-
-.dark-mode .welcome-overview h4{
-    color: var(--lavender-gray);
-}
-
 /* User List */
 .user-list {
     background-color: var(--minty-moss);

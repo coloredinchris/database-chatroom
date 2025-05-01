@@ -136,11 +136,20 @@
   padding: 0;
 }
 
+.dark-mode .welcome-overview p {
+  color: var(--minty-moss);
+}
+
 .welcome-overview h3 {
   font-size: 1.6rem;
   margin-bottom: 1rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--translucent-midnight-bark);
+}
+
+.dark-mode .welcome-overview h3 {
+  color: var(--minty-moss);
+  border-bottom: 1px solid var(--translucent-minty-moss);
 }
 
 .welcome-overview-list {
@@ -151,6 +160,15 @@
 
 .welcome-overview-list li {
   margin-bottom: 0.75rem;
+}
+
+.dark-mode .welcome-overview-list li {
+  color: var(--minty-moss);
+}
+
+.dark-mode .welcome-overview-list li button {
+  color: var(--deep-moss);
+  background-color: var(--minty-moss);
 }
 
 .welcome-overview code {
@@ -169,6 +187,27 @@
   border-radius: 6px;
   font-weight: bold;
   pointer-events: none;
+}
+
+.welcome-buttons button {
+  background-color: var(--misty-blue);
+  color: var(--deep-moss);
+}
+
+.dark-mode .welcome-buttons button {
+  background-color: var(--midnight-bark);
+  color: var(--minty-moss);
+  border: 1px solid var(--translucent-minty-moss);
+}
+
+.welcome-buttons button:hover {
+  background-color: var(--translucent-misty-blue);
+  transform: scale(1.02);
+}
+
+.dark-mode .welcome-buttons button:hover {
+  background-color: var(--translucent-midnight-bark-button);
+  transform: scale(1.02);
 }
 
 /* Login button */
