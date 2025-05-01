@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/HamburgerMenu.css";
 
-const HamburgerMenu = ({ menuType = "default", username }) => {
+const HamburgerMenu = ({ menuType = "default", username, darkMode, setDarkMode }) => {
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -42,13 +42,24 @@ const HamburgerMenu = ({ menuType = "default", username }) => {
                     <div className="menu-dropdown">
                         {menuType === "default" && (
                             <>
+                                <button
+                                    onClick={() => setDarkMode(!darkMode)}
+                                    className="toggle-mode-button"
+                                >
+                                    {darkMode ? "Light Mode" : "Dark Mode"}
+                                </button>
                                 <button onClick={() => navigate("/login")}>Login</button>
                                 <button onClick={() => navigate("/register")}>Register</button>
-                                <button onClick={() => navigate("/forgot-password")}>Forgot Password</button>
                             </>
                         )}
                         {menuType === "chatroom" && (
                             <>
+                                <button
+                                    onClick={() => setDarkMode(!darkMode)}
+                                    className="toggle-mode-button"
+                                >
+                                    {darkMode ? "Light Mode" : "Dark Mode"}
+                                </button>
                                 <button
                                     onClick={() => navigate("/account")}
                                     className="account-button"
@@ -60,6 +71,12 @@ const HamburgerMenu = ({ menuType = "default", username }) => {
                         )}
                         {menuType === "account" && (
                             <>
+                                <button
+                                    onClick={() => setDarkMode(!darkMode)}
+                                    className="toggle-mode-button"
+                                >
+                                    {darkMode ? "Light Mode" : "Dark Mode"}
+                                </button>
                                 <button
                                     onClick={() => navigate("/chatroom")}
                                     className="back-to-chatroom-button"
@@ -73,6 +90,12 @@ const HamburgerMenu = ({ menuType = "default", username }) => {
                         )}
                         {menuType === "manage-users" && (
                             <>
+                                <button
+                                    onClick={() => setDarkMode(!darkMode)}
+                                    className="toggle-mode-button"
+                                >
+                                    {darkMode ? "Light Mode" : "Dark Mode"}
+                                </button>
                                 <button 
                                     onClick={() => navigate("/account")} 
                                     className="account-button"

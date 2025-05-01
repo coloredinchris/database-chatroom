@@ -36,7 +36,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(20, 20, 20, 0.7);
+    background: var(--translucent-midnight-bark);
     backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
@@ -47,8 +47,9 @@
   }
 
   .welcome-box {
-    background-color: #ffffff;
+    background-color: var(--minty-moss);
     padding: 2.5rem 2rem;
+    border: 1px solid var(--translucent-midnight-bark);
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     max-width: 400px;
@@ -56,17 +57,40 @@
     text-align: center;
     animation: fadeIn 0.3s ease-in-out;
   }
+
+  .dark-mode .welcome-box {
+    background-color: var(--deep-moss);
+  }
+
+  .welcome-box h2 {
+    color: var(--midnight-bark);
+  }
+
+  .dark-mode .welcome-box h2 {
+    color: var(--minty-moss);
+  }
     
   .welcome-box p {
     margin-bottom: 1.5rem;
-    color: #555;
+    color: var(--midnight-bark);
     padding-top: 0rem;
     font-size: 1.2rem;
-    
+  }
+
+  .dark-mode .welcome-box p {
+    color: var(--minty-moss);
+  }
+
+  .welcome-box p a {
+    color: var(--muted-red);
+  }
+
+  .dark-mode .welcome-box p a {
+    color: var(--sky-blue);
   }
   
   .welcome-box input {
-    width: 100%;
+    width: 93%;
     padding: 0.75rem;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -140,49 +164,65 @@
   font-size: 16px;
   padding: 0.2rem .5rem;
   border: none;
-  color: var (--deep-moss);
+  color: var(--deep-moss);
   background-color: var(--misty-blue);
   border-radius: 6px;
   font-weight: bold;
   pointer-events: none;
 }
 
-/* Register button */
-.register-button {
-    width: 100%;
-    padding: 0.75rem;
-    border: none;
-    border-radius: 8px;
-    background-color: var(--river-teal);
-    color: white;
-    font-weight: bold;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.register-button:hover {
-    background-color: var(--translucent-river-teal);
-    transform: scale(1.02);
-}
-
 /* Login button */
 .login-button {
     width: 100%;
     padding: 0.75rem;
-    border: none;
+    border: 1px solid var(--translucent-midnight-bark);
     border-radius: 8px;
-    background-color: var(--river-teal);
-    color: white;
+    background-color: var(--misty-blue);
+    color: var(--deep-moss);
     font-weight: bold;
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
+.dark-mode .login-button {
+    border: 1px solid var(--translucent-minty-moss);
+    background-color: var(--midnight-bark);
+    color: var(--minty-moss);
+}
+
 .login-button:hover {
-    background-color: var(--translucent-river-teal);
+    background-color: var(--translucent-misty-blue);
     transform: scale(1.02);
+}
+
+.dark-mode .login-button:hover {
+    background-color: var(--translucent-midnight-bark-button);
+    transform: scale(1.02);
+}
+
+.register-button {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--translucent-midnight-bark);
+  border-radius: 8px;
+  background-color: var(--misty-blue);
+  color: var(--deep-moss);
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.dark-mode .register-button {
+  color: var(--minty-moss);
+  background-color: var(--midnight-bark);
+  border: 1px solid var(--translucent-minty-moss);
+}
+
+.register-button:hover {
+  background-color: var(--translucent-misty-blue);
+  transform: scale(1.02);
 }
   
   @keyframes fadeIn {

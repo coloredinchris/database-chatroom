@@ -285,7 +285,6 @@ body {
 
 .user-list li {
     border-radius: 5px;
-    padding: .4rem .6rem;
     margin-bottom: .4rem;
     font-weight: 500;
     cursor: pointer;

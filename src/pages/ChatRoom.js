@@ -9,7 +9,6 @@ import HamburgerMenu from "../components/HamburgerMenu";
 import WelcomeScreen from "./WelcomeScreen";
 import "../styles/ChatRoom.css";
 import { socket } from "../hooks/useChatSocket";
-import { useNavigate } from "react-router-dom";
 
 const ChatRoom = () => {
   const {
@@ -43,6 +42,16 @@ const ChatRoom = () => {
       dir === "left" ? views[(idx - 1 + views.length) % views.length] : views[(idx + 1) % views.length]
     );
   };
+
+  useEffect(() => {
+          if (darkMode) {
+            document.body.classList.add('dark-mode');
+            document.body.classList.remove('light-mode');
+          } else {
+            document.body.classList.add('light-mode');
+            document.body.classList.remove('dark-mode');
+          }
+        }, [darkMode]);  
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -161,13 +170,15 @@ const ChatRoom = () => {
 
   return (
     <div className={`chatroom ${darkMode ? "dark-mode" : "light-mode"}`}>
-      <HamburgerMenu menuType="chatroom" username={username} />
+      <HamburgerMenu 
+      menuType="chatroom" 
+      username={username} 
+      darkMode={darkMode} 
+      setDarkMode={setDarkMode} 
+      />
       <div className="chatroom-main">
         <div className="left-group">
           <h1>Chatroom</h1>
-          <button id="toggleMode" onClick={() => setDarkMode((prev) => !prev)}>
-            Toggle Dark/Light Mode
-          </button>
           <MessageList
             messages={messages}
             username={username}

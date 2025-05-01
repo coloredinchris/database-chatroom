@@ -6,30 +6,35 @@
 }
 
 .hamburger-icon {
-    background-color: #333;
-    color: white;
-    border: none;
+    background-color: var(--slate);
+    color: var(--minty-moss);
+    border: 0.1rem solid var(--translucent-midnight-bark);
     border-radius: 0.5rem;
     padding: 0.5rem;
     font-size: 1.2rem;
     cursor: pointer;
 }
 
+.dark-mode .hamburger-icon {
+    background-color: var(--midnight-bark);
+    border: 0.1rem solid var(--translucent-minty-moss);
+}
+
 .hamburger-icon:not(:disabled):hover {
-    background-color: var(--translucent-river-teal); /* Darker shade on hover */
-    transition: background-color 0.2s ease, transform 0.2s ease; /* Smooth transition */
+    background-color: var(--translucent-slate-button);
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .hamburger-icon.active {
-    background-color: var(--river-teal); /* Active state color */
+    background-color: var(--translucent-slate-button);
 }
 
 .menu-dropdown {
     position: absolute;
     top: 3rem; /* Dropdown appears below the hamburger icon */
     left: 0;
-    background-color: white;
-    border: 0.1rem solid #ccc;
+    background-color: var(--mudstone);
+    border: 0.1rem solid var(--translucent-midnight-bark);
     border-radius: 0.5rem;
     box-shadow: 0 0.4rem 0.6rem rgba(0, 0, 0, 0.1);
     padding: 1rem;
@@ -40,16 +45,22 @@
     width: 12rem; /* Set a fixed width for the dropdown */
 }
 
+.dark-mode .menu-dropdown {
+    border: 0.1rem solid var(--translucent-minty-moss);
+    background-color: var(--midnight-bark);
+}
+
 /* Style for both links and buttons in the dropdown */
 .menu-dropdown a,
 .menu-dropdown button {
     text-decoration: none;
-    color: white;
+    color: var(--deep-moss);
     font-size: 1rem;
-    padding: 0.5rem 1rem;
+    font-weight: bold;
+    padding: 0.5rem 0;
     border-radius: 0.5rem;
-    background-color: var(--river-teal); /* Match the Logout button's color */
-    border: none;
+    background-color: var(--misty-blue);
+    border: 0.1rem solid var(--translucent-midnight-bark);
     text-align: center;
     cursor: pointer;
     transition: background-color 0.2s ease;
@@ -58,10 +69,22 @@
     white-space: nowrap; /* Prevent text from wrapping */
 }
 
+.dark-mode .menu-dropdown a,
+.dark-mode .menu-dropdown button {
+    background-color: var(--minty-moss);
+    color: var(--deep-moss);
+    border: 0.1rem solid var(--translucent-minty-moss);
+}
+
 /* Hover effect for both links and buttons */
 .menu-dropdown a:not(:disabled):hover,
 .menu-dropdown button:not(:disabled):hover {
-    background-color: var(--translucent-river-teal); /* Match the Logout button's hover effect */
+    background-color: var(--translucent-misty-blue);
+}
+
+.dark-mode .menu-dropdown a:not(:disabled):hover,
+.dark-mode .menu-dropdown button:not(:disabled):hover {
+    background-color: var(--translucent-minty-moss);
 }
 
 /* Logout Button */
@@ -80,17 +103,13 @@
     background-color: var(--translucent-river-teal);
 }
 
-.back-to-chatroom-button {
-    background-color: #4caf50;
-    color: white;
+.back-to-chatroom-button button {
+    font-size: 0.8rem;
+    padding-right: 20px;
     border: none;
-    padding: 10px 15px;
-    margin: 5px 0;
+    background-color: var(--river-teal);
+    color: white;
+    border-radius: 4px;
     cursor: pointer;
-    border-radius: 5px;
-    font-size: 14px;
-}
-
-.back-to-chatroom-button:hover {
-    background-color: #45a049;
+    transition: background-color 0.3s ease;
 }

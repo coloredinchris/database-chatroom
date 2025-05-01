@@ -14,7 +14,18 @@ const ManageUsers = () => {
   const [isModerator, setIsModerator] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add('dark-mode');
+      document.body.classList.remove('light-mode');
+    } else {
+      document.body.classList.add('light-mode');
+      document.body.classList.remove('dark-mode');
+    }
+  }, [darkMode]); 
 
   useEffect(() => {
     if (!socket || !socket.connected) {
@@ -228,7 +239,11 @@ const ManageUsers = () => {
 
   return (
     <div className="manage-users-page">
-      <HamburgerMenu menuType="manage-users" username={sessionUsername} />
+      <HamburgerMenu 
+            menuType="manage-users" 
+            darkMode={darkMode} 
+            setDarkMode={setDarkMode} 
+      />
       <h1>Manage Users</h1>
 
       <div className="tabs">

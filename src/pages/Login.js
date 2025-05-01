@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { initializeSocket } from "../hooks/socket";
 import HamburgerMenu from "../components/HamburgerMenu";
@@ -9,6 +9,17 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const [darkMode, setDarkMode] = useState(false);
+
+    useEffect(() => {
+            if (darkMode) {
+              document.body.classList.add('dark-mode');
+              document.body.classList.remove('light-mode');
+            } else {
+              document.body.classList.add('light-mode');
+              document.body.classList.remove('dark-mode');
+            }
+          }, [darkMode]); 
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -35,7 +46,11 @@ const Login = () => {
 
     return (
         <div className="welcome-overlay">
-            <HamburgerMenu />
+            <HamburgerMenu 
+            menuType="default" 
+            darkMode={darkMode} 
+            setDarkMode={setDarkMode} 
+            />
             <div className="welcome-box">
                 <h2>Login</h2>
                 {error && <p style={{ color: "red" }}>{error}</p>}

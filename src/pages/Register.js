@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import HamburgerMenu from "../components/HamburgerMenu";
 import "../styles/WelcomeScreen.css";
@@ -20,6 +20,17 @@ const Register = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const [darkMode, setDarkMode] = useState(false);
+
+useEffect(() => {
+        if (darkMode) {
+          document.body.classList.add('dark-mode');
+          document.body.classList.remove('light-mode');
+        } else {
+          document.body.classList.add('light-mode');
+          document.body.classList.remove('dark-mode');
+        }
+      }, [darkMode]);
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -52,7 +63,11 @@ const Register = () => {
 
     return (
         <div className="welcome-overlay">
-            <HamburgerMenu />
+            <HamburgerMenu 
+            menuType="default" 
+            darkMode={darkMode} 
+            setDarkMode={setDarkMode} 
+            />
             <div className="welcome-box">
                 <h2>Register</h2>
                 {error && <p style={{ color: "red" }}>{error}</p>}

@@ -14,6 +14,7 @@ const Account = ({ username }) => {
     const [isModerator, setIsModerator] = useState(false);
     const [showDeleteOverlay, setShowDeleteOverlay] = useState(false);
     const [confirmationInput, setConfirmationInput] = useState("");
+    const [darkMode, setDarkMode] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -30,6 +31,16 @@ const Account = ({ username }) => {
         };
         fetchSession();
     }, []);
+
+    useEffect(() => {
+        if (darkMode) {
+          document.body.classList.add('dark-mode');
+          document.body.classList.remove('light-mode');
+        } else {
+          document.body.classList.add('light-mode');
+          document.body.classList.remove('dark-mode');
+        }
+      }, [darkMode]);      
 
     const handleUsernameChange = async () => {
         if (!newUsername.trim()) {
@@ -119,7 +130,12 @@ const Account = ({ username }) => {
 
     return (
         <div className="account-page">
-            <HamburgerMenu menuType="account" username={username} />
+            <HamburgerMenu 
+            menuType="account" 
+            username={username} 
+            darkMode={darkMode} 
+            setDarkMode={setDarkMode} 
+            />
             <h1>Account Information</h1>
             <p>Username: {username}</p>
 
