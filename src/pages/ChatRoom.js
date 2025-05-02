@@ -14,7 +14,6 @@ import { socket } from "../hooks/useChatSocket";
 const ChatRoom = () => {
   const {
     messages,
-    setMessages,
     username,
     hasJoined,
     handleJoin,

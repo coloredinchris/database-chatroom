@@ -1,5 +1,5 @@
 // src/pages/ManageUsers.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { socket, initializeSocket } from "../hooks/socket";
 import HamburgerMenu from "../components/HamburgerMenu";
@@ -13,10 +13,39 @@ const ManageUsers = () => {
   const [registeredUsers, setRegisteredUsers] = useState([]);
   const [sessionUsername, setSessionUsername] = useState("");
   const [isModerator, setIsModerator] = useState(false);
-  const [contextMenu, setContextMenu] = useState(null);
   const [loading, setLoading] = useState(true);
   const [darkMode, setDarkMode] = useDarkMode();
   const navigate = useNavigate();
+
+  const fetchBannedUsers = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/banned-users", { credentials: "include" });
+      const data = await res.json();
+      console.log("[DEBUG] Banned users fetched:", data);
+      if (data.banned_users) {
+        setBannedUsers(data.banned_users);
+      } else if (data.banned) { 
+        // fallback, just in case server still sends 'banned'
+        setBannedUsers(data.banned);
+      }
+    } catch (err) {
+      console.error("Error fetching banned users:", err);
+    }
+  };
+
+  const fetchRegisteredUsers = useCallback(async () => {
+    try {
+      const res = await fetch("http://localhost:5000/registered-users", { credentials: "include" });
+      const data = await res.json();
+      if (data.users) {
+        const bannedUsernames = bannedUsers.map((user) => user.username);
+        const filtered = data.users.filter((user) => !bannedUsernames.includes(user.username));
+        setRegisteredUsers(filtered);
+      }
+    } catch (err) {
+      console.error("Error fetching registered users:", err);
+    }
+  }, [bannedUsers]);
 
   useEffect(() => {
     if (!socket || !socket.connected) {
@@ -34,7 +63,7 @@ const ManageUsers = () => {
     return () => {
       socket.off('success', handleSuccess);
     };
-  }, []);  
+  }, [fetchRegisteredUsers]);  
 
   useEffect(() => {
     const verifySession = async () => {
@@ -94,133 +123,7 @@ const ManageUsers = () => {
       socket.off("unban_response");
       socket.off("promote_response");
     };
-  }, [navigate]);
-
-  const fetchBannedUsers = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/banned-users", { credentials: "include" });
-      const data = await res.json();
-      console.log("[DEBUG] Banned users fetched:", data);
-      if (data.banned_users) {
-        setBannedUsers(data.banned_users);
-      } else if (data.banned) { 
-        // fallback, just in case server still sends 'banned'
-        setBannedUsers(data.banned);
-      }
-    } catch (err) {
-      console.error("Error fetching banned users:", err);
-    }
-  };
-
-  const fetchRegisteredUsers = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/registered-users", { credentials: "include" });
-      const data = await res.json();
-      if (data.users) {
-        const bannedUsernames = bannedUsers.map((user) => user.username);
-        const filtered = data.users.filter((user) => !bannedUsernames.includes(user.username));
-        setRegisteredUsers(filtered);
-      }
-    } catch (err) {
-      console.error("Error fetching registered users:", err);
-    }
-  };
-
-  const handleRightClickBanned = (e, username) => {
-    e.preventDefault();
-  
-    if (!username) return;
-  
-    const isSuperAdmin = sessionUsername === "coloredinchris";
-  
-    if (isSuperAdmin || isModerator) {
-      setContextMenu({
-        x: e.pageX,
-        y: e.pageY,
-        options: [
-          {
-            label: "🚫 Unban User",
-            onClick: () => {
-              socket.emit("unban_user_command", { username });
-              setContextMenu(null);
-            },
-          },
-        ],
-      });
-    } else {
-      setContextMenu(null);
-    }
-  };  
-  
-
-  const handleRightClickRegistered = (e, clickedUser) => {
-    e.preventDefault();
-    const options = [];
-  
-    if (!clickedUser) return;
-  
-    const isSuperAdmin = sessionUsername === "coloredinchris";
-    const isSelf = clickedUser.username === sessionUsername;
-  
-    if (isSelf) {
-      // Prevent right-clicking yourself
-      return setContextMenu(null);
-    }
-  
-    if (isSuperAdmin) {
-      // Super admin can promote, demote, and ban ANYONE (even moderators)
-      if (clickedUser.is_moderator) {
-        options.push({
-          label: "⛔ Demote Moderator",
-          onClick: () => {
-            socket.emit("demote_user_command", { username: clickedUser.username });
-            setContextMenu(null);
-          },
-        });
-      } else {
-        options.push({
-          label: "🛡️ Promote to Moderator",
-          onClick: () => {
-            socket.emit("promote_user_command", { username: clickedUser.username });
-            setContextMenu(null);
-          },
-        });
-      }
-  
-      options.push({
-        label: "🚫 Ban User",
-        onClick: () => {
-          const reason = window.prompt(`Enter a reason for banning ${clickedUser.username}:`, "Violation of rules.");
-          if (reason !== null) {
-            socket.emit("ban_user_command", { username: clickedUser.username, reason: reason || "No reason provided" });
-            setRegisteredUsers((prev) => prev.filter((user) => user.username !== clickedUser.username));
-            setContextMenu(null);
-          }
-        },
-      });
-    } else {
-      // Regular moderator behavior
-      if (!clickedUser.is_moderator) {
-        options.push({
-          label: "🚫 Ban User",
-          onClick: () => {
-            const reason = window.prompt(`Enter a reason for banning ${clickedUser.username}:`, "Violation of rules.");
-            if (reason !== null) {
-              socket.emit("ban_user_command", { username: clickedUser.username, reason: reason || "No reason provided" });
-              setRegisteredUsers((prev) => prev.filter((user) => user.username !== clickedUser.username));
-              setContextMenu(null);
-            }
-          },
-        });
-      }
-    }
-  
-    if (options.length > 0) {
-      setContextMenu({ x: e.pageX, y: e.pageY, options });
-    } else {
-      setContextMenu(null);
-    }
-  };  
+  }, [navigate, fetchRegisteredUsers]);
 
   if (loading) {
     return <div className="loading-overlay">Loading...</div>;
@@ -256,33 +159,53 @@ const ManageUsers = () => {
       <div className="list-container">
         {activeTab === "banned" && (
           <ul className="user-list">
-            {bannedUsers.map((user) => (
-              <li key={user.username} onContextMenu={(e) => handleRightClickBanned(e, user.username)}>
+          {bannedUsers.map((user) => (
+            <UserContextMenu
+              key={user.username}
+              user={{ username: user.username, is_moderator: false, is_banned: true }}
+              sessionUsername={sessionUsername}
+              isSessionModerator={isModerator}
+              onPromote={() => {}} // no promote for banned users
+              onDemote={() => {}} // no demote for banned users
+              onBan={() => {
+                socket.emit("unban_user_command", { username: user.username });
+              }}
+              darkMode={darkMode}
+            >
+              <li>
                 {user.username} (Reason: {user.reason})
               </li>
-            ))}
-          </ul>
+            </UserContextMenu>
+          ))}
+        </ul>             
         )}
 
         {activeTab === "registered" && (
           <ul className="user-list">
-            {registeredUsers.map((user) => (
-              <li key={user.username} onContextMenu={(e) => handleRightClickRegistered(e, user)}>
+          {registeredUsers.map((user) => (
+            <UserContextMenu
+              key={user.username}
+              user={{ username: user.username, is_moderator: user.is_moderator, is_banned: false }}
+              sessionUsername={sessionUsername}
+              isSessionModerator={isModerator}
+              onPromote={() => socket.emit("promote_user_command", { username: user.username })}
+              onDemote={() => socket.emit("demote_user_command", { username: user.username })}
+              onBan={() => {
+                const reason = prompt(`Enter reason for banning ${user.username}:`, "Violation of rules.");
+                if (reason !== null) {
+                  socket.emit("ban_user_command", { username: user.username, reason });
+                }
+              }}
+              darkMode={darkMode}
+            >
+              <li>
                 {user.is_moderator && <span role="img" aria-label="moderator">🛡️</span>} {user.username}
               </li>
-            ))}
-          </ul>
+            </UserContextMenu>
+          ))}
+        </ul>        
         )}
       </div>
-
-      {contextMenu && (
-        <UserContextMenu
-          x={contextMenu.x}
-          y={contextMenu.y}
-          options={contextMenu.options}
-          onClose={() => setContextMenu(null)}
-        />
-      )}
     </div>
     </div>
   );

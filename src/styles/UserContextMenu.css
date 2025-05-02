@@ -1,18 +1,18 @@
 .user-context-menu {
     position: absolute;
-    background: #222;
-    border: 1px solid #555;
+    background: var(--midnight-bark);
+    border: 1px solid var(--translucent-minty-moss);
     border-radius: 8px;
-    padding: 8px 0;
-    width: 150px;
+    width: 13rem;
     z-index: 9999;
   }
   
   .menu-item {
     padding: 8px 12px;
-    color: white;
     cursor: pointer;
     transition: background 0.2s;
+    color: var(--minty-moss);
+    border-bottom: 1px solid var(--translucent-minty-moss);
   }
   
   .menu-item:hover {
@@ -20,6 +20,6 @@
   }
   
   .cancel {
-    color: #ff6666;
+    border: none;
   }
   
