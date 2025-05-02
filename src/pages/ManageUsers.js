@@ -229,6 +229,7 @@ const ManageUsers = () => {
   if (!isModerator) return null; // Failsafe protection
 
   return (
+    <div className="manage-users-container">
     <div className="manage-users-page">
       <HamburgerMenu 
             menuType="manage-users" 
@@ -282,6 +283,7 @@ const ManageUsers = () => {
           onClose={() => setContextMenu(null)}
         />
       )}
+    </div>
     </div>
   );
 };

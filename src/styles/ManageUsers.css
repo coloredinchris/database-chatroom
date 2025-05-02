@@ -1,17 +1,36 @@
 /* src/styles/ManageUsers.css */
 
+.manage-users-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: var(--misty-blue);
+  }
+
 .manage-users-page {
     max-width: 800px;
     margin: 50px auto;
     padding: 20px;
-    background-color: #f9f9f9; /* light mode base */
+    background-color: var(--minty-moss);
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark-mode .manage-users-page {
+    background-color: var(--deep-moss);
+    color: var(--minty-moss);
   }
   
   .manage-users-page h1 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 1.2rem;
+    color: var(--midnight-bark);
+  }
+
+  .dark-mode .manage-users-page h1 {
+    color: var(--minty-moss);
   }
   
   .tabs {
@@ -21,8 +40,9 @@
   }
   
   .tabs button {
-    background-color: #eee;
-    border: none;
+    background-color: var(--translucent-slate-button);
+    color: var(--minty-moss);
+    border: 1px solid var(--translucent-midnight-bark);
     padding: 10px 20px;
     margin: 0 10px;
     border-radius: 8px;
@@ -30,19 +50,29 @@
     font-weight: bold;
     transition: background-color 0.3s;
   }
+
+  .dark-mode .tabs button {
+    background-color: var(--translucent-minty-moss);
+    color: var(--minty-moss);
+    border: 1px solid var(--translucent-minty-moss);
+  }
   
   .tabs button.active {
-    background-color: #00D0E0;
-    color: white;
+    background-color: var(--mudstone);
+    color: var(--minty-moss);
+  }
+
+  .dark-mode .tabs button.active {
+    background-color: var(--midnight-bark);
+    color: var(--minty-moss);
   }
   
   .tabs button:hover {
-    background-color: #00B0C0;
-    color: white;
+    background-color: var(--translucent-midnight-bark);
   }
   
   .list-container {
-    background-color: white;
+    background-color: var(--mudstone);
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
@@ -56,13 +86,17 @@
   
   .user-list li {
     padding: 12px 16px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--mudstone);
     cursor: pointer;
     transition: background-color 0.3s;
   }
   
   .user-list li:hover {
-    background-color: #f0f0f0;
+    background-color: var(--translucent-midnight-bark);
+  }
+
+  .dark-mode .user-list li:hover {
+    background-color: var(--translucent-minty-moss);
   }
   
   .user-list li:last-child {
