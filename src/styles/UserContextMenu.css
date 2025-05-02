@@ -1,7 +1,7 @@
 .user-context-menu {
     position: absolute;
-    background: var(--midnight-bark);
-    border: 1px solid var(--translucent-minty-moss);
+    background: var(--midnight-bark) !important;
+    border: 1px solid var(--translucent-minty-moss) !important;
     border-radius: 8px;
     width: 13rem;
     z-index: 9999;

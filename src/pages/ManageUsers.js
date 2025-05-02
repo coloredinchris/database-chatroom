@@ -158,7 +158,7 @@ const ManageUsers = () => {
 
       <div className="list-container">
         {activeTab === "banned" && (
-          <ul className="user-list">
+          <ul className="registry-list">
           {bannedUsers.map((user) => (
             <UserContextMenu
               key={user.username}
@@ -181,7 +181,7 @@ const ManageUsers = () => {
         )}
 
         {activeTab === "registered" && (
-          <ul className="user-list">
+          <ul className="registry-list">
           {registeredUsers.map((user) => (
             <UserContextMenu
               key={user.username}

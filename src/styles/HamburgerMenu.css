@@ -42,7 +42,6 @@
     flex-direction: column;
     gap: 0.5rem;
     align-items: center; /* Center align buttons */
-    width: 12rem; /* Set a fixed width for the dropdown */
 }
 
 .dark-mode .menu-dropdown {
@@ -57,7 +56,7 @@
     color: var(--deep-moss);
     font-size: 1rem;
     font-weight: bold;
-    padding: 0.5rem 0;
+    padding: 0.5rem 0.5rem;
     border-radius: 0.5rem;
     background-color: var(--misty-blue);
     border: 0.1rem solid var(--translucent-midnight-bark);
