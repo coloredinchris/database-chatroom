@@ -2,7 +2,8 @@
     padding: 0 1rem 0 1rem;;
     text-align: center;
     font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
+    color: var(--midnight-bark);
+    background-color: var(--minty-moss);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -10,36 +11,72 @@
     justify-content: center;
 }
 
+.dark-mode .account-page {
+    background-color: var(--deep-moss);
+    color: var(--minty-moss);
+}
+
 .account-page h1 {
     font-size: 2.5rem; 
-    color: #333;
+    color: var(--midnight-bark);
+    border-bottom: 1px solid var(--translucent-midnight-bark);
     margin: 0;
+    padding: 1.4rem 5rem;
+}
+
+.dark-mode .account-page h1 {
+    color: var(--minty-moss);
+    border-bottom: 1px solid var(--translucent-minty-moss);
+}
+
+.dark-mode .account-page h3 {
+    color: var(--minty-moss);
 }
 
 .account-page p {
+    margin: 0;
+    margin: 1rem 0;
     font-size: 1.5rem; 
-    color: #555;
-    margin-bottom: 2rem;
+    color: var(--midnight-bark);
+}
+
+.dark-mode .account-page p {
+    color: var(--minty-moss);
 }
 
 .reset-password-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 1rem 1rem; 
+    background-color: var(--deep-moss);
+    color: var(--minty-moss);
+    margin-top: 1rem;
+    padding: 0.5rem 1rem; 
     font-size: 1.2rem; 
     border-radius: 0.5rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
+.dark-mode .reset-password-button {
+    background-color: var(--minty-moss);
+    color: var(--deep-moss);
+}
+
 .reset-password-button:hover {
-    background-color: #0056b3;
+    background-color: var(--translucent-deep-moss);
+}
+
+.dark-mode .reset-password-button:hover {
+    background-color: var(--translucent-minty-moss-button);
 }
 
 .color-selection {
     margin-top: 2rem;
+    padding-bottom: 2rem;
     text-align: center;
+    border-bottom: 1px solid var(--translucent-midnight-bark);
+}
+
+.dark-mode .color-selection {
+    border-bottom: 1px solid var(--translucent-minty-moss);
 }
 
 .color-selection h3 {
@@ -55,6 +92,41 @@
     margin-top: 1rem;
     flex-wrap: wrap;
     margin-bottom: 2rem;
+}
+
+.color-selection button {
+    background-color: var(--deep-moss);
+    color: var(--minty-moss);
+    margin-top: 1rem;
+    padding: 0.5rem 1rem; 
+    font-size: 1.2rem; 
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dark-mode .color-selection button {
+    background-color: var(--minty-moss);
+    color: var(--deep-moss);
+    
+}
+
+.color-selection button:disabled {
+    background-color: var(--translucent-minty-moss);
+    color: var(--translucent-midnight-bark);
+}
+
+.color-selection button:disabled:hover {
+    cursor: not-allowed;
+}
+
+.color-selection button:hover:not(:disabled) {
+    background-color: var(--translucent-deep-moss);
+    transition: background-color 0.3s ease;
+}
+
+.dark-mode .color-selection button:hover:not(:disabled) {
+    background-color: var(--translucent-minty-moss-button);
 }
 
 .color-box {
@@ -93,59 +165,102 @@
     background-color: #218838;
 }
 
-.username-change {
-    margin-top: 2rem;
-  }
+.username-change h3 {
+    margin: 0;
+    margin-bottom: 1rem;
+}
   
-  .username-change input {
+.username-change input {
     padding: 0.5rem;
     margin-right: 0.5rem;
     font-size: 1rem;
     border-radius: 5px;
     border: 1px solid #ccc;
-  }
+}
   
-  .username-change button {
+.username-change button {
     padding: 0.5rem 1rem;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--deep-moss);
+    color: var(--minty-moss);
     border: none;
     border-radius: 5px;
     cursor: pointer;
-  }
+    font-weight: bold;
+}
 
-  .username-change button:not(:disabled) {
-    background-color: #007bff;
-  }
+.username-change button:not(:disabled) {
+    background-color: var(--deep-moss);
+    transition: background-color 0.3s ease;
+}
+
+.dark-mode .username-change button:not(:disabled) {
+    background-color: var(--minty-moss);
+    border: 1px solid var(--translucent-midnight-bark);
+    color: var(--deep-moss);
+}
   
-  .username-change button:disabled {
-    background-color: #ccc;
+.username-change button:disabled {
+    background-color: var(--translucent-minty-moss);
+    color: var(--translucent-misty-blue);
+    border: 2px solid var(--lavender-gray);
     cursor: not-allowed;
-  }
+    transition: background-color 0.3s ease;
+}
 
-  .username-change button:hover:not(:disabled) {
-    background-color: #004494;
-  }
+.username-change button:disabled {
+    color: var(--translucent-midnight-bark);
+}
 
-  .manage-users-section {
-    margin-top: 20px;
-  }
+.username-change button:hover:not(:disabled) {
+    background-color: var(--translucent-deep-moss);
+}
+
+.dark-mode .username-change button:hover:not(:disabled) {
+    background-color: var(--translucent-minty-moss-button);
+}
+
+.manage-users-section {
+    margin-top: 0.3rem;
+}
   
-  .manage-users-button {
+.manage-users-button {
     display: inline-block;
-    padding: 10px 20px;
-    background-color: #00D0E0;
-    color: white;
-    text-decoration: none;
+    padding: 0.5rem 1rem;
+    background-color: var(--deep-moss);
+    color: var(--minty-moss);
     border-radius: 8px;
-  }
+}
+
+.dark-mode .manage-users-button {
+    background-color: var(--minty-moss);
+    color: var(--deep-moss);
+}
   
-  .manage-users-button:hover {
-    background-color: #00B0C0;
-  }
+.manage-users-button:hover {
+    background-color: var(--translucent-deep-moss);
+    text-decoration: none;
+}
+
+.dark-mode .manage-users-button:hover {
+    background-color: var(--translucent-minty-moss-button);
+}
   
-  .delete-account-section {
-    padding-top: 1rem;
+.delete-account-section {
+    border-top: 1px solid var(--translucent-midnight-bark);
+    margin-top: 1.5rem;
+    padding: 0 10rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--translucent-midnight-bark);
+}
+
+.dark-mode .delete-account-section {
+    border-top: 1px solid var(--translucent-minty-moss);
+    border-bottom: 1px solid var(--translucent-minty-moss);
+}
+
+.delete-account-section button:hover {
+    background-color: var(--muted-red);
+    transition: background-color 0.3s ease;
 }
 
 /* Overlay for Delete Confirmation */
@@ -163,7 +278,8 @@
 }
 
 .delete-confirmation {
-    background-color: white;
+    background-color: var(--minty-moss);
+    color: var(--midnight-bark);
     padding: 2rem;
     border-radius: 0.5rem;
     box-shadow: 0 0.4rem 0.6rem rgba(0, 0, 0, 0.2);
@@ -183,7 +299,7 @@
 .confirm-delete-button,
 .cancel-delete-button {
     background-color: #d9534f;
-    color: white;
+    color: var(--minty-moss);
     font-size: 1rem;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
@@ -196,7 +312,7 @@
 
 .delete-account-button {
     background-color: #d9534f;
-    color: white;
+    color: var(--minty-moss);
     font-size: 1rem;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
@@ -207,13 +323,13 @@
 }
 
 .confirm-delete-button:hover {
-    background-color: #c9302c;
+    background-color: var(--muted-red);
 }
 
 .cancel-delete-button {
-    background-color: #6c757d;
+    background-color: var(--slate);
 }
 
 .cancel-delete-button:hover {
-    background-color: #5a6268;
+    background-color: var(--translucent-slate-button);
 }

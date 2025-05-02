@@ -8,10 +8,12 @@
     --misty-blue: #B5C7C7;
     --dark-misty-blue: rgba(181, 199, 199, 0.15);
     --translucent-misty-blue: rgba(181, 199, 199, 0.7);
-    --deep-moss: #1D3520;      
+    --deep-moss: #1D3520;
+    --translucent-deep-moss: rgba(29, 53, 32, 0.85);    
     --slate: #545F66;
     --translucent-slate-button: rgba(84, 95, 102, 0.8);     
-    --pine-green: #3A6B35;       
+    --pine-green: #3A6B35;   
+    --translucent-pine-green: rgba(58, 107, 53, 0.3);    
     --mudstone: #665544; 
     --translucent-mudstone-button: rgba(102, 85, 68, 0.8); 
     --earthy-orange: #C67F36;
@@ -19,6 +21,7 @@
     --minty-moss: #C4DFAA;
     --translucent-minty-moss: rgba(196, 223, 170, 0.5);
     --translucent-minty-moss-button: rgba(196, 223, 170, 0.75);
+    --translucent-minty-moss: rgba(196, 223, 170, 0.3);
     --tuscan-yellow: #FCD12A;
     --translucent-tuscan-yellow: rgba(252, 209, 42, 0.85);
     --translucent-tuscan-yellow-button: rgba(252, 209, 42, 0.4);

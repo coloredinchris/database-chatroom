@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/Account.css";
 import HamburgerMenu from "../components/HamburgerMenu";
-import useDarkMode from "../hooks/useDarkMode.js";
+import useDarkMode from "../hooks/useDarkMode";
+import { usernameColorMap } from "../components/ColorUtils";
 
 const readableColors = [
     "#00D0E0", "#00D0F0", "#00E000", "#00E060", "#CBCC32",
@@ -128,28 +129,31 @@ const Account = ({ username }) => {
             setDarkMode={setDarkMode} 
             />
             <h1>Account Information</h1>
-            <p>Username: {username}</p>
-
-            <button onClick={handleResetPassword} className="reset-password-button">
-                Reset Password
-            </button>
 
             <div className="color-selection">
-                <h3>Select a Color</h3>
+                <h3>Change Your Color!</h3>
                 <div className="color-options">
-                    {readableColors.map((color) => (
-                        <div
-                            key={color}
-                            className={`color-box ${selectedColor === color ? "selected" : ""}`}
-                            style={{ backgroundColor: color }}
-                            onClick={() => setSelectedColor(color)}
-                        />
-                    ))}
+                {readableColors.map((color) => {
+                const displayColor = darkMode
+                    ? usernameColorMap[color]?.dark || color
+                    : usernameColorMap[color]?.light || color;
+
+                return (
+                    <div
+                    key={color}
+                    className={`color-box ${selectedColor === color ? "selected" : ""}`}
+                    style={{ backgroundColor: displayColor }}
+                    onClick={() => setSelectedColor(color)}
+                    />
+                );
+                })}
                 </div>
                 <button onClick={handleColorChange} disabled={!selectedColor}>
                     Save Color
                 </button>
             </div>
+
+            <p>Username: {username}</p>
 
             <div className="username-change">
                 <h3>Change Username</h3>
@@ -164,18 +168,13 @@ const Account = ({ username }) => {
                 </button>
             </div>
 
-            {isModerator && (
-                <div className="manage-users-section">
-                    <h3>Moderation</h3>
-                    <Link to="/manage-users" className="manage-users-button">
-                        Manage Users
-                    </Link>
-                </div>
-            )}
+            <button onClick={handleResetPassword} className="reset-password-button">
+                Reset Password
+            </button>
 
             {/* DELETE ACCOUNT Button */}
             <div className="delete-account-section">
-                <h3>Danger Zone</h3>
+                <h3>Danger Zone!</h3>
                 <button 
                     onClick={() => setShowDeleteOverlay(true)} 
                     className="delete-account-button"
@@ -206,6 +205,15 @@ const Account = ({ username }) => {
                             Cancel
                         </button>
                     </div>
+                </div>
+            )}
+
+            {isModerator && (
+                <div className="manage-users-section">
+                    <h3>🧰 Moderation 🧰</h3>
+                    <Link to="/manage-users" className="manage-users-button">
+                        Manage Users
+                    </Link>
                 </div>
             )}
         </div>

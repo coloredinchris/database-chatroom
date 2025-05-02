@@ -1,18 +1,18 @@
 // src/components/ColorUtils.js
+export const usernameColorMap = {
+  "#00D0E0": { light: "#00D0E0", dark: "#144AB7" },
+  "#00D0F0": { light: "#00D0F0", dark: "#324CCC" },
+  "#00E000": { light: "#00E000", dark: "#2D606B" },
+  "#00E060": { light: "#00E060", dark: "#0F6089" },
+  "#CBCC32": { light: "#CBCC32", dark: "#8E4A3D" },
+  "#99D65B": { light: "#99D65B", dark: "#6B562D" },
+  "#26D8D8": { light: "#26D8D8", dark: "#324CCC" },
+  "#DBC1BC": { light: "#DBC1BC", dark: "#8E3D8E" },
+  "#EFD175": { light: "#EFD175", dark: "#99337F" },
+  "#D6D65B": { light: "#D6D65B", dark: "#993366" },
+};
+
 export const getAdjustedColor = (baseColor, isDarkMode) => {
-    const usernameColorMap = {
-      "#00D0E0": { light: "#00D0E0", dark: "#144AB7" },
-      "#00D0F0": { light: "#00D0F0", dark: "#324CCC" },
-      "#00E000": { light: "#00E000", dark: "#2D606B" },
-      "#00E060": { light: "#00E060", dark: "#0F6089" },
-      "#CBCC32": { light: "#CBCC32", dark: "#8E4A3D" },
-      "#99D65B": { light: "#99D65B", dark: "#6B562D" },
-      "#26D8D8": { light: "#26D8D8", dark: "#324CCC" },
-      "#DBC1BC": { light: "#DBC1BC", dark: "#8E3D8E" },
-      "#EFD175": { light: "#EFD175", dark: "#99337F" },
-      "#D6D65B": { light: "#D6D65B", dark: "#993366" },
-    };
-  
     return isDarkMode
       ? usernameColorMap[baseColor]?.dark || baseColor
       : usernameColorMap[baseColor]?.light || baseColor;
